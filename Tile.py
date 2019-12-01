@@ -1,5 +1,9 @@
-class Tile:
-	tile_type = 0
+from tetrisnt_enums import *
 
-	def __init__(self, tile_type = 0):
+class Tile:
+	tile_type = None
+	is_active = False
+
+	def __init__(self, tile_type = TILE_TYPE_BLANK, is_active = False):
 		self.tile_type = tile_type
+		self.is_active = is_active
