@@ -11,12 +11,14 @@ window_height = 400
 window_width = 400
 
 # control delay between frames
-frame_rate = 10
-frame_delay = 1000//frame_rate
+frame_rate = 60
+frame_delay_ms = 1000//frame_rate
+fall_delay = 49
+move_delay = 16
 
 # board dimensions
 board_height = 20
-board_height_buffer = 2 # buffer for blocks that start above the top of the board
+board_height_buffer = 0 # buffer for blocks that start above the top of the board
 board_width = 10
 
 # calculate size of one tile based on board height
@@ -31,21 +33,43 @@ active_piece = None
 # game variables
 score = 31415
 time_to_spawn = False
+time_to_fall = False
+time_to_move = False
+time_next_move = 0
+time_next_fall = 0
 
 # string to display on screen with debugging info
 debug_string = 'hello there'
 
 # 2d array where all the tiles are stored, initialized with board_width * (board_height + board_height_buffer) blank tiles
 # access with board[col][row]
+#   0 1 2 3 4 5 6 7 8 9
+# 0 
+# 1
+# 2
+# 3
+# 4
+# 5
+# 6
+# 7
+# 8
+# 9
+# ...
 # initialized in init_board()
 board = []
+
+# Clock to help with frame timing
+updateClock = pygame.time.Clock
 
 # Fill board with empty tiles
 def init_board():
 	global board # must do this to tell it you're going to modify the global variable, else it'll make a new one
 
 	board = [[Tile() for j in range(board_width)] for i in range(board_height+board_height_buffer)]
-
+	# for row in board:
+		# for tile in row:
+			# print(str(tile.tile_type), end = ' ')
+		# print()
 
 def load_sprites():
 	sprites[0] = pygame.image.load('backgroundblock.bmp')
@@ -53,7 +77,7 @@ def load_sprites():
 
 def draw_board():
 	screen.fill((0,0,0))
-	for row, tile_row in enumerate(board[2:]):
+	for row, tile_row in enumerate(board):
 		for col, tile in enumerate(tile_row):				
 
 			scaled_image = pygame.transform.scale(sprites[tile.tile_type], (tile_size, tile_size))
@@ -85,17 +109,42 @@ def update_board():
 	global score
 	global active_piece
 	global time_to_spawn
+	global time_to_fall
+	global time_to_move
+	global time_next_fall
+	global time_next_move
+	
+	
+	ticks = pygame.time.get_ticks()
+	
 	
 	if time_to_spawn:
 		new_piece_type = random.randint(1,7+1)
 		active_piece = Piece(PIECE_TYPE_I)
+		time_next_fall = ticks + 20 * fall_delay
 		time_to_spawn = False
-	elif active_piece == None:
+	if active_piece == None:
 		time_to_spawn = True
 		return
-
-	allow_movement = True
-	if allow_movement:
+		
+	if ticks >= time_next_move:
+		time_to_move = True
+		time_next_move = ticks + move_delay
+	if ticks >= time_next_fall:
+		time_to_fall = True
+		time_next_fall = ticks + fall_delay
+		
+	if not can_move(direction = DIRECTION_DOWN):
+		for location in active_piece.locations:
+			board[location[1]][location[0]] = Tile(active_piece.tile_type)
+			active_piece = None
+			return
+		
+	if time_to_fall:
+		active_piece.move(direction = DIRECTION_DOWN)
+		time_to_fall = False
+		
+	if time_to_move:
 		if keys[pygame.K_LEFT]:
 			if can_move(direction = DIRECTION_LEFT):
 				active_piece.move(direction = DIRECTION_LEFT)
@@ -105,26 +154,37 @@ def update_board():
 		if keys[pygame.K_DOWN]:
 			if can_move(direction = DIRECTION_DOWN):
 				active_piece.move(direction = DIRECTION_DOWN)
+		time_to_move = False
 
-	global debug_string
-	debug_string = ''
-	for location in active_piece.locations:
-		debug_string += str(location) + ' '
 	score += 1
+
 
 # Check if piece can move in the specified direction
 # Returns: True, False
 def can_move(direction):
-	return True # remove when fixed
-	# todo: insert logic to return True if none of the locations in piece would intersect a piece on the board after it were moved
-	if direction == DIRECTION_DOWN: # down
-		pass # do nothing
-	if direction == DIRECTION_LEFT: # left
-		pass # do nothing
-	if direction == DIRECTION_RIGHT: # right
+
+	# Check the extremes of the board
+	if active_piece.extreme(DIRECTION_DOWN) >= 19:
+		return False
+		
+	if direction == DIRECTION_LEFT:
+		if active_piece.extreme(DIRECTION_LEFT) <= 1:
+			return False
+
+	# Check for intersections with other pieces
+	if direction == DIRECTION_DOWN:
+		for location in active_piece.locations:
+			tile = board[location[1] + 1][location[0]]
+			if tile.tile_type != TILE_TYPE_BLANK:
+				return False
+					
+	if direction == DIRECTION_LEFT:
+		pass
+	
+	if direction == DIRECTION_RIGHT:
 		pass # do nothing
 
-	return False
+	return True
 
 # Check if lines can be cleared, clear them, shift stuff down, update score
 def clear_lines():
@@ -143,12 +203,13 @@ pygame.display.set_caption('Tetrisn\'t')
 # thing that we draw to
 screen = pygame.display.set_mode((window_width, window_width))
 
-
 running = True
 
 # main loop
 while running:
-	pygame.time.delay(frame_delay)
+	# Delay the game and keep running at certain framerate
+	updateClock().tick_busy_loop(frame_delay_ms)
+	debug_string = str(updateClock().get_fps())
 
 	# event handling, gets all event from the event queue
 	for event in pygame.event.get():
@@ -158,8 +219,6 @@ while running:
 			running = False
 	
 	keys = pygame.key.get_pressed()
-
-	
 
 	update_board()
 	if active_piece != None:
