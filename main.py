@@ -72,8 +72,9 @@ def init_board():
 		# print()
 
 def load_sprites():
-	sprites[0] = pygame.image.load('backgroundblock.bmp')
-	sprites[1] = pygame.image.load('ISTblock.bmp')
+	# Load sprites from image files and convert for performance
+	sprites[0] = pygame.image.load('backgroundblock.bmp').convert()
+	sprites[1] = pygame.image.load('ISTblock.bmp').convert()
 
 def draw_board():
 	screen.fill((0,0,0))
