@@ -44,7 +44,7 @@ debug_string = 'hello there'
 # 2d array where all the tiles are stored, initialized with board_width * (board_height + board_height_buffer) blank tiles
 # access with board[col][row]
 #   0 1 2 3 4 5 6 7 8 9
-# 0 
+# 0
 # 1
 # 2
 # 3
@@ -78,7 +78,7 @@ def load_sprites():
 def draw_board():
 	screen.fill((0,0,0))
 	for row, tile_row in enumerate(board):
-		for col, tile in enumerate(tile_row):				
+		for col, tile in enumerate(tile_row):
 
 			scaled_image = pygame.transform.scale(sprites[tile.tile_type], (tile_size, tile_size))
 			screen.blit(scaled_image, (col*tile_size, row*tile_size))
@@ -88,16 +88,16 @@ def draw_board():
 		screen.blit(scaled_image, (location[0]*tile_size, location[1]*tile_size))
 
 
-	
+
 
 def draw_text():
 	x = board_width * tile_size
 	y = 0
 
-	font = pygame.font.Font('freesansbold.ttf', 24) 
+	font = pygame.font.Font('freesansbold.ttf', 24)
 
 	score_text = font.render(str(score), True, (0,255,0))
-	  
+
 	screen.blit(score_text, (x,y))
 
 	debug_text = font.render(str(debug_string), True, (255,0,0))
@@ -113,11 +113,11 @@ def update_board():
 	global time_to_move
 	global time_next_fall
 	global time_next_move
-	
-	
+
+
 	ticks = pygame.time.get_ticks()
-	
-	
+
+
 	if time_to_spawn:
 		new_piece_type = random.randint(1,7+1)
 		active_piece = Piece(PIECE_TYPE_I)
@@ -126,24 +126,24 @@ def update_board():
 	if active_piece == None:
 		time_to_spawn = True
 		return
-		
+
 	if ticks >= time_next_move:
 		time_to_move = True
 		time_next_move = ticks + move_delay
 	if ticks >= time_next_fall:
 		time_to_fall = True
 		time_next_fall = ticks + fall_delay
-		
+
 	if not can_move(direction = DIRECTION_DOWN):
 		for location in active_piece.locations:
 			board[location[1]][location[0]] = Tile(active_piece.tile_type)
-			active_piece = None
-			return
-		
+		active_piece = None
+		return
+
 	if time_to_fall:
 		active_piece.move(direction = DIRECTION_DOWN)
 		time_to_fall = False
-		
+
 	if time_to_move:
 		if keys[pygame.K_LEFT]:
 			if can_move(direction = DIRECTION_LEFT):
@@ -163,26 +163,24 @@ def update_board():
 # Returns: True, False
 def can_move(direction):
 
-	# Check the extremes of the board
-	if active_piece.extreme(DIRECTION_DOWN) >= 19:
-		return False
-		
-	if direction == DIRECTION_LEFT:
-		if active_piece.extreme(DIRECTION_LEFT) <= 1:
-			return False
-
 	# Check for intersections with other pieces
 	if direction == DIRECTION_DOWN:
 		for location in active_piece.locations:
+			if location[1] + 2 > len(board):
+				return False
 			tile = board[location[1] + 1][location[0]]
 			if tile.tile_type != TILE_TYPE_BLANK:
 				return False
-					
+
 	if direction == DIRECTION_LEFT:
-		pass
-	
+		for location in active_piece.locations:
+			if location[0] <= 0:
+				return False
+
 	if direction == DIRECTION_RIGHT:
-		pass # do nothing
+		for location in active_piece.locations:
+			if location[0] + 1 >= len(board[0]):
+				return False
 
 	return True
 
@@ -217,12 +215,12 @@ while running:
 		if event.type == pygame.QUIT:
 			# change the value to False, to exit the main loop
 			running = False
-	
+
 	keys = pygame.key.get_pressed()
 
 	update_board()
 	if active_piece != None:
 		draw_board()
-	
+
 	draw_text()
 	pygame.display.update()
