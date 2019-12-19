@@ -24,6 +24,9 @@ board_width = 10
 # calculate size of one tile based on board height
 tile_size = window_height // board_height
 
+# thing that we draw to
+screen = pygame.display.set_mode((window_width, window_height))
+
 # store sprites
 sprites = {}
 
@@ -73,8 +76,10 @@ def init_board():
 
 def load_sprites():
 	# Load sprites from image files and convert for performance
-	sprites[0] = pygame.image.load('backgroundblock.bmp').convert()
-	sprites[1] = pygame.image.load('ISTblock.bmp').convert()
+	sprites[TILE_TYPE_BLANK] = pygame.image.load('backgroundblock.bmp').convert()
+	sprites[TILE_TYPE_IOT] = pygame.image.load('IOTblock.bmp').convert()
+	sprites[TILE_TYPE_JS] = pygame.image.load('JSblock.bmp').convert()
+	sprites[TILE_TYPE_LZ] = pygame.image.load('LZblock.bmp').convert()
 
 def draw_board():
 	screen.fill((0,0,0))
@@ -121,7 +126,7 @@ def update_board():
 
 	if time_to_spawn:
 		new_piece_type = random.randint(1,7+1)
-		active_piece = Piece(PIECE_TYPE_I)
+		active_piece = Piece()
 		time_next_fall = ticks + 20 * fall_delay
 		time_to_spawn = False
 	if active_piece == None:
@@ -198,9 +203,6 @@ init_board()
 logo = pygame.image.load('iconsmall.bmp')
 pygame.display.set_icon(logo)
 pygame.display.set_caption('Tetrisn\'t')
-
-# thing that we draw to
-screen = pygame.display.set_mode((window_width, window_width))
 
 running = True
 
