@@ -14,6 +14,7 @@ window_width = 400
 frame_rate = 60
 frame_delay_ms = 1000//frame_rate
 fall_delay = 49
+rotate_delay = 49
 move_delay = 16
 
 # board dimensions
@@ -38,8 +39,10 @@ score = 31415
 time_to_spawn = False
 time_to_fall = False
 time_to_move = False
+time_to_rotate = False
 time_next_move = 0
 time_next_fall = 0
+time_next_rotate = 0
 
 # string to display on screen with debugging info
 debug_string = 'hello there'
@@ -118,8 +121,10 @@ def update_board():
 	global time_to_spawn
 	global time_to_fall
 	global time_to_move
+	global time_to_rotate
 	global time_next_fall
 	global time_next_move
+	global time_next_rotate
 
 
 	ticks = pygame.time.get_ticks()
@@ -140,6 +145,9 @@ def update_board():
 	if ticks >= time_next_fall:
 		time_to_fall = True
 		time_next_fall = ticks + fall_delay
+	if ticks >= time_next_rotate:
+		time_to_rotate = True
+		time_next_rotate = ticks + rotate_delay
 
 	if not can_move(direction = DIRECTION_DOWN):
 		for location in active_piece.locations:
@@ -162,6 +170,15 @@ def update_board():
 			if can_move(direction = DIRECTION_DOWN):
 				active_piece.move(direction = DIRECTION_DOWN)
 		time_to_move = False
+		
+	if time_to_rotate:
+		if keys[pygame.K_z]:
+			if can_rotate(ROTATION_CCW):
+				active_piece.rotate(ROTATION_CCW)
+		if keys[pygame.K_x]:
+			if can_rotate(ROTATION_CW):
+				active_piece.rotate(ROTATION_CW)
+		time_to_rotate = False
 
 	clear_lines()
 		
@@ -193,6 +210,11 @@ def can_move(direction):
 				return False
 
 	return True
+	
+	
+def can_rotate(rotation_direction):
+	return True
+	
 
 # Check if lines can be cleared, clear them, shift stuff down, update score
 def clear_lines():
