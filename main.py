@@ -185,7 +185,7 @@ def can_move(direction):
 		for location in active_piece.locations:
 			if location[0] <= 0:
 				return False
-			if board[
+			
 
 	if direction == DIRECTION_RIGHT:
 		for location in active_piece.locations:
@@ -216,7 +216,7 @@ def clear_lines():
 			
 	# Move upper lines down
 	for line_index, line in enumerate(board):
-		
+		pass
 
 
 pygame.init()
