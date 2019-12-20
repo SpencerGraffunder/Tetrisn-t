@@ -12,6 +12,8 @@ class Piece:
 
 	def __init__(self):
 		self.piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+		if self.piece_type == previous_piece:
+			self.piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
 		previous_piece = self.piece_type
 		self.rotation = 0
 		if self.piece_type == PIECE_TYPE_I:

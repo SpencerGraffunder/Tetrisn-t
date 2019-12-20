@@ -202,11 +202,17 @@ def can_move(direction):
 		for location in active_piece.locations:
 			if location[0] <= 0:
 				return False
+			tile = board[location[1]][location[0] - 1]
+			if tile.tile_type != TILE_TYPE_BLANK:
+				return False
 			
 
 	if direction == DIRECTION_RIGHT:
 		for location in active_piece.locations:
 			if location[0] + 1 >= len(board[0]):
+				return False
+			tile = board[location[1]][location[0] + 1]
+			if tile.tile_type != TILE_TYPE_BLANK:
 				return False
 
 	return True
