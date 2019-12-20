@@ -116,6 +116,7 @@ class Piece:
 					location = ((loc_copy[1]-pivot[1])+pivot[1],(pivot[1]-loc_copy[1])+pivot[1])
 					self.rotation = (self.rotation-90) % 360
 		elif self.piece_type == PIECE_TYPE_T or self.piece_type == PIECE_TYPE_L or self.piece_type == PIECE_TYPE_J: # the four-rotation-position pieces
+			pdb.set_trace()
 			pivot = self.locations[1]
 			if rotation_direction == ROTATION_CW:
 				# General rotate CW:

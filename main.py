@@ -77,15 +77,19 @@ def init_board():
 			# print(str(tile.tile_type), end = ' ')
 		# print()
 
-		
-def load_sprites():
-	# Load sprites from image files and convert for performance
-	sprites[TILE_TYPE_BLANK] = pygame.image.load('backgroundblock.bmp').convert()
-	sprites[TILE_TYPE_IOT] = pygame.image.load('IOTblock.bmp').convert()
-	sprites[TILE_TYPE_JS] = pygame.image.load('JSblock.bmp').convert()
-	sprites[TILE_TYPE_LZ] = pygame.image.load('LZblock.bmp').convert()
 
-	
+def load_sprites():
+	if getattr(sys, 'frozen', False):
+		wd = sys._MEIPASS
+	else:
+		wd = ''
+	# Load sprites from image files and convert for performance
+	sprites[TILE_TYPE_BLANK] = pygame.image.load(os.path.join(wd,'backgroundblock.bmp')).convert()
+	sprites[TILE_TYPE_IOT] = pygame.image.load(os.path.join(wd,'IOTblock.bmp')).convert()
+	sprites[TILE_TYPE_JS] = pygame.image.load(os.path.join(wd,'JSblock.bmp')).convert()
+	sprites[TILE_TYPE_LZ] = pygame.image.load(os.path.join(wd,'LZblock.bmp')).convert()
+
+
 def draw_board():
 	screen.fill((0,0,0))
 	for row, tile_row in enumerate(board):
@@ -104,15 +108,15 @@ def draw_text():
 	x = board_width * tile_size
 	y = 0
 
-	font = pygame.font.Font('freesansbold.ttf', 24)
+	# font = pygame.font.Font('freesansbold.ttf', 24)
 
-	score_text = font.render(str(score), True, (0,255,0))
+	# score_text = font.render(str(score), True, (0,255,0))
 
-	screen.blit(score_text, (x,y))
+	# screen.blit(score_text, (x,y))
 
-	debug_text = font.render(str(debug_string), True, (255,0,0))
+	# debug_text = font.render(str(debug_string), True, (255,0,0))
 
-	screen.blit(debug_text, (x, score_text.get_height()))
+	# screen.blit(debug_text, (x, score_text.get_height()))
 
 def update_board():
 	global board
@@ -170,7 +174,7 @@ def update_board():
 			if can_move(direction = DIRECTION_DOWN):
 				active_piece.move(direction = DIRECTION_DOWN)
 		time_to_move = False
-		
+
 	if time_to_rotate:
 		if keys[pygame.K_z]:
 			if can_rotate(ROTATION_CCW):
@@ -181,7 +185,7 @@ def update_board():
 		time_to_rotate = False
 
 	clear_lines()
-		
+
 	score += 1
 
 
@@ -205,7 +209,7 @@ def can_move(direction):
 			tile = board[location[1]][location[0] - 1]
 			if tile.tile_type != TILE_TYPE_BLANK:
 				return False
-			
+
 
 	if direction == DIRECTION_RIGHT:
 		for location in active_piece.locations:
@@ -216,18 +220,18 @@ def can_move(direction):
 				return False
 
 	return True
-	
-	
+
+
 def can_rotate(rotation_direction):
 	return True
-	
+
 
 # Check if lines can be cleared, clear them, shift stuff down, update score
 def clear_lines():
-	
+
 	# Store all lines that can be cleared
 	lines_to_clear = []
-	
+
 	# Add all clearable lines to list
 	for row_index, row in enumerate(board):
 		can_clear = True
@@ -236,12 +240,12 @@ def clear_lines():
 				can_clear = False
 		if can_clear:
 			lines_to_clear.append(row_index)
-			
+
 	# Get clear tiles on board
 	for line in lines_to_clear:
 		for tile in board[line]:
 			tile.tile_type = TILE_TYPE_BLANK
-			
+
 	# Move upper lines down
 	for line_index, line in enumerate(board):
 		pass
