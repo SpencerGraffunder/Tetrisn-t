@@ -106,26 +106,22 @@ class Piece:
 			if turn == TURN_CW:
 				# General rotate CW:
 				for location in self.locations:
-					loc_copy = location
-					location = ((pivot[1]-loc_copy[1])+pivot[0],(loc_copy[1]-pivot[1])+pivot[1])
-					self.rotation = (self.rotation+90) % 360
+					location = ((pivot[1]-location[1])+pivot[0],(location[1]-pivot[1])+pivot[1])
+				self.rotation = (self.rotation+90) % 360
 			elif turn == TURN_CCW:
 				# General rotate CCW:
 				for location in self.locations:
-					loc_copy = location
-					location = ((loc_copy[1]-pivot[1])+pivot[1],(pivot[1]-loc_copy[1])+pivot[1])
-					self.rotation = (self.rotation-90) % 360
+					location = ((location[1]-pivot[1])+pivot[1],(pivot[1]-location[1])+pivot[1])
+				self.rotation = (self.rotation-90) % 360
 		elif self.piece_type == PIECE_TYPE_T or self.piece_type == PIECE_TYPE_L or self.piece_type == PIECE_TYPE_J: # the four-rotation-position pieces
 			pivot = self.locations[1]
 			if rotation_direction == ROTATION_CW:
 				# General rotate CW:
 				for location in self.locations:
-					loc_copy = location
-					location = ((pivot[1]-loc_copy[1])+pivot[0],(loc_copy[1]-pivot[1])+pivot[1])
-					self.rotation = (self.rotation+90) % 360
+					location = ((pivot[1]-location[1])+pivot[0],(location[1]-pivot[1])+pivot[1])
+				self.rotation = (self.rotation+90) % 360
 			elif rotation_direction == ROTATION_CCW:
 				# General rotate CCW:
 				for location in self.locations:
-					loc_copy = location
-					location = ((loc_copy[1]-pivot[1])+pivot[1],(pivot[1]-loc_copy[1])+pivot[1])
-					self.rotation = (self.rotation-90) % 360
+					location = ((location[1]-pivot[1])+pivot[1],(pivot[1]-location[1])+pivot[1])
+				self.rotation = (self.rotation-90) % 360
