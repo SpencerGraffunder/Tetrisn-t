@@ -74,6 +74,7 @@ def init_board():
 			# print(str(tile.tile_type), end = ' ')
 		# print()
 
+		
 def load_sprites():
 	# Load sprites from image files and convert for performance
 	sprites[TILE_TYPE_BLANK] = pygame.image.load('backgroundblock.bmp').convert()
@@ -81,6 +82,7 @@ def load_sprites():
 	sprites[TILE_TYPE_JS] = pygame.image.load('JSblock.bmp').convert()
 	sprites[TILE_TYPE_LZ] = pygame.image.load('LZblock.bmp').convert()
 
+	
 def draw_board():
 	screen.fill((0,0,0))
 	for row, tile_row in enumerate(board):
@@ -90,9 +92,8 @@ def draw_board():
 			screen.blit(scaled_image, (col*tile_size, row*tile_size))
 
 	for location in active_piece.locations:
-		scaled_image = pygame.transform.scale(sprites[1], (tile_size, tile_size))
+		scaled_image = pygame.transform.scale(sprites[active_piece.tile_type], (tile_size, tile_size))
 		screen.blit(scaled_image, (location[0]*tile_size, location[1]*tile_size))
-
 
 
 
@@ -162,6 +163,8 @@ def update_board():
 				active_piece.move(direction = DIRECTION_DOWN)
 		time_to_move = False
 
+	clear_lines()
+		
 	score += 1
 
 
@@ -182,6 +185,7 @@ def can_move(direction):
 		for location in active_piece.locations:
 			if location[0] <= 0:
 				return False
+			if board[
 
 	if direction == DIRECTION_RIGHT:
 		for location in active_piece.locations:
@@ -192,7 +196,27 @@ def can_move(direction):
 
 # Check if lines can be cleared, clear them, shift stuff down, update score
 def clear_lines():
-	pass # do nothing
+	
+	# Store all lines that can be cleared
+	lines_to_clear = []
+	
+	# Add all clearable lines to list
+	for row_index, row in enumerate(board):
+		can_clear = True
+		for tile in row:
+			if tile.tile_type == TILE_TYPE_BLANK:
+				can_clear = False
+		if can_clear:
+			lines_to_clear.append(row_index)
+			
+	# Get clear tiles on board
+	for line in lines_to_clear:
+		for tile in board[line]:
+			tile.tile_type = TILE_TYPE_BLANK
+			
+	# Move upper lines down
+	for line_index, line in enumerate(board):
+		
 
 
 pygame.init()
