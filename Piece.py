@@ -79,12 +79,14 @@ class Piece:
 				self.locations[1] = (pivot[0]+1,pivot[1])
 				self.locations[2] = pivot
 				self.locations[3] = (pivot[0],pivot[1]+1)
+				self.rotation = (self.rotation+90) % 360
 			elif self.rotation in [90,270]:
 				pivot = self.locations[2]
 				self.locations[0] = (pivot[0]-1,pivot[1])
 				self.locations[1] = pivot
 				self.locations[2] = (pivot[0],pivot[1]+1)
 				self.locations[3] = (pivot[0]+1,pivot[1]+1)
+				self.rotation = (self.rotation+90) % 360
 		elif self.piece_type == PIECE_TYPE_I or self.piece_type == PIECE_TYPE_S: # the two-rotation-position pieces that aren't special
 			if self.piece_type == PIECE_TYPE_I:
 				pivot = self.locations[2]
@@ -100,31 +102,27 @@ class Piece:
 					turn = TURN_CW # turn to horizontal
 			if turn == TURN_CW:
 				# General rotate CW:
-				for position in self.locations:
-					pos_copy = position
-					position[0] = (pivot[1]-pos_copy[1])+pivot[0]
-					position[1] = (pos_copy[1]-pivot[1])+pivot[1]
+				for location in self.locations:
+					loc_copy = location
+					location = ((pivot[1]-loc_copy[1])+pivot[0],(loc_copy[1]-pivot[1])+pivot[1])
 					self.rotation = (self.rotation+90) % 360
 			elif turn == TURN_CCW:
 				# General rotate CCW:
-				for position in self.locations:
-					pos_copy = position
-					position[0] = (pos_copy[1]-pivot[1])+pivot[1]
-					position[1] = (pivot[1]-pos_copy[1])+pivot[1]
+				for location in self.locations:
+					loc_copy = location
+					location = ((loc_copy[1]-pivot[1])+pivot[1],(pivot[1]-loc_copy[1])+pivot[1])
 					self.rotation = (self.rotation-90) % 360
 		elif self.piece_type == PIECE_TYPE_T or self.piece_type == PIECE_TYPE_L or self.piece_type == PIECE_TYPE_J: # the four-rotation-position pieces
-			pivot = self.position[1]
+			pivot = self.locations[1]
 			if rotation_direction == ROTATION_CW:
 				# General rotate CW:
-				for position in self.locations:
-					pos_copy = position
-					position[0] = (pivot[1]-pos_copy[1])+pivot[0]
-					position[1] = (pos_copy[1]-pivot[1])+pivot[1]
+				for location in self.locations:
+					loc_copy = location
+					location = ((pivot[1]-loc_copy[1])+pivot[0],(loc_copy[1]-pivot[1])+pivot[1])
 					self.rotation = (self.rotation+90) % 360
 			elif rotation_direction == ROTATION_CCW:
 				# General rotate CCW:
-				for position in self.locations:
-					pos_copy = position
-					position[0] = (pos_copy[1]-pivot[1])+pivot[1]
-					position[1] = (pivot[1]-pos_copy[1])+pivot[1]
+				for location in self.locations:
+					loc_copy = location
+					location = ((loc_copy[1]-pivot[1])+pivot[1],(pivot[1]-loc_copy[1])+pivot[1])
 					self.rotation = (self.rotation-90) % 360
