@@ -7,6 +7,33 @@ import random
 from tetrisnt_enums import *
 from collections import deque
 
+class States(object):
+	def __init__(self):
+		self.done = False
+		self.next = None
+		self.quit = False
+		self.previous = None
+		
+class Menu(States):
+	def __init__(self):
+		States.__init__(self)
+		self.next = 'game'
+	def cleanup(self):
+		pass
+	def startup(self):
+		pass
+	def get_event(self, event):
+		pass
+	def update(self, screen, dt):
+		self.draw(screen)
+	def draw(self, screen):
+		screen.fill((100,255,0))
+
+class Game(States):
+	def __init__(self):
+		States.__init__(self)
+		self.next = 'menu'
+		
 # window dimensions
 window_height = 400
 window_width = 400
@@ -51,7 +78,7 @@ has_ccw_rotate_been_released = True
 debug_string = 'hello there'
 
 # 2d array where all the tiles are stored, initialized with board_width * (board_height + board_height_buffer) blank tiles
-# access with board[col][row]
+# access with board[row][col]
 #   0 1 2 3 4 5 6 7 8 9
 # 0
 # 1
