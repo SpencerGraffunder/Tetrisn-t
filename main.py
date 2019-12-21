@@ -7,6 +7,7 @@ import random
 from tetrisnt_enums import *
 from copy import copy
 from collections import deque
+import sys
 
 class States(object):
 	def __init__(self):
@@ -18,6 +19,7 @@ class States(object):
 class Menu(States):
 	def __init__(self):
 		States.__init__(self)
+		self.next = 'game'
 	def get_event(self, event):
 		pass
 	def update(self, screen, dt):
@@ -27,7 +29,21 @@ class Menu(States):
 
 class Game(States):
 	def __init__(self):
+	
 		States.__init__(self)
+		
+		self.next = 'menu'
+		
+		self.frame_delay_ms = 1000//frame_rate
+		self.fall_delay = 49
+		self.rotate_delay = 49
+		self.move_delay = 16
+		self.tile_size = window_height // board_height
+		
+		# store sprites
+		sprites = {}
+		
+		
 	def get_event(self, event):
 		pass
 	def update(self, screen, dt):
@@ -47,27 +63,63 @@ class Control:
 	def __init__(self, **settings):
 		self.__dict__.update(settings)
 		self.done = False
-		self.screen = pg.time.Clock()
+		self.screen = pygame.time.Clock()
 	def setup_states(self, state_dict, start_state):
 		self.state_dict = state_dict
 		self.state_name = start_state
+		self.state = self.state_dict[self.state_name]
+	def update(self, dt):
+		if self.state.quit:
+			self.done = True
+		elif self.state.done:
+			self.flip_state()
+		self.state.update(self.screen, dt)
+	def event_loop(self):
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				self.done = True
+			self.state.get_event(event)
+	def main_game_loop(self):
+		while not self.done:
+			delta_time = self.clock.tick(self.fps)/1000.0
+			self.event_loop()
+			self.update(delta_time)
+			pygame.display.update()
+			
+settings = {
+    'window_size':(400,400),
+    'frame_rate' :60
+	'board_width':10
+	'board_height':20
+	'board_height_buffer':0
+}
+
+program = Control(**settings)
+state_dict = {
+	'menu': Menu(),
+	'game': Game()
+}
+program.setup_states(state_dict, 'game')
+app.main_game_loop()
+pygame.quit()
+sys.exit()
 	
 		
 # window dimensions
-window_height = 400
-window_width = 400
+# window_height = 400
+# window_width = 400
 
 # control delay between frames
-frame_rate = 60
-frame_delay_ms = 1000//frame_rate
-fall_delay = 49
-rotate_delay = 49
-move_delay = 16
+# frame_rate = 60
+# frame_delay_ms = 1000//frame_rate
+# fall_delay = 49
+# rotate_delay = 49
+# move_delay = 16
 
 # board dimensions
-board_height = 20
-board_height_buffer = 0 # buffer for blocks that start above the top of the board
-board_width = 10
+# board_height = 20
+# board_height_buffer = 0 # buffer for blocks that start above the top of the board
+# board_width = 10
 
 # calculate size of one tile based on board height
 tile_size = window_height // board_height
@@ -75,8 +127,7 @@ tile_size = window_height // board_height
 # thing that we draw to
 screen = pygame.display.set_mode((window_width, window_height))
 
-# store sprites
-sprites = {}
+
 
 # stores Piece object that holds data about active piece
 active_piece = None
@@ -92,9 +143,6 @@ time_next_fall = 0
 time_next_rotate = 0
 has_cw_rotate_been_released = True
 has_ccw_rotate_been_released = True
-
-# string to display on screen with debugging info
-debug_string = 'hello there'
 
 # 2d array where all the tiles are stored, initialized with board_width * (board_height + board_height_buffer) blank tiles
 # access with board[row][col]
