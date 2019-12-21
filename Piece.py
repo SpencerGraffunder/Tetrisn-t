@@ -1,10 +1,7 @@
 from tetrisnt_enums import *
 import pdb
-import random
 import sys
 from copy import copy
-
-previous_piece = None
 
 class Piece:
 	piece_type = 0
@@ -12,12 +9,8 @@ class Piece:
 	rotation = 0
 	locations = [(0,0),(0,0),(0,0),(0,0)] # col,row
 
-	def __init__(self):
-		global previous_piece
-		self.piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-		if self.piece_type == previous_piece:
-			self.piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-		previous_piece = self.piece_type
+	def __init__(self, piece_type):
+		self.piece_type = piece_type
 		self.rotation = 0
 		if self.piece_type == PIECE_TYPE_I:
 			self.locations[0] = (3,0) # [-][-][-][-] | [-][-][0][-]

@@ -58,6 +58,13 @@ class Game(States):
 		for location in active_piece.locations:
 			scaled_image = pygame.transform.scale(sprites[active_piece.tile_type], (tile_size, tile_size))
 			screen.blit(scaled_image, (location[0]*tile_size, location[1]*tile_size))
+
+		for row_index in range(0,2):
+			for col_index in range(0,4):
+				for location in next_piece.locations:
+					if location == (col_index,row_index):
+						scaled_image = pygame.transform.scale(sprites[next_piece.tile_type], (tile_size, tile_size))
+						screen.blit(scaled_image, ((location[0]+board_width+1)*tile_size, (location[1]+1)*tile_size))
 			
 class Control:
 	def __init__(self, **settings):
@@ -132,6 +139,15 @@ screen = pygame.display.set_mode((window_width, window_height))
 # stores Piece object that holds data about active piece
 active_piece = None
 
+# stores the type of piece active_piece is and passes it to the Piece() function
+active_piece_type = None
+
+# stores Piece object that holds data about next piece
+next_piece = None
+
+# stores the type of piece next_piece is and passes it to the Piece() function
+next_piece_type = None
+
 # game variables
 score = 31415
 time_to_spawn = False
@@ -205,6 +221,9 @@ def update_board():
 	global board
 	global score
 	global active_piece
+	global active_piece_type
+	global next_piece
+	global next_piece_type
 	global time_to_spawn
 	global time_to_fall
 	global time_to_move
@@ -219,8 +238,17 @@ def update_board():
 
 
 	if time_to_spawn:
-		new_piece_type = random.randint(1,7+1)
-		active_piece = Piece()
+		# RNG piece choice decision
+		if next_piece_type == None:
+			active_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+		else:
+			active_piece_type = copy(next_piece)
+		next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+		if next_piece_type == active_piece_type:
+			next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+
+		active_piece = Piece(active_piece_type)
+		next_piece   = Piece(next_piece_type)
 		time_next_fall = ticks + 20 * fall_delay
 		time_to_spawn = False
 	if active_piece == None:
