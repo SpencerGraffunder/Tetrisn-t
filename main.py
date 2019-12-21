@@ -18,11 +18,6 @@ class States(object):
 class Menu(States):
 	def __init__(self):
 		States.__init__(self)
-		self.next = 'game'
-	def cleanup(self):
-		pass
-	def startup(self):
-		pass
 	def get_event(self, event):
 		pass
 	def update(self, screen, dt):
@@ -33,7 +28,30 @@ class Menu(States):
 class Game(States):
 	def __init__(self):
 		States.__init__(self)
-		self.next = 'menu'
+	def get_event(self, event):
+		pass
+	def update(self, screen, dt):
+		self.draw(screen)
+	def draw(self, screen):
+		screen.fill((0,0,0))
+		for row_index, tile_row in enumerate(board):
+			for col_index, tile in enumerate(tile_row):
+				scaled_image = pygame.transform.scale(sprites[tile.tile_type], (tile_size, tile_size))
+				screen.blit(scaled_image, (col*tile_size, row*tile_size))
+				
+		for location in active_piece.locations:
+			scaled_image = pygame.transform.scale(sprites[active_piece.tile_type], (tile_size, tile_size))
+			screen.blit(scaled_image, (location[0]*tile_size, location[1]*tile_size))
+			
+class Control:
+	def __init__(self, **settings):
+		self.__dict__.update(settings)
+		self.done = False
+		self.screen = pg.time.Clock()
+	def setup_states(self, state_dict, start_state):
+		self.state_dict = state_dict
+		self.state_name = start_state
+	
 		
 # window dimensions
 window_height = 400
@@ -119,20 +137,6 @@ def load_sprites():
 	sprites[TILE_TYPE_IOT] = pygame.image.load(os.path.join(wd,'IOTblock.bmp')).convert()
 	sprites[TILE_TYPE_JS] = pygame.image.load(os.path.join(wd,'JSblock.bmp')).convert()
 	sprites[TILE_TYPE_LZ] = pygame.image.load(os.path.join(wd,'LZblock.bmp')).convert()
-
-
-def draw_board():
-	screen.fill((0,0,0))
-	for row, tile_row in enumerate(board):
-		for col, tile in enumerate(tile_row):
-
-			scaled_image = pygame.transform.scale(sprites[tile.tile_type], (tile_size, tile_size))
-			screen.blit(scaled_image, (col*tile_size, row*tile_size))
-
-	for location in active_piece.locations:
-		scaled_image = pygame.transform.scale(sprites[active_piece.tile_type], (tile_size, tile_size))
-		screen.blit(scaled_image, (location[0]*tile_size, location[1]*tile_size))
-
 
 
 def draw_text():
