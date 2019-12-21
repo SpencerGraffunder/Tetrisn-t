@@ -5,6 +5,7 @@ from Tile import * # Import like this to avoid having to do Tile. before everyth
 from Piece import *
 import random
 from tetrisnt_enums import *
+from copy import copy
 
 # window dimensions
 window_height = 400
@@ -236,7 +237,111 @@ def can_move(direction):
 
 
 def can_rotate(rotation_direction):
-	return True
+	if active_piece.piece_type == PIECE_TYPE_O: # for the meme
+		return True
+	elif active_piece.piece_type == PIECE_TYPE_Z: # the special case
+		if active_piece.rotation in [0,180]:
+			pivot = copy(active_piece.locations[1])
+			if pivot[0]+1>=0 and pivot[0]+1<=board_width-1 and pivot[1]-1>=-2 and pivot[1]-1<=board_height-1: # self.locations[0] = (pivot[0]+1,pivot[1]-1)
+				if board[pivot[1]-1][pivot[0]+1].tile_type != TILE_TYPE_BLANK:
+					return False
+			else:
+				return False
+			if pivot[0]+1>=0 and pivot[0]+1<=board_width-1 and pivot[1]>=-2   and pivot[1]<=board_height-1:   # self.locations[1] = (pivot[0]+1,pivot[1])
+				if board[pivot[1]][pivot[0]+1].tile_type != TILE_TYPE_BLANK:
+					return False
+			else:
+				return False
+			if pivot[0]>=0   and pivot[0]<=board_width-1   and pivot[1]>=-2   and pivot[1]<=board_height-1:   # self.locations[2] = pivot
+				if board[pivot[1]][pivot[0]].tile_type != TILE_TYPE_BLANK:
+					return False
+			else:
+				return False
+			if pivot[0]>=0   and pivot[0]<=board_width-1   and pivot[1]+1>=-2 and pivot[1]+1<=board_height-1: # self.locations[3] = (pivot[0],pivot[1]+1)
+				if board[pivot[1]+1][pivot[0]].tile_type != TILE_TYPE_BLANK:
+					return False
+			else:
+				return False
+		elif active_piece.rotation in [90,270]:
+			pivot = copy(active_piece.locations[2])
+			if pivot[0]-1>=0 and pivot[0]-1<=board_width-1 and pivot[1]>=-2   and pivot[1]<=board_height-1:   # self.locations[0] = (pivot[0]-1,pivot[1])
+				if board[pivot[1]][pivot[0]-1].tile_type != TILE_TYPE_BLANK:
+					return False
+			else:
+				return False
+			if pivot[0]>=0   and pivot[0]<=board_width-1   and pivot[1]>=-2   and pivot[1]<=board_height-1:   # self.locations[1] = pivot
+				if board[pivot[1]][pivot[0]].tile_type != TILE_TYPE_BLANK:
+					return False
+			else:
+				return False
+			if pivot[0]>=0   and pivot[0]<=board_width-1   and pivot[1]+1>=-2 and pivot[1]+1<=board_height-1: # self.locations[2] = (pivot[0],pivot[1]+1)
+				if board[pivot[1]+1][pivot[0]].tile_type != TILE_TYPE_BLANK:
+					return False
+			else:
+				return False
+			if pivot[0]+1>=0 and pivot[0]+1<=board_width-1 and pivot[1]+1>=-2 and pivot[1]+1<=board_height-1: # self.locations[3] = (pivot[0]+1,pivot[1]+1)
+				if board[pivot[1]+1][pivot[0]+1].tile_type != TILE_TYPE_BLANK:
+					return False
+			else:
+				return False
+		return True # no check returned False
+	elif active_piece.piece_type == PIECE_TYPE_I or active_piece.piece_type == PIECE_TYPE_S: # the two-rotation-position pieces that aren't special
+		if active_piece.piece_type == PIECE_TYPE_I:
+			pivot = active_piece.locations[2]
+			if active_piece.rotation in [0,180]:
+				turn = TURN_CW # turn to vertical
+			else:
+				turn = TURN_CCW # turn to horizontal
+		elif active_piece.piece_type == PIECE_TYPE_S:
+			pivot = copy(active_piece.locations[0])
+			if active_piece.rotation in [0,180]:
+				turn = TURN_CCW # turn to vertical
+			else:
+				turn = TURN_CW # turn to horizontal
+		if turn == TURN_CW:
+			# General check if can rotate CW:
+			for location in active_piece.locations:
+				new_x = (pivot[1]-location[1])+pivot[0]
+				new_y = (location[0]-pivot[0])+pivot[1]
+				if new_x>=0 and new_x<=board_width-1 and new_y>=-2 and new_y<=board_height-1: # self.locations[i] = ((pivot[1]-location[1])+pivot[0],(location[0]-pivot[0])+pivot[1])
+					if board[new_y][new_x].tile_type != TILE_TYPE_BLANK:
+						return False
+				else:
+					return False
+		elif turn == TURN_CCW:
+			# General check if can rotate CCW:
+			for location in active_piece.locations:
+				new_x = (location[1]-pivot[1])+pivot[0]
+				new_y = (pivot[0]-location[0])+pivot[1]
+				if new_x>=0 and new_x<=board_width-1 and new_y>=-2 and new_y<=board_height-1: # self.locations[i] = ((pivot[1]-location[1])+pivot[0],(location[0]-pivot[0])+pivot[1])
+					if board[new_y][new_x].tile_type != TILE_TYPE_BLANK:
+						return False
+				else:
+					return False
+		return True # no check returned False
+	elif active_piece.piece_type == PIECE_TYPE_T or active_piece.piece_type == PIECE_TYPE_L or active_piece.piece_type == PIECE_TYPE_J: # the four-rotation-position pieces
+		pivot = copy(active_piece.locations[1])
+		if rotation_direction == ROTATION_CW:
+			# General check if can rotate CW:
+			for location in active_piece.locations:
+				new_x = (pivot[1]-location[1])+pivot[0]
+				new_y = (location[0]-pivot[0])+pivot[1]
+				if new_x>=0 and new_x<=board_width-1 and new_y>=-2 and new_y<=board_height-1: # self.locations[i] = ((pivot[1]-location[1])+pivot[0],(location[0]-pivot[0])+pivot[1])
+					if board[new_y][new_x].tile_type != TILE_TYPE_BLANK:
+						return False
+				else:
+					return False
+		elif rotation_direction == ROTATION_CCW:
+			# General check if can rotate CCW:
+			for location in active_piece.locations:
+				new_x = (location[1]-pivot[1])+pivot[0]
+				new_y = (pivot[0]-location[0])+pivot[1]
+				if new_x>=0 and new_x<=board_width-1 and new_y>=-2 and new_y<=board_height-1: # self.locations[i] = ((pivot[1]-location[1])+pivot[0],(location[0]-pivot[0])+pivot[1])
+					if board[new_y][new_x].tile_type != TILE_TYPE_BLANK:
+						return False
+				else:
+					return False
+		return True # no check returned False
 
 
 # Check if lines can be cleared, clear them, shift stuff down, update score
