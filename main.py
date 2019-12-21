@@ -43,6 +43,8 @@ time_to_rotate = False
 time_next_move = 0
 time_next_fall = 0
 time_next_rotate = 0
+has_cw_rotate_been_released = True
+has_ccw_rotate_been_released = True
 
 # string to display on screen with debugging info
 debug_string = 'hello there'
@@ -129,7 +131,8 @@ def update_board():
 	global time_next_fall
 	global time_next_move
 	global time_next_rotate
-
+	global has_cw_rotate_been_released
+	global has_ccw_rotate_been_released
 
 	ticks = pygame.time.get_ticks()
 
@@ -175,7 +178,7 @@ def update_board():
 				active_piece.move(direction = DIRECTION_DOWN)
 		time_to_move = False
 
-	if time_to_rotate:
+	if time_to_rotate and has_ccw_rotate_been_released and has_cw_rotate_been_released:
 		if keys[pygame.K_z]:
 			if can_rotate(ROTATION_CCW):
 				active_piece.rotate(ROTATION_CCW)
@@ -183,6 +186,16 @@ def update_board():
 			if can_rotate(ROTATION_CW):
 				active_piece.rotate(ROTATION_CW)
 		time_to_rotate = False
+
+	if keys[pygame.K_z]: # to make each rotation key press only rotate once
+		has_ccw_rotate_been_released = False
+	else:
+		has_ccw_rotate_been_released = True
+
+	if keys[pygame.K_x]:
+		has_cw_rotate_been_released = False
+	else:
+		has_cw_rotate_been_released = True
 
 	clear_lines()
 
