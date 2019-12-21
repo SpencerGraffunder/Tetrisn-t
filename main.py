@@ -6,6 +6,7 @@ from Piece import *
 import random
 from tetrisnt_enums import *
 from copy import copy
+from collections import deque
 
 # window dimensions
 window_height = 400
@@ -161,6 +162,7 @@ def update_board():
 		for location in active_piece.locations:
 			board[location[1]][location[0]] = Tile(active_piece.tile_type)
 		active_piece = None
+		clear_lines()
 		return
 
 	if time_to_fall:
@@ -168,37 +170,35 @@ def update_board():
 		time_to_fall = False
 
 	if time_to_move:
-		if keys[pygame.K_LEFT]:
+		if keys[pygame.K_a]:
 			if can_move(direction = DIRECTION_LEFT):
 				active_piece.move(direction = DIRECTION_LEFT)
-		if keys[pygame.K_RIGHT]:
+		if keys[pygame.K_d]:
 			if can_move(direction = DIRECTION_RIGHT):
 				active_piece.move(direction = DIRECTION_RIGHT)
-		if keys[pygame.K_DOWN]:
+		if keys[pygame.K_s]:
 			if can_move(direction = DIRECTION_DOWN):
 				active_piece.move(direction = DIRECTION_DOWN)
 		time_to_move = False
 
 	if time_to_rotate and has_ccw_rotate_been_released and has_cw_rotate_been_released:
-		if keys[pygame.K_z]:
+		if keys[pygame.K_LEFT]:
 			if can_rotate(ROTATION_CCW):
 				active_piece.rotate(ROTATION_CCW)
-		if keys[pygame.K_x]:
+		if keys[pygame.K_RIGHT]:
 			if can_rotate(ROTATION_CW):
 				active_piece.rotate(ROTATION_CW)
 		time_to_rotate = False
 
-	if keys[pygame.K_z]: # to make each rotation key press only rotate once
+	if keys[pygame.K_LEFT]: # to make each rotation key press only rotate once
 		has_ccw_rotate_been_released = False
 	else:
 		has_ccw_rotate_been_released = True
 
-	if keys[pygame.K_x]:
+	if keys[pygame.K_RIGHT]:
 		has_cw_rotate_been_released = False
 	else:
 		has_cw_rotate_been_released = True
-
-	clear_lines()
 
 	score += 1
 
@@ -223,7 +223,6 @@ def can_move(direction):
 			tile = board[location[1]][location[0] - 1]
 			if tile.tile_type != TILE_TYPE_BLANK:
 				return False
-
 
 	if direction == DIRECTION_RIGHT:
 		for location in active_piece.locations:
@@ -347,6 +346,8 @@ def can_rotate(rotation_direction):
 # Check if lines can be cleared, clear them, shift stuff down, update score
 def clear_lines():
 
+	global board
+	
 	# Store all lines that can be cleared
 	lines_to_clear = []
 
@@ -360,13 +361,18 @@ def clear_lines():
 			lines_to_clear.append(row_index)
 
 	# Get clear tiles on board
-	for line in lines_to_clear:
-		for tile in board[line]:
-			tile.tile_type = TILE_TYPE_BLANK
+	# for line in lines_to_clear:
+		# for tile in board[line]:
+			# tile.tile_type = TILE_TYPE_BLANK
 
 	# Move upper lines down
-	for line_index, line in enumerate(board):
-		pass
+	for line in lines_to_clear:
+		board.pop(line)
+		board = deque(board)
+		board.appendleft([Tile() for j in range(board_width)])
+		board = list(board)
+		# board = [Tile() for j in range(board_width)] + board
+		# board.append([Tile() for j in range(board_width)])
 
 
 pygame.init()
