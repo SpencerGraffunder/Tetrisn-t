@@ -2,6 +2,7 @@ from tetrisnt_enums import *
 import pdb
 import random
 import sys
+from copy import copy
 
 previous_piece = None
 
@@ -78,14 +79,14 @@ class Piece:
 			pass
 		elif self.piece_type == PIECE_TYPE_Z: # the special case
 			if self.rotation in [0,180]:
-				pivot = self.locations[1]
+				pivot = copy(self.locations[1])
 				self.locations[0] = (pivot[0]+1,pivot[1]-1)
 				self.locations[1] = (pivot[0]+1,pivot[1])
 				self.locations[2] = pivot
 				self.locations[3] = (pivot[0],pivot[1]+1)
 				self.rotation = (self.rotation+90) % 360
 			elif self.rotation in [90,270]:
-				pivot = self.locations[2]
+				pivot = copy(self.locations[2])
 				self.locations[0] = (pivot[0]-1,pivot[1])
 				self.locations[1] = pivot
 				self.locations[2] = (pivot[0],pivot[1]+1)
@@ -99,30 +100,30 @@ class Piece:
 				else:
 					turn = TURN_CCW # turn to horizontal
 			elif self.piece_type == PIECE_TYPE_S:
-				pivot = self.locations[0]
+				pivot = copy(self.locations[0])
 				if self.rotation in [0,180]:
 					turn = TURN_CCW # turn to vertical
 				else:
 					turn = TURN_CW # turn to horizontal
 			if turn == TURN_CW:
 				# General rotate CW:
-				for location in self.locations:
-					location = ((pivot[1]-location[1])+pivot[0],(location[1]-pivot[1])+pivot[1])
+				for i,location in enumerate(self.locations):
+					self.locations[i] = ((pivot[1]-location[1])+pivot[0],(location[0]-pivot[0])+pivot[1])
 				self.rotation = (self.rotation+90) % 360
 			elif turn == TURN_CCW:
 				# General rotate CCW:
-				for location in self.locations:
-					location = ((location[1]-pivot[1])+pivot[1],(pivot[1]-location[1])+pivot[1])
+				for i,location in enumerate(self.locations):
+					self.locations[i] = ((location[1]-pivot[1])+pivot[0],(pivot[0]-location[0])+pivot[1])
 				self.rotation = (self.rotation-90) % 360
 		elif self.piece_type == PIECE_TYPE_T or self.piece_type == PIECE_TYPE_L or self.piece_type == PIECE_TYPE_J: # the four-rotation-position pieces
-			pivot = self.locations[1]
+			pivot = copy(self.locations[1])
 			if rotation_direction == ROTATION_CW:
 				# General rotate CW:
-				for location in self.locations:
-					location = ((pivot[1]-location[1])+pivot[0],(location[1]-pivot[1])+pivot[1])
+				for i,location in enumerate(self.locations):
+					self.locations[i] = ((pivot[1]-location[1])+pivot[0],(location[0]-pivot[0])+pivot[1])
 				self.rotation = (self.rotation+90) % 360
 			elif rotation_direction == ROTATION_CCW:
 				# General rotate CCW:
-				for location in self.locations:
-					location = ((location[1]-pivot[1])+pivot[1],(pivot[1]-location[1])+pivot[1])
+				for i,location in enumerate(self.locations):
+					self.locations[i] = ((location[1]-pivot[1])+pivot[0],(pivot[0]-location[0])+pivot[1])
 				self.rotation = (self.rotation-90) % 360
