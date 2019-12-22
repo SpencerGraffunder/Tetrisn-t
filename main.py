@@ -317,10 +317,11 @@ class Game(States):
 			if keys[pygame.K_LEFT]:
 				if self.can_rotate(ROTATION_CCW):
 					self.active_piece.rotate(ROTATION_CCW)
+					self.time_to_rotate = False
 			if keys[pygame.K_RIGHT]:
 				if self.can_rotate(ROTATION_CW):
 					self.active_piece.rotate(ROTATION_CW)
-			self.time_to_rotate = False
+					self.time_to_rotate = False
 
 		if keys[pygame.K_LEFT]: # to make each rotation key press only rotate once
 			self.has_ccw_rotate_been_released = False
