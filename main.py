@@ -62,7 +62,7 @@ class Game(States):
 		# stores the type of piece next_piece is and passes it to the Piece() function
 		self.next_piece_type = None
 
-		self.score = 31415
+		self.score = 0
 		self.time_to_spawn = False
 		self.time_to_fall = False
 		self.time_to_move = False
@@ -248,7 +248,7 @@ class Game(States):
 			return True # no check returned False
 
 	# Check if lines can be cleared, clear them, shift stuff down, update score
-	def clear_lines(self):
+	def clear_lines(self, level = 0):
 
 		# Store all lines that can be cleared
 		lines_to_clear = []
@@ -273,6 +273,20 @@ class Game(States):
 			self.board = deque(self.board)
 			self.board.appendleft([Tile() for j in range(board_width)])
 			self.board = list(self.board)
+
+		# Score the points
+		num_lines = len(lines_to_clear)
+		if num_lines == 0:
+			pass
+		elif num_lines == 1:
+			self.score += 40 * (n + 1)
+		elif num_lines == 2:
+			self.score += 100 * (n + 1)
+		elif num_lines == 3:
+			self.score += 300 * (n + 1)
+		elif num_lines == 4: # BOOM Tetrisn't
+			self.score += 1200 * (n + 1)
+
 
 	def update(self, screen, dt):
 	
