@@ -29,12 +29,17 @@ class Menu(States):
 	def __init__(self):
 		States.__init__(self)
 		self.next = 'game'
+		self.font = pygame.font.Font('freesansbold.ttf', 72)
+		self.text = self.font.render('Tetrisn\'t', True, (0, 128, 0))
+		self.text_rect = self.text.get_rect()
+		self.text_rect.center = (window_width//2, window_height//2)
 	def do_event(self, event):
 		pass
 	def update(self, screen, dt):
 		self.draw(screen)
 	def draw(self, screen):
 		screen.fill((100,255,0))
+		screen.blit(self.text, self.text_rect)
 
 class Game(States):
 	def __init__(self):
@@ -90,7 +95,8 @@ class Game(States):
 	def do_event(self, event):
 	
 		if event.type == pygame.KEYDOWN:
-			
+			if event.key == pygame.K_ESCAPE:
+				self.done = True
 			
 			if self.active_piece != None:
 				if event.key == pygame.K_LEFT:
@@ -364,6 +370,11 @@ class Control:
 		elif self.state.done:
 			self.flip_state()
 		self.state.update(self.screen, dt)
+	def flip_state(self):
+		self.state.done = False
+		previous, self.state_name = self.state_name, self.state.next
+		self.state = self.state_dict[self.state_name]
+		self.state.previous = previous
 	def event_loop(self):
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -376,7 +387,7 @@ class Control:
 			self.update(delta_time)
 			pygame.display.update()
 
-
+pygame.init()
 program = Control()
 
 state_dict = {
