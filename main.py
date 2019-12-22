@@ -29,7 +29,7 @@ class Menu(States):
 	def __init__(self):
 		States.__init__(self)
 		self.next = 'game'
-	def get_event(self, event):
+	def do_event(self, event):
 		pass
 	def update(self, screen, dt):
 		self.draw(screen)
@@ -87,8 +87,21 @@ class Game(States):
 		self.board = [[Tile() for j in range(board_width)] for i in range(board_height+board_height_buffer)]
 
 
-	def get_event(self, event):
-		pass
+	def do_event(self, event):
+	
+		if event.type == pygame.KEYDOWN:
+			
+			
+			if self.active_piece != None:
+				if event.key == pygame.K_LEFT:
+					if self.can_rotate(ROTATION_CCW):
+						self.active_piece.rotate(ROTATION_CCW)
+						self.time_to_rotate = False
+				if event.key == pygame.K_RIGHT:
+					if self.can_rotate(ROTATION_CW):
+						self.active_piece.rotate(ROTATION_CW)
+						self.time_to_rotate = False
+		
 
 	# Check if piece can move in the specified direction
 	# Returns: True, False
@@ -313,26 +326,6 @@ class Game(States):
 					self.active_piece.move(direction = DIRECTION_DOWN)
 			self.time_to_move = False
 
-		if self.time_to_rotate and self.has_ccw_rotate_been_released and self.has_cw_rotate_been_released:
-			if keys[pygame.K_LEFT]:
-				if self.can_rotate(ROTATION_CCW):
-					self.active_piece.rotate(ROTATION_CCW)
-					self.time_to_rotate = False
-			if keys[pygame.K_RIGHT]:
-				if self.can_rotate(ROTATION_CW):
-					self.active_piece.rotate(ROTATION_CW)
-					self.time_to_rotate = False
-
-		if keys[pygame.K_LEFT]: # to make each rotation key press only rotate once
-			self.has_ccw_rotate_been_released = False
-		else:
-			self.has_ccw_rotate_been_released = True
-
-		if keys[pygame.K_RIGHT]:
-			self.has_cw_rotate_been_released = False
-		else:
-			self.has_cw_rotate_been_released = True
-
 		self.score += 1
 
 		self.draw(screen)
@@ -375,7 +368,7 @@ class Control:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				self.done = True
-			self.state.get_event(event)
+			self.state.do_event(event)
 	def main_game_loop(self):
 		while not self.done:
 			delta_time = self.clock.tick(frame_rate)/1000.0
