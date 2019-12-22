@@ -39,14 +39,142 @@ class Game(States):
 		self.rotate_delay = 49
 		self.move_delay = 16
 		self.tile_size = window_height // board_height
+		self.active_piece = None
+		# stores the type of piece active_piece is and passes it to the Piece() function
+		self.active_piece_type = None
+
+		# stores Piece object that holds data about next piece
+		self.next_piece = None
+
+		# stores the type of piece next_piece is and passes it to the Piece() function
+		self.next_piece_type = None
+
+		self.score = 31415
+		self.time_to_spawn = False
+		self.time_to_fall = False
+		self.time_to_move = False
+		self.time_to_rotate = False
+		self.time_next_move = 0
+		self.time_next_fall = 0
+		self.time_next_rotate = 0
+		self.has_cw_rotate_been_released = True
+		self.has_ccw_rotate_been_released = True
 		
-		# store sprites
-		sprites = {}
-		
+		self.sprites = {}
+
+		self.board = []
+
+		# load sprites
+		if getattr(sys, 'frozen', False):
+			wd = sys._MEIPASS
+		else:
+			wd = ''
+		# Load sprites from image files and convert for performance
+		sprites[TILE_TYPE_BLANK] = pygame.image.load(os.path.join(wd,'backgroundblock.bmp')).convert()
+		sprites[TILE_TYPE_IOT] = pygame.image.load(os.path.join(wd,'IOTblock.bmp')).convert()
+		sprites[TILE_TYPE_JS] = pygame.image.load(os.path.join(wd,'JSblock.bmp')).convert()
+		sprites[TILE_TYPE_LZ] = pygame.image.load(os.path.join(wd,'LZblock.bmp')).convert()
+
+		# Fill board with empty tiles
+		self.board = [[Tile() for j in range(board_width)] for i in range(board_height+board_height_buffer)]
+				
 		
 	def get_event(self, event):
 		pass
 	def update(self, screen, dt):
+		global board
+		global score
+		global active_piece
+		global active_piece_type
+		global next_piece
+		global next_piece_type
+		global time_to_spawn
+		global time_to_fall
+		global time_to_move
+		global time_to_rotate
+		global time_next_fall
+		global time_next_move
+		global time_next_rotate
+		global has_cw_rotate_been_released
+		global has_ccw_rotate_been_released
+
+		ticks = pygame.time.get_ticks()
+
+
+		if time_to_spawn:
+			# RNG piece choice decision
+			if next_piece_type == None:
+				active_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+			else:
+				active_piece_type = copy(next_piece)
+			next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+			if next_piece_type == active_piece_type:
+				next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+
+			active_piece = Piece(active_piece_type)
+			next_piece   = Piece(next_piece_type)
+			time_next_fall = ticks + 20 * fall_delay
+			time_to_spawn = False
+		if active_piece == None:
+			time_to_spawn = True
+			return
+
+		if ticks >= time_next_move:
+			time_to_move = True
+			time_next_move = ticks + move_delay
+		if ticks >= time_next_fall:
+			time_to_fall = True
+			time_next_fall = ticks + fall_delay
+		if ticks >= time_next_rotate:
+			time_to_rotate = True
+			time_next_rotate = ticks + rotate_delay
+
+		if not can_move(direction = DIRECTION_DOWN):
+			for location in active_piece.locations:
+				board[location[1]][location[0]] = Tile(active_piece.tile_type)
+			active_piece = None
+			clear_lines()
+			return
+
+		if time_to_fall:
+			active_piece.move(direction = DIRECTION_DOWN)
+			time_to_fall = False
+
+		if time_to_move:
+			if keys[pygame.K_a]:
+				if can_move(direction = DIRECTION_LEFT):
+					active_piece.move(direction = DIRECTION_LEFT)
+			if keys[pygame.K_d]:
+				if can_move(direction = DIRECTION_RIGHT):
+					active_piece.move(direction = DIRECTION_RIGHT)
+			if keys[pygame.K_s]:
+				if can_move(direction = DIRECTION_DOWN):
+					active_piece.move(direction = DIRECTION_DOWN)
+			time_to_move = False
+
+		if time_to_rotate and has_ccw_rotate_been_released and has_cw_rotate_been_released:
+			if keys[pygame.K_LEFT]:
+				if can_rotate(ROTATION_CCW):
+					active_piece.rotate(ROTATION_CCW)
+			if keys[pygame.K_RIGHT]:
+				if can_rotate(ROTATION_CW):
+					active_piece.rotate(ROTATION_CW)
+			time_to_rotate = False
+
+		if keys[pygame.K_LEFT]: # to make each rotation key press only rotate once
+			has_ccw_rotate_been_released = False
+		else:
+			has_ccw_rotate_been_released = True
+
+		if keys[pygame.K_RIGHT]:
+			has_cw_rotate_been_released = False
+		else:
+			has_cw_rotate_been_released = True
+
+		score += 1
+
+
+
 		self.draw(screen)
 	def draw(self, screen):
 		screen.fill((0,0,0))
@@ -110,204 +238,12 @@ program.setup_states(state_dict, 'game')
 app.main_game_loop()
 pygame.quit()
 sys.exit()
-	
-		
-# window dimensions
-# window_height = 400
-# window_width = 400
-
-# control delay between frames
-# frame_rate = 60
-# frame_delay_ms = 1000//frame_rate
-# fall_delay = 49
-# rotate_delay = 49
-# move_delay = 16
-
-# board dimensions
-# board_height = 20
-# board_height_buffer = 0 # buffer for blocks that start above the top of the board
-# board_width = 10
-
-# calculate size of one tile based on board height
-tile_size = window_height // board_height
-
-# thing that we draw to
-screen = pygame.display.set_mode((window_width, window_height))
 
 
 
-# stores Piece object that holds data about active piece
-active_piece = None
-
-# stores the type of piece active_piece is and passes it to the Piece() function
-active_piece_type = None
-
-# stores Piece object that holds data about next piece
-next_piece = None
-
-# stores the type of piece next_piece is and passes it to the Piece() function
-next_piece_type = None
-
-# game variables
-score = 31415
-time_to_spawn = False
-time_to_fall = False
-time_to_move = False
-time_to_rotate = False
-time_next_move = 0
-time_next_fall = 0
-time_next_rotate = 0
-has_cw_rotate_been_released = True
-has_ccw_rotate_been_released = True
-
-# 2d array where all the tiles are stored, initialized with board_width * (board_height + board_height_buffer) blank tiles
-# access with board[row][col]
-#   0 1 2 3 4 5 6 7 8 9
-# 0
-# 1
-# 2
-# 3
-# 4
-# 5
-# 6
-# 7
-# 8
-# 9
-# ...
-# initialized in init_board()
-board = []
-
-# Clock to help with frame timing
-updateClock = pygame.time.Clock
-
-# Fill board with empty tiles
-def init_board():
-	global board # must do this to tell it you're going to modify the global variable, else it'll make a new one
-
-	board = [[Tile() for j in range(board_width)] for i in range(board_height+board_height_buffer)]
-	# for row in board:
-		# for tile in row:
-			# print(str(tile.tile_type), end = ' ')
-		# print()
 
 
-def load_sprites():
-	if getattr(sys, 'frozen', False):
-		wd = sys._MEIPASS
-	else:
-		wd = ''
-	# Load sprites from image files and convert for performance
-	sprites[TILE_TYPE_BLANK] = pygame.image.load(os.path.join(wd,'backgroundblock.bmp')).convert()
-	sprites[TILE_TYPE_IOT] = pygame.image.load(os.path.join(wd,'IOTblock.bmp')).convert()
-	sprites[TILE_TYPE_JS] = pygame.image.load(os.path.join(wd,'JSblock.bmp')).convert()
-	sprites[TILE_TYPE_LZ] = pygame.image.load(os.path.join(wd,'LZblock.bmp')).convert()
 
-
-def draw_text():
-	x = board_width * tile_size
-	y = 0
-
-	# font = pygame.font.Font('freesansbold.ttf', 24)
-
-	# score_text = font.render(str(score), True, (0,255,0))
-
-	# screen.blit(score_text, (x,y))
-
-	# debug_text = font.render(str(debug_string), True, (255,0,0))
-
-	# screen.blit(debug_text, (x, score_text.get_height()))
-
-def update_board():
-	global board
-	global score
-	global active_piece
-	global active_piece_type
-	global next_piece
-	global next_piece_type
-	global time_to_spawn
-	global time_to_fall
-	global time_to_move
-	global time_to_rotate
-	global time_next_fall
-	global time_next_move
-	global time_next_rotate
-	global has_cw_rotate_been_released
-	global has_ccw_rotate_been_released
-
-	ticks = pygame.time.get_ticks()
-
-
-	if time_to_spawn:
-		# RNG piece choice decision
-		if next_piece_type == None:
-			active_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-		else:
-			active_piece_type = copy(next_piece)
-		next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-		if next_piece_type == active_piece_type:
-			next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-
-		active_piece = Piece(active_piece_type)
-		next_piece   = Piece(next_piece_type)
-		time_next_fall = ticks + 20 * fall_delay
-		time_to_spawn = False
-	if active_piece == None:
-		time_to_spawn = True
-		return
-
-	if ticks >= time_next_move:
-		time_to_move = True
-		time_next_move = ticks + move_delay
-	if ticks >= time_next_fall:
-		time_to_fall = True
-		time_next_fall = ticks + fall_delay
-	if ticks >= time_next_rotate:
-		time_to_rotate = True
-		time_next_rotate = ticks + rotate_delay
-
-	if not can_move(direction = DIRECTION_DOWN):
-		for location in active_piece.locations:
-			board[location[1]][location[0]] = Tile(active_piece.tile_type)
-		active_piece = None
-		clear_lines()
-		return
-
-	if time_to_fall:
-		active_piece.move(direction = DIRECTION_DOWN)
-		time_to_fall = False
-
-	if time_to_move:
-		if keys[pygame.K_a]:
-			if can_move(direction = DIRECTION_LEFT):
-				active_piece.move(direction = DIRECTION_LEFT)
-		if keys[pygame.K_d]:
-			if can_move(direction = DIRECTION_RIGHT):
-				active_piece.move(direction = DIRECTION_RIGHT)
-		if keys[pygame.K_s]:
-			if can_move(direction = DIRECTION_DOWN):
-				active_piece.move(direction = DIRECTION_DOWN)
-		time_to_move = False
-
-	if time_to_rotate and has_ccw_rotate_been_released and has_cw_rotate_been_released:
-		if keys[pygame.K_LEFT]:
-			if can_rotate(ROTATION_CCW):
-				active_piece.rotate(ROTATION_CCW)
-		if keys[pygame.K_RIGHT]:
-			if can_rotate(ROTATION_CW):
-				active_piece.rotate(ROTATION_CW)
-		time_to_rotate = False
-
-	if keys[pygame.K_LEFT]: # to make each rotation key press only rotate once
-		has_ccw_rotate_been_released = False
-	else:
-		has_ccw_rotate_been_released = True
-
-	if keys[pygame.K_RIGHT]:
-		has_cw_rotate_been_released = False
-	else:
-		has_cw_rotate_been_released = True
-
-	score += 1
 
 
 # Check if piece can move in the specified direction
