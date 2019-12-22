@@ -298,13 +298,13 @@ class Game(States):
 		if num_lines == 0:
 			pass
 		elif num_lines == 1:
-			self.score += 40 * (n + 1)
+			self.score += 40 * (level + 1)
 		elif num_lines == 2:
-			self.score += 100 * (n + 1)
+			self.score += 100 * (level + 1)
 		elif num_lines == 3:
-			self.score += 300 * (n + 1)
+			self.score += 300 * (level + 1)
 		elif num_lines == 4: # BOOM Tetrisn't
-			self.score += 1200 * (n + 1)
+			self.score += 1200 * (level + 1)
 
 
 	def update(self, screen, dt):
