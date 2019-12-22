@@ -34,7 +34,9 @@ class Menu(States):
 		self.text_rect = self.text.get_rect()
 		self.text_rect.center = (window_width//2, window_height//2)
 	def do_event(self, event):
-		pass
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_SPACE:
+				self.done = True
 	def update(self, screen, dt):
 		self.draw(screen)
 	def draw(self, screen):
@@ -70,9 +72,11 @@ class Game(States):
 		self.time_next_move = 0
 		self.time_next_fall = 0
 		self.time_next_rotate = 0
-		self.has_cw_rotate_been_released = True
-		self.has_ccw_rotate_been_released = True
-
+		self.das_counter = 0
+		self.das_threshold = 0
+		self.is_move_right_pressed = False
+		self.is_move_left_pressed = False
+		
 		self.sprites = {}
 
 		self.board = []
@@ -99,14 +103,34 @@ class Game(States):
 				self.done = True
 			
 			if self.active_piece != None:
-				if event.key == pygame.K_LEFT:
-					if self.can_rotate(ROTATION_CCW):
-						self.active_piece.rotate(ROTATION_CCW)
-						self.time_to_rotate = False
-				if event.key == pygame.K_RIGHT:
-					if self.can_rotate(ROTATION_CW):
-						self.active_piece.rotate(ROTATION_CW)
-						self.time_to_rotate = False
+				if self.time_to_rotate:
+					if event.key == pygame.K_LEFT:
+						if self.can_rotate(ROTATION_CCW):
+							self.active_piece.rotate(ROTATION_CCW)
+							self.time_to_rotate = False
+					if event.key == pygame.K_RIGHT:
+						if self.can_rotate(ROTATION_CW):
+							self.active_piece.rotate(ROTATION_CW)
+							self.time_to_rotate = False
+						
+				if event.key == pygame.K_a:
+					self.is_move_left_pressed = True
+					self.das_threshold = 0
+					self.das_counter = 0
+				if event.key == pygame.K_d:
+					self.is_move_right_pressed = True
+					self.das_threshold = 0
+					self.das_counter = 0
+				if event.key == pygame.K_s:
+					if self.can_move(direction = DIRECTION_DOWN):
+						self.active_piece.move(direction = DIRECTION_DOWN)
+				self.time_to_move = False
+				
+		if event.type == pygame.KEYUP:
+			if event.key == pygame.K_a:
+				self.is_move_left_pressed = False
+			if event.key == pygame.K_d:
+				self.is_move_right_pressed = False
 		
 
 	# Check if piece can move in the specified direction
@@ -261,12 +285,7 @@ class Game(States):
 					can_clear = False
 			if can_clear:
 				lines_to_clear.append(row_index)
-
-		# Get clear tiles on board
-		# for line in lines_to_clear:
-			# for tile in board[line]:
-				# tile.tile_type = TILE_TYPE_BLANK
-
+				
 		# Move upper lines down
 		for line in lines_to_clear:
 			self.board.pop(line)
@@ -290,7 +309,21 @@ class Game(States):
 
 	def update(self, screen, dt):
 	
-		keys = pygame.key.get_pressed()
+		if self.is_move_left_pressed or self.is_move_right_pressed:
+			self.das_counter += 1
+		
+			if self.das_counter > self.das_threshold:
+				if self.is_move_left_pressed:
+					if self.can_move(DIRECTION_LEFT):
+						self.active_piece.move(DIRECTION_LEFT)
+				if self.is_move_right_pressed:
+					if self.can_move(DIRECTION_RIGHT):
+						self.active_piece.move(DIRECTION_RIGHT)
+				self.das_counter = 0
+				if self.das_threshold == 0:
+					self.das_threshold = 16
+				else:
+					self.das_threshold = 6
 
 		ticks = pygame.time.get_ticks()
 
@@ -333,18 +366,6 @@ class Game(States):
 		if self.time_to_fall:
 			self.active_piece.move(direction = DIRECTION_DOWN)
 			self.time_to_fall = False
-
-		if self.time_to_move:
-			if keys[pygame.K_a]:
-				if self.can_move(direction = DIRECTION_LEFT):
-					self.active_piece.move(direction = DIRECTION_LEFT)
-			if keys[pygame.K_d]:
-				if self.can_move(direction = DIRECTION_RIGHT):
-					self.active_piece.move(direction = DIRECTION_RIGHT)
-			if keys[pygame.K_s]:
-				if self.can_move(direction = DIRECTION_DOWN):
-					self.active_piece.move(direction = DIRECTION_DOWN)
-			self.time_to_move = False
 
 		self.score += 1
 
