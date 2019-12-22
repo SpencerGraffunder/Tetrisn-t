@@ -264,15 +264,15 @@ class Game(States):
 		if self.time_to_spawn:
 			# RNG piece choice decision
 			if self.next_piece_type == None:
-				active_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+				active_piece_type = copy(random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S]))
 			else:
-				active_piece_type = self.next_piece.piece_type
-			self.next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-			if self.next_piece_type == active_piece_type:
-				self.next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+				active_piece_type = copy(self.next_piece.piece_type)
+			next_piece_type = copy(random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S]))
+			if next_piece_type == active_piece_type:
+				next_piece_type = copy(random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S]))
 
 			self.active_piece = Piece(active_piece_type)
-			self.next_piece   = Piece(self.next_piece_type)
+			#self.next_piece   = Piece(next_piece_type)
 			time_next_fall = ticks + 20 * self.fall_delay
 			self.time_to_spawn = False
 			
@@ -348,12 +348,12 @@ class Game(States):
 			scaled_image = pygame.transform.scale(self.sprites[self.active_piece.tile_type], (self.tile_size, self.tile_size))
 			screen.blit(scaled_image, (location[0]*self.tile_size, location[1]*self.tile_size))
 
-		for row_index in range(0,2):
-			for col_index in range(0,4):
-				for location in self.next_piece.locations:
-					if location == (col_index, row_index):
-						scaled_image = pygame.transform.scale(self.sprites[self.next_piece.tile_type], (self.tile_size, self.tile_size))
-						screen.blit(scaled_image, ((location[0]+board_width+1)*self.tile_size, (location[1]+1)*self.tile_size))
+		# for row_index in range(0,2):
+		# 	for col_index in range(0,4):
+		# 		for location in self.next_piece.locations:
+		# 			if location == (col_index, row_index):
+		# 				scaled_image = pygame.transform.scale(self.sprites[self.next_piece.tile_type], (self.tile_size, self.tile_size))
+		# 				screen.blit(scaled_image, ((location[0]+board_width+1)*self.tile_size, (location[1]+1)*self.tile_size))
 
 class Control:
 	def __init__(self):
