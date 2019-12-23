@@ -51,8 +51,6 @@ class Game(States):
 		self.next = 'menu'
 
 		self.fall_delay = 150
-		self.rotate_delay = 49
-		self.move_delay = 16
 		self.tile_size = window_height // board_height
 		self.active_piece = None
 		# stores the type of piece active_piece is and passes it to the Piece() function
@@ -68,7 +66,6 @@ class Game(States):
 		self.time_to_spawn = False
 		self.time_to_fall = False
 		self.time_to_move = False
-		self.time_to_rotate = False
 		self.time_next_move = 0
 		self.time_next_fall = 0
 		self.time_next_rotate = 0
@@ -104,15 +101,14 @@ class Game(States):
 				self.done = True
 			
 			if self.active_piece != None:
-				if self.time_to_rotate:
-					if event.key == pygame.K_LEFT:
-						if self.can_rotate(ROTATION_CCW):
-							self.active_piece.rotate(ROTATION_CCW)
-							self.time_to_rotate = False
-					if event.key == pygame.K_RIGHT:
-						if self.can_rotate(ROTATION_CW):
-							self.active_piece.rotate(ROTATION_CW)
-							self.time_to_rotate = False
+				if event.key == pygame.K_LEFT:
+					if self.can_rotate(ROTATION_CCW):
+						self.active_piece.rotate(ROTATION_CCW)
+						self.time_to_rotate = False
+				if event.key == pygame.K_RIGHT:
+					if self.can_rotate(ROTATION_CW):
+						self.active_piece.rotate(ROTATION_CW)
+						self.time_to_rotate = False
 						
 				if event.key == pygame.K_a:
 					self.is_move_left_pressed = True
@@ -350,15 +346,9 @@ class Game(States):
 			self.time_to_spawn = True
 			return
 
-		if ticks >= self.time_next_move:
-			self.time_to_move = True
-			self.time_next_move = ticks + self.move_delay
 		if ticks >= self.time_next_fall:
 			self.time_to_fall = True
 			self.time_next_fall = ticks + self.fall_delay
-		if ticks >= self.time_next_rotate:
-			self.time_to_rotate = True
-			self.time_next_rotate = ticks + self.rotate_delay
 
 		if not self.can_move(direction = DIRECTION_DOWN):
 			for location in self.active_piece.locations:
@@ -382,24 +372,23 @@ class Game(States):
 				scaled_image = pygame.transform.scale(self.sprites[tile.tile_type], (self.tile_size, self.tile_size))
 				screen.blit(scaled_image, (col_index * self.tile_size, row_index * self.tile_size))
 
+		pdb.set_trace()
 		for location in self.active_piece.locations:
 			scaled_image = pygame.transform.scale(self.sprites[self.active_piece.tile_type], (self.tile_size, self.tile_size))
 			screen.blit(scaled_image, (location[0]*self.tile_size, location[1]*self.tile_size))
 
 		for row_index in range(0,2):
-			for col_index in range(0,4):
+			for col_index in range(3,8):
 				for location in self.next_piece.locations:
 					if location == (col_index, row_index):
-						#pdb.set_trace()
 						scaled_image = pygame.transform.scale(self.sprites[self.next_piece.tile_type], (self.tile_size, self.tile_size))
-						screen.blit(scaled_image, ((location[0]+board_width+1)*self.tile_size, (location[1]+1)*self.tile_size))
+						screen.blit(scaled_image, ((location[0]+board_width)*self.tile_size, (location[1]+1)*self.tile_size))
 
 class Control:
 	def __init__(self):
 		self.done = False
 		self.screen = pygame.display.set_mode((window_height, window_width))
 		self.clock = pygame.time.Clock()
-		self.frame_delay_ms = 1000 // frame_rate
 	def setup_states(self, state_dict, start_state):
 		self.state_dict = state_dict
 		self.state_name = start_state
