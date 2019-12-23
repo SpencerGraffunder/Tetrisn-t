@@ -4,12 +4,13 @@ import sys
 from copy import copy
 
 class Piece:
-	piece_type = 0
-	tile_type = 0
-	rotation = 0
-	locations = [(0,0),(0,0),(0,0),(0,0)] # col,row
 
 	def __init__(self, piece_type):
+		self.piece_type = 0
+		self.tile_type = 0
+		self.rotation = 0
+		self.locations = [(0,0),(0,0),(0,0),(0,0)] # col,row
+		# pdb.set_trace()
 		self.piece_type = piece_type
 		self.rotation = 0
 		if self.piece_type == PIECE_TYPE_I:

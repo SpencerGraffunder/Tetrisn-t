@@ -64,7 +64,7 @@ class Game(States):
 		# stores the type of piece next_piece is and passes it to the Piece() function
 		self.next_piece_type = None
 
-		self.score = 31415
+		self.score = 0
 		self.time_to_spawn = False
 		self.time_to_fall = False
 		self.time_to_move = False
@@ -276,7 +276,7 @@ class Game(States):
 			return True # no check returned False
 
 	# Check if lines can be cleared, clear them, shift stuff down, update score
-	def clear_lines(self):
+	def clear_lines(self, level = 0):
 
 		# Store all lines that can be cleared
 		lines_to_clear = []
@@ -296,6 +296,20 @@ class Game(States):
 			self.board = deque(self.board)
 			self.board.appendleft([Tile() for j in range(board_width)])
 			self.board = list(self.board)
+
+		# Score the points
+		num_lines = len(lines_to_clear)
+		if num_lines == 0:
+			pass
+		elif num_lines == 1:
+			self.score += 40 * (level + 1)
+		elif num_lines == 2:
+			self.score += 100 * (level + 1)
+		elif num_lines == 3:
+			self.score += 300 * (level + 1)
+		elif num_lines == 4: # BOOM Tetrisn't
+			self.score += 1200 * (level + 1)
+
 
 	def update(self, screen, dt):
 	
@@ -320,15 +334,15 @@ class Game(States):
 		if self.time_to_spawn:
 			# RNG piece choice decision
 			if self.next_piece_type == None:
-				active_piece_type = copy(random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S]))
+				self.active_piece_type = copy(random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S]))
 			else:
-				active_piece_type = copy(self.next_piece.piece_type)
-			next_piece_type = copy(random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S]))
-			if next_piece_type == active_piece_type:
-				next_piece_type = copy(random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S]))
-
-			self.active_piece = Piece(active_piece_type)
-			#self.next_piece   = Piece(next_piece_type)
+				self.active_piece_type = copy(self.next_piece.piece_type)
+			self.next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+			if self.next_piece_type == self.active_piece_type:
+				self.next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+			# pdb.set_trace()
+			self.active_piece = Piece(self.active_piece_type)
+			self.next_piece   = Piece(self.next_piece_type)
 			time_next_fall = ticks + 20 * self.fall_delay
 			self.time_to_spawn = False
 			
@@ -372,12 +386,13 @@ class Game(States):
 			scaled_image = pygame.transform.scale(self.sprites[self.active_piece.tile_type], (self.tile_size, self.tile_size))
 			screen.blit(scaled_image, (location[0]*self.tile_size, location[1]*self.tile_size))
 
-		# for row_index in range(0,2):
-		# 	for col_index in range(0,4):
-		# 		for location in self.next_piece.locations:
-		# 			if location == (col_index, row_index):
-		# 				scaled_image = pygame.transform.scale(self.sprites[self.next_piece.tile_type], (self.tile_size, self.tile_size))
-		# 				screen.blit(scaled_image, ((location[0]+board_width+1)*self.tile_size, (location[1]+1)*self.tile_size))
+		for row_index in range(0,2):
+			for col_index in range(0,4):
+				for location in self.next_piece.locations:
+					if location == (col_index, row_index):
+						#pdb.set_trace()
+						scaled_image = pygame.transform.scale(self.sprites[self.next_piece.tile_type], (self.tile_size, self.tile_size))
+						screen.blit(scaled_image, ((location[0]+board_width+1)*self.tile_size, (location[1]+1)*self.tile_size))
 
 class Control:
 	def __init__(self):
