@@ -372,7 +372,6 @@ class Game(States):
 				scaled_image = pygame.transform.scale(self.sprites[tile.tile_type], (self.tile_size, self.tile_size))
 				screen.blit(scaled_image, (col_index * self.tile_size, row_index * self.tile_size))
 
-		pdb.set_trace()
 		for location in self.active_piece.locations:
 			scaled_image = pygame.transform.scale(self.sprites[self.active_piece.tile_type], (self.tile_size, self.tile_size))
 			screen.blit(scaled_image, (location[0]*self.tile_size, location[1]*self.tile_size))
