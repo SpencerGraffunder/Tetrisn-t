@@ -76,6 +76,7 @@ class Game(States):
 		self.das_threshold = 0
 		self.is_move_right_pressed = False
 		self.is_move_left_pressed = False
+		self.is_move_down_pressed = False
 		
 		self.sprites = {}
 
@@ -122,8 +123,9 @@ class Game(States):
 					self.das_threshold = 0
 					self.das_counter = 0
 				if event.key == pygame.K_s:
-					if self.can_move(direction = DIRECTION_DOWN):
-						self.active_piece.move(direction = DIRECTION_DOWN)
+					self.is_move_down_pressed = True
+					self.das_threshold = 0
+					self.das_counter = 0
 				self.time_to_move = False
 				
 		if event.type == pygame.KEYUP:
@@ -131,6 +133,8 @@ class Game(States):
 				self.is_move_left_pressed = False
 			if event.key == pygame.K_d:
 				self.is_move_right_pressed = False
+			if event.key == pygame.K_s:
+				self.is_move_down_pressed = False
 		
 
 	# Check if piece can move in the specified direction
@@ -295,7 +299,7 @@ class Game(States):
 
 	def update(self, screen, dt):
 	
-		if self.is_move_left_pressed or self.is_move_right_pressed:
+		if self.is_move_left_pressed or self.is_move_right_pressed or self.is_move_down_pressed:
 			self.das_counter += 1
 		
 			if self.das_counter > self.das_threshold:
