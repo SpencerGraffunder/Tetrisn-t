@@ -67,6 +67,26 @@ class Piece:
 		elif direction == DIRECTION_RIGHT:
 			for index, location in enumerate(self.locations):
 				self.locations[index] = (location[0]+1,location[1])
+				
+	def can_move(self, board, direction):
+		test_locations = copy(self.locations)
+		if direction == DIRECTION_DOWN:
+			for index, location in enumerate(test_locations):
+				test_locations[index] = (location[0],location[1]+1)
+		elif direction == DIRECTION_LEFT:
+			for index, location in enumerate(test_locations):
+				test_locations[index] = (location[0]-1,location[1])
+		elif direction == DIRECTION_RIGHT:
+			for index, location in enumerate(test_locations):
+				test_locations[index] = (location[0]+1,location[1])
+				
+		for location in test_locations:
+			if location[1] >= len(board) or location[0] < 0 or location[0] >= len(board[0]):
+				return False
+			if board[location[1]][location[0]].tile_type != TILE_TYPE_BLANK:
+				return False
+		
+		return True
 
 	def rotate(self, rotation_direction):
 		if self.piece_type == PIECE_TYPE_O: # for the meme

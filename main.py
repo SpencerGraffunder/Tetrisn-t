@@ -43,6 +43,7 @@ class States(object):
 		self.quit = False
 		self.previous = None
 
+		
 class Menu(States):
 	def __init__(self):
 		States.__init__(self)
@@ -62,6 +63,7 @@ class Menu(States):
 	def draw(self, screen):
 		screen.fill((100,255,0))
 		screen.blit(self.text, self.text_rect)
+		
 
 class Game(States):
 	def __init__(self):
@@ -156,37 +158,6 @@ class Game(States):
 				self.is_move_down_pressed = False
 		
 
-	# Check if piece can move in the specified direction
-	# Returns: True, False
-	def can_move(self, direction):
-
-		# Check for intersections with other pieces
-		if direction == DIRECTION_DOWN:
-			for location in self.active_piece.locations:
-				if location[1] + 2 > len(self.board):
-					return False
-				tile = self.board[location[1] + 1][location[0]]
-				if tile.tile_type != TILE_TYPE_BLANK:
-					return False
-
-		if direction == DIRECTION_LEFT:
-			for location in self.active_piece.locations:
-				if location[0] <= 0:
-					return False
-				tile = self.board[location[1]][location[0] - 1]
-				if tile.tile_type != TILE_TYPE_BLANK:
-					return False
-
-		if direction == DIRECTION_RIGHT:
-			for location in self.active_piece.locations:
-				if location[0] + 1 >= len(self.board[0]):
-					return False
-				tile = self.board[location[1]][location[0] + 1]
-				if tile.tile_type != TILE_TYPE_BLANK:
-					return False
-
-		return True
-
 	def can_rotate(self, rotation_direction):
 		if self.active_piece.piece_type == PIECE_TYPE_O: # for the meme
 			return True
@@ -203,7 +174,7 @@ class Game(States):
 						return False
 				else:
 					return False
-				if pivot[0]>=0   and pivot[0]<=board_width-1   and pivot[1]>=-2   and pivot[1]<=board_height-1:   # self.locations[2] = pivot
+				if pivot[0]>=0   and pivot[0]<=board_width-1   and pivot[1] >=-2   and pivot[1]<=board_height-1:   # self.locations[2] = pivot
 					if self.board[pivot[1]][pivot[0]].tile_type != TILE_TYPE_BLANK:
 						return False
 				else:
@@ -345,11 +316,11 @@ class Game(States):
 			
 				if self.das_counter > self.das_threshold:
 					if self.is_move_left_pressed:
-						if self.can_move(DIRECTION_LEFT):
+						if self.active_piece.can_move(self.board, DIRECTION_LEFT):
 							self.active_piece.move(DIRECTION_LEFT)
 							self.das_counter = 0
 					if self.is_move_right_pressed:
-						if self.can_move(DIRECTION_RIGHT):
+						if self.active_piece.can_move(self.board, DIRECTION_RIGHT):
 							self.active_piece.move(DIRECTION_RIGHT)
 							self.das_counter = 0
 
@@ -363,7 +334,7 @@ class Game(States):
 				
 				if self.down_counter > 2:
 					if self.is_move_down_pressed:
-						if self.can_move(DIRECTION_DOWN):
+						if self.active_piece.can_move(self.board, DIRECTION_DOWN):
 							self.active_piece.move(DIRECTION_DOWN)
 						else:
 							self.time_to_fall = True
@@ -392,7 +363,7 @@ class Game(States):
 			self.time_to_fall = True
 			self.fall_counter = 0
 
-		if not self.can_move(direction = DIRECTION_DOWN):
+		if self.time_to_fall and not self.active_piece.can_move(self.board, direction = DIRECTION_DOWN):
 			for location in self.active_piece.locations:
 				self.board[location[1]][location[0]] = Tile(self.active_piece.tile_type)
 			self.active_piece = None
@@ -409,6 +380,7 @@ class Game(States):
 		self.draw(screen)
 
 	def draw(self, screen):
+	
 		screen.fill((0,0,0)) 
 		for row_index, tile_row in enumerate(self.board):
 			for col_index, tile in enumerate(tile_row):
@@ -426,6 +398,7 @@ class Game(States):
 						scaled_image = pygame.transform.scale(self.sprites[self.next_piece.tile_type], (self.tile_size, self.tile_size))
 						screen.blit(scaled_image, ((location[0]+board_width)*self.tile_size, (location[1]+1)*self.tile_size))
 
+						
 class Control:
 	def __init__(self):
 		self.done = False
