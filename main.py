@@ -17,6 +17,24 @@ window_width = 400
 board_height_buffer = 0
 frame_rate = 60
 
+fall_delay_values = {
+	0:48,
+	1:43,
+	2:38,
+	3:33,
+	4:28,
+	5:23,
+	6:18,
+	7:13,
+	8:8,
+	9:6,
+	10:5,
+	13:4,
+	16:3,
+	19:2,
+	29:1
+}
+
 
 class States(object):
 	def __init__(self):
@@ -37,6 +55,8 @@ class Menu(States):
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_SPACE:
 				self.done = True
+			if event.key == pygame.K_ESCAPE:
+				self.quit = True
 	def update(self, screen, dt):
 		self.draw(screen)
 	def draw(self, screen):
@@ -63,14 +83,18 @@ class Game(States):
 		self.next_piece_type = None
 
 		self.score = 0
-		self.time_to_spawn = False
+		self.current_level = 0
+		self.time_to_spawn = True
 		self.time_to_fall = False
+		self.fall_threshold = fall_delay_values[self.current_level]
+		self.fall_counter = 0
 		self.time_to_move = False
 		self.time_next_move = 0
 		self.time_next_fall = 0
 		self.time_next_rotate = 0
 		self.das_counter = 0
 		self.das_threshold = 0
+		self.down_counter = 0
 		self.is_move_right_pressed = False
 		self.is_move_left_pressed = False
 		self.is_move_down_pressed = False
@@ -120,8 +144,7 @@ class Game(States):
 					self.das_counter = 0
 				if event.key == pygame.K_s:
 					self.is_move_down_pressed = True
-					self.das_threshold = 0
-					self.das_counter = 0
+					self.down_counter = 0
 				self.time_to_move = False
 				
 		if event.type == pygame.KEYUP:
@@ -272,7 +295,7 @@ class Game(States):
 			return True # no check returned False
 
 	# Check if lines can be cleared, clear them, shift stuff down, update score
-	def clear_lines(self, level = 0):
+	def clear_lines(self):
 
 		# Store all lines that can be cleared
 		lines_to_clear = []
@@ -295,36 +318,57 @@ class Game(States):
 
 		# Score the points
 		num_lines = len(lines_to_clear)
-		if num_lines == 0:
-			pass
-		elif num_lines == 1:
-			self.score += 40 * (level + 1)
-		elif num_lines == 2:
-			self.score += 100 * (level + 1)
-		elif num_lines == 3:
-			self.score += 300 * (level + 1)
-		elif num_lines == 4: # BOOM Tetrisn't
-			self.score += 1200 * (level + 1)
-
+		if num_lines != 0:
+			if num_lines == 1:
+				self.score += 40 * (self.current_level + 1)
+			elif num_lines == 2:
+				self.score += 100 * (self.current_level + 1)
+			elif num_lines == 3:
+				self.score += 300 * (self.current_level + 1)
+			elif num_lines == 4: # BOOM Tetrisn't for Jeffn't
+				self.score += 1200 * (self.current_level + 1)
+			print(self.score)
+				
+			self.current_level += 1
+			print(self.current_level)
+			
+			if self.current_level in fall_delay_values.keys():
+				self.fall_threshold = fall_delay_values[self.current_level]
+				
+			
 
 	def update(self, screen, dt):
 	
-		if self.is_move_left_pressed or self.is_move_right_pressed or self.is_move_down_pressed:
-			self.das_counter += 1
-		
-			if self.das_counter > self.das_threshold:
-				if self.is_move_left_pressed:
-					if self.can_move(DIRECTION_LEFT):
-						self.active_piece.move(DIRECTION_LEFT)
-				if self.is_move_right_pressed:
-					if self.can_move(DIRECTION_RIGHT):
-						self.active_piece.move(DIRECTION_RIGHT)
-				self.das_counter = 0
-				if self.das_threshold == 0:
-					self.das_threshold = 16
-				else:
-					self.das_threshold = 6
+		if self.active_piece != None:
+			if self.is_move_left_pressed or self.is_move_right_pressed:
+				self.das_counter += 1
+			
+				if self.das_counter > self.das_threshold:
+					if self.is_move_left_pressed:
+						if self.can_move(DIRECTION_LEFT):
+							self.active_piece.move(DIRECTION_LEFT)
+							self.das_counter = 0
+					if self.is_move_right_pressed:
+						if self.can_move(DIRECTION_RIGHT):
+							self.active_piece.move(DIRECTION_RIGHT)
+							self.das_counter = 0
 
+					if self.das_threshold == 0:
+						self.das_threshold = 16
+					else:
+						self.das_threshold = 6
+						
+			if self.is_move_down_pressed:
+				self.down_counter += 1
+				
+				if self.down_counter > 2:
+					if self.is_move_down_pressed:
+						if self.can_move(DIRECTION_DOWN):
+							self.active_piece.move(DIRECTION_DOWN)
+						else:
+							self.time_to_fall = True
+						self.down_counter = 0
+			
 		ticks = pygame.time.get_ticks()
 
 		if self.time_to_spawn:
@@ -341,20 +385,19 @@ class Game(States):
 			self.next_piece   = Piece(self.next_piece_type)
 			time_next_fall = ticks + 20 * self.fall_delay
 			self.time_to_spawn = False
-			
-		if self.active_piece == None:
-			self.time_to_spawn = True
-			return
 
-		if ticks >= self.time_next_fall:
+		self.fall_counter += 1
+			
+		if self.fall_counter > self.fall_threshold:
 			self.time_to_fall = True
-			self.time_next_fall = ticks + self.fall_delay
+			self.fall_counter = 0
 
 		if not self.can_move(direction = DIRECTION_DOWN):
 			for location in self.active_piece.locations:
 				self.board[location[1]][location[0]] = Tile(self.active_piece.tile_type)
 			self.active_piece = None
 			self.clear_lines()
+			self.time_to_spawn = True
 			return
 
 		if self.time_to_fall:
@@ -366,7 +409,7 @@ class Game(States):
 		self.draw(screen)
 
 	def draw(self, screen):
-		screen.fill((0,0,0))
+		screen.fill((0,0,0)) 
 		for row_index, tile_row in enumerate(self.board):
 			for col_index, tile in enumerate(tile_row):
 				scaled_image = pygame.transform.scale(self.sprites[tile.tile_type], (self.tile_size, self.tile_size))
