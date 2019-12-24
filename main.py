@@ -86,7 +86,6 @@ class Game(States):
 
 		self.score = 0
 		self.current_level = 0
-		self.time_to_spawn = True
 		self.time_to_fall = False
 		self.fall_threshold = fall_delay_values[self.current_level]
 		self.fall_counter = 0
@@ -100,6 +99,7 @@ class Game(States):
 		self.is_move_right_pressed = False
 		self.is_move_left_pressed = False
 		self.is_move_down_pressed = False
+		self.tetris_state = TETRIS_STATE_SPAWN
 		
 		self.sprites = {}
 
@@ -207,8 +207,24 @@ class Game(States):
 			
 
 	def update(self, screen, dt):
-	
-		if self.active_piece != None:
+
+		if self.tetris_state == TETRIS_STATE_SPAWN:
+			# Spawn piece
+			# RNG piece choice decision
+			if self.next_piece_type == None:
+				self.active_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+			else:
+				self.active_piece_type = self.next_piece.piece_type
+			self.next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+			if self.next_piece_type == self.active_piece_type:
+				self.next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+			self.active_piece = Piece(self.active_piece_type)
+			self.next_piece   = Piece(self.next_piece_type)
+			self.tetris_state = TETRIS_STATE_PLAY
+			self.fall_counter = 0
+
+		elif self.tetris_state == TETRIS_STATE_PLAY:
+			# Move piece logic
 			if self.is_move_left_pressed or self.is_move_right_pressed:
 				self.das_counter += 1
 			
@@ -235,46 +251,31 @@ class Game(States):
 						if self.active_piece.can_move(self.board, DIRECTION_DOWN):
 							self.active_piece.move(DIRECTION_DOWN)
 							self.fall_counter = 0
-						else:
-							self.time_to_fall = True
+						else: # Lock piece
+							for location in self.active_piece.locations:
+								self.board[location[1]][location[0]] = Tile(self.active_piece.tile_type)
+							self.active_piece = None
+							self.tetris_state = TETRIS_STATE_CLEAR
 						self.down_counter = 0
-			
-		ticks = pygame.time.get_ticks()
 
-		if self.time_to_spawn:
-			# RNG piece choice decision
-			if self.next_piece_type == None:
-				self.active_piece_type = copy(random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S]))
-			else:
-				self.active_piece_type = copy(self.next_piece.piece_type)
-			self.next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-			if self.next_piece_type == self.active_piece_type:
-				self.next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+			self.fall_counter += 1
+
+			if self.fall_counter > self.fall_threshold:
+				if not self.active_piece.can_move(self.board, DIRECTION_DOWN):
+					for location in self.active_piece.locations:
+						self.board[location[1]][location[0]] = Tile(self.active_piece.tile_type)
+					self.active_piece = None
+					self.tetris_state = TETRIS_STATE_CLEAR
+					self.fall_counter = 0
+				else:
+					self.active_piece.move(DIRECTION_DOWN)
+					self.fall_counter = 0
+
+
+		elif self.tetris_state == TETRIS_STATE_CLEAR:
 			# pdb.set_trace()
-			self.active_piece = Piece(self.active_piece_type)
-			self.next_piece   = Piece(self.next_piece_type)
-			time_next_fall = ticks + 20 * self.fall_delay
-			self.time_to_spawn = False
-
-		self.fall_counter += 1
-			
-		if self.fall_counter > self.fall_threshold:
-			self.time_to_fall = True
-			self.fall_counter = 0
-
-		if self.time_to_fall and not self.active_piece.can_move(self.board, direction = DIRECTION_DOWN):
-			for location in self.active_piece.locations:
-				self.board[location[1]][location[0]] = Tile(self.active_piece.tile_type)
-			self.active_piece = None
 			self.clear_lines()
-			self.time_to_spawn = True
-			return
-
-		if self.time_to_fall:
-			self.active_piece.move(direction = DIRECTION_DOWN)
-			self.time_to_fall = False
-
-		self.score += 1
+			self.tetris_state = TETRIS_STATE_SPAWN
 
 		self.draw(screen)
 
@@ -294,17 +295,19 @@ class Game(States):
 				scaled_image = pygame.transform.scale(self.sprites[tile.tile_type], (self.tile_size, self.tile_size))
 				screen.blit(scaled_image, (col_index * self.tile_size, row_index * self.tile_size))
 
-		for location in self.active_piece.locations:
-			scaled_image = pygame.transform.scale(self.sprites[self.active_piece.tile_type], (self.tile_size, self.tile_size))
-			screen.blit(scaled_image, (location[0]*self.tile_size, location[1]*self.tile_size))
+		if self.active_piece != None:
+			for location in self.active_piece.locations:
+				scaled_image = pygame.transform.scale(self.sprites[self.active_piece.tile_type], (self.tile_size, self.tile_size))
+				screen.blit(scaled_image, (location[0]*self.tile_size, location[1]*self.tile_size))
 
-		# draw next piece
-		for row_index in range(0,2):
-			for col_index in range(3,8):
-				for location in self.next_piece.locations:
-					if location == (col_index, row_index):
-						scaled_image = pygame.transform.scale(self.sprites[self.next_piece.tile_type], (self.tile_size, self.tile_size))
-						screen.blit(scaled_image, ((location[0]+board_width)*self.tile_size, (location[1]+1)*self.tile_size))
+		if self.next_piece != None:
+			# draw next piece
+			for row_index in range(0,2):
+				for col_index in range(3,8):
+					for location in self.next_piece.locations:
+						if location == (col_index, row_index):
+							scaled_image = pygame.transform.scale(self.sprites[self.next_piece.tile_type], (self.tile_size, self.tile_size))
+							screen.blit(scaled_image, ((location[0]+board_width)*self.tile_size, (location[1]+1)*self.tile_size))
 
 		# draw purdy stuff
 		# bw = board_width
