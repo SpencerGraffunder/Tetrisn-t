@@ -85,10 +85,15 @@ class Game(States):
 		else:
 			wd = ''
 		# Load sprites from image files and convert for performance
-		self.sprites[TILE_TYPE_BLANK] = pygame.image.load(os.path.join(wd,'backgroundblock.bmp')).convert()
-		self.sprites[TILE_TYPE_IOT] = pygame.image.load(os.path.join(wd,'IOTblock.bmp')).convert()
-		self.sprites[TILE_TYPE_JS] = pygame.image.load(os.path.join(wd,'JSblock.bmp')).convert()
-		self.sprites[TILE_TYPE_LZ] = pygame.image.load(os.path.join(wd,'LZblock.bmp')).convert()
+		self.sprites[TILE_TYPE_BLANK]        = pygame.image.load(os.path.join(wd,'backgroundblock.bmp')).convert()
+		self.sprites[TILE_TYPE_IOT]          = pygame.image.load(os.path.join(wd,'IOTblock.bmp')).convert()
+		self.sprites[TILE_TYPE_JS]           = pygame.image.load(os.path.join(wd,'JSblock.bmp')).convert()
+		self.sprites[TILE_TYPE_LZ]           = pygame.image.load(os.path.join(wd,'LZblock.bmp')).convert()
+		self.sprites[TILE_TYPE_GRAY]         = pygame.image.load(os.path.join(wd,'grayHL/lightgray.bmp')).convert()
+		self.sprites[TILE_TYPE_GRAY_HLLEFT]  = pygame.image.load(os.path.join(wd,'grayHL/grayHLleft.bmp')).convert()
+		self.sprites[TILE_TYPE_GRAY_HLRIGHT] = pygame.image.load(os.path.join(wd,'grayHL/grayHLright.bmp')).convert()
+		self.sprites[TILE_TYPE_GRAY_HLUP]    = pygame.image.load(os.path.join(wd,'grayHL/grayHLup.bmp')).convert()
+		self.sprites[TILE_TYPE_GRAY_HLDOWN]  = pygame.image.load(os.path.join(wd,'grayHL/grayHLdown.bmp')).convert()
 
 		# Fill board with empty tiles
 		self.board = [[Tile() for j in range(board_width)] for i in range(board_height+board_height_buffer)]
@@ -367,22 +372,36 @@ class Game(States):
 
 	def draw(self, screen):
 		screen.fill((0,0,0))
+
+		# fill right of board with gray for background
+		for col_index in range(0+board_width-1,10+board_width):
+			for row_index in range(0,board_height):
+				if col_index not in range(0+board_width-1+4,0+board_width-1+8) or row_index not in range(1,3):
+					scaled_image = pygame.transform.scale(self.sprites[TILE_TYPE_GRAY], (self.tile_size, self.tile_size))
+					screen.blit(scaled_image, (col_index * self.tile_size, row_index * self.tile_size))
+
 		for row_index, tile_row in enumerate(self.board):
 			for col_index, tile in enumerate(tile_row):
 				scaled_image = pygame.transform.scale(self.sprites[tile.tile_type], (self.tile_size, self.tile_size))
 				screen.blit(scaled_image, (col_index * self.tile_size, row_index * self.tile_size))
 
-		pdb.set_trace()
+		# pdb.set_trace()
 		for location in self.active_piece.locations:
 			scaled_image = pygame.transform.scale(self.sprites[self.active_piece.tile_type], (self.tile_size, self.tile_size))
 			screen.blit(scaled_image, (location[0]*self.tile_size, location[1]*self.tile_size))
 
+		# draw next piece
 		for row_index in range(0,2):
 			for col_index in range(3,8):
 				for location in self.next_piece.locations:
 					if location == (col_index, row_index):
 						scaled_image = pygame.transform.scale(self.sprites[self.next_piece.tile_type], (self.tile_size, self.tile_size))
 						screen.blit(scaled_image, ((location[0]+board_width)*self.tile_size, (location[1]+1)*self.tile_size))
+
+		# draw purdy stuff
+		# bw = board_width
+		# blank_locations = [()]
+
 
 class Control:
 	def __init__(self):
