@@ -12,47 +12,57 @@ class Piece:
 		self.rotation = 0
 		self.locations = [None, None, None, None] # col,row
 		self.piece_type = piece_type
+
+		center = 2
+
+		# to determine spawn positions
+		width = BOARD_WIDTH
+		if width % 2 == 0: # even board width
+			center = width // 2
+		elif width % 2 == 1: # odd board width
+			center = (width+1) // 2
+
 		if self.piece_type == PIECE_TYPE_I:
-			self.locations[0] = (3,2) # [-][-][-][-] | [-][-][0][-]
-			self.locations[1] = (4,2) # [-][-][-][-] | [-][-][1][-]
-			self.locations[2] = (5,2) # [0][1][2][3] | [-][-][2][-]
-			self.locations[3] = (6,2) # [-][-][-][-] | [-][-][3][-]
+			self.locations[0] = (center-2,2) # [-][-][-][-] | [-][-][0][-]
+			self.locations[1] = (center-1,2) # [-][-][-][-] | [-][-][1][-]
+			self.locations[2] = (center,2)   # [0][1][2][3] | [-][-][2][-]
+			self.locations[3] = (center+1,2) # [-][-][-][-] | [-][-][3][-]
 			self.tile_type = TILE_TYPE_IOT
 		elif self.piece_type == PIECE_TYPE_O:
-			self.locations[0] = (4,2) #
-			self.locations[1] = (5,2) # [0][1]
-			self.locations[2] = (4,3) # [2][3]
-			self.locations[3] = (5,3) #
+			self.locations[0] = (center-1,2) #
+			self.locations[1] = (center,2)   # [0][1]
+			self.locations[2] = (center-1,3) # [2][3]
+			self.locations[3] = (center,3)   #
 			self.tile_type = TILE_TYPE_IOT
 		elif self.piece_type == PIECE_TYPE_T:
-			self.locations[0] = (4,2) # [-][-][-] | [-][0][-] | [-][3][-] | [-][2][-]
-			self.locations[1] = (5,2) # [0][1][2] | [3][1][-] | [2][1][0] | [-][1][3]
-			self.locations[2] = (6,2) # [-][3][-] | [-][2][-] | [-][-][-] | [-][0][-]
-			self.locations[3] = (5,3) #			  |			  |			  |
+			self.locations[0] = (center-1,2) # [-][-][-] | [-][0][-] | [-][3][-] | [-][2][-]
+			self.locations[1] = (center,2)   # [0][1][2] | [3][1][-] | [2][1][0] | [-][1][3]
+			self.locations[2] = (center+1,2) # [-][3][-] | [-][2][-] | [-][-][-] | [-][0][-]
+			self.locations[3] = (center,3)   #			  |			  |			  |
 			self.tile_type = TILE_TYPE_IOT
 		elif self.piece_type == PIECE_TYPE_L:
-			self.locations[0] = (4,2) # [-][-][-] | [3][0][-] | [-][-][3] | [-][2][-]
-			self.locations[1] = (5,2) # [0][1][2] | [-][1][-] | [2][1][0] | [-][1][-]
-			self.locations[2] = (6,2) # [3][-][-] | [-][2][-] | [-][-][-] | [-][0][3]
-			self.locations[3] = (4,3) # 		  |		      |		      |
+			self.locations[0] = (center-1,2) # [-][-][-] | [3][0][-] | [-][-][3] | [-][2][-]
+			self.locations[1] = (center,2)   # [0][1][2] | [-][1][-] | [2][1][0] | [-][1][-]
+			self.locations[2] = (center+1,2) # [3][-][-] | [-][2][-] | [-][-][-] | [-][0][3]
+			self.locations[3] = (center-1,3) # 		  |		      |		      |
 			self.tile_type = TILE_TYPE_LZ
 		elif self.piece_type == PIECE_TYPE_J:
-			self.locations[0] = (4,2) #	[-][-][-] | [-][0][-] | [3][-][-] | [-][2][3]
-			self.locations[1] = (5,2) # [0][1][2] | [-][1][-] | [2][1][0] | [-][1][-]
-			self.locations[2] = (6,2) # [-][-][3] | [3][2][-] | [-][-][-] | [-][0][-]
-			self.locations[3] = (6,3) #			  |           |           |
+			self.locations[0] = (center-1,2) # [-][-][-] | [-][0][-] | [3][-][-] | [-][2][3]
+			self.locations[1] = (center,2)   # [0][1][2] | [-][1][-] | [2][1][0] | [-][1][-]
+			self.locations[2] = (center+1,2) # [-][-][3] | [3][2][-] | [-][-][-] | [-][0][-]
+			self.locations[3] = (center+1,3) #		     |           |           |
 			self.tile_type = TILE_TYPE_JS
 		elif self.piece_type == PIECE_TYPE_Z:
-			self.locations[0] = (4,2) # [-][-][-] | [-][-][3]
-			self.locations[1] = (5,2) # [0][1][-] | [-][1][2]
-			self.locations[2] = (5,3) # [-][2][3] | [-][0][-]
-			self.locations[3] = (6,3) #			  |
+			self.locations[0] = (center-1,2) # [-][-][-] | [-][-][3]
+			self.locations[1] = (center,2)   # [0][1][-] | [-][1][2]
+			self.locations[2] = (center,3)   # [-][2][3] | [-][0][-]
+			self.locations[3] = (center+1,3) #           |
 			self.tile_type = TILE_TYPE_LZ
 		elif self.piece_type == PIECE_TYPE_S:
-			self.locations[0] = (5,2) # [-][-][-] | [-][1][-]
-			self.locations[1] = (6,2) # [-][0][1] | [-][0][3]
-			self.locations[2] = (4,3) # [2][3][-] | [-][-][2]
-			self.locations[3] = (5,3) # 		  |
+			self.locations[0] = (center,2)   # [-][-][-] | [-][1][-]
+			self.locations[1] = (center+1,2) # [-][0][1] | [-][0][3]
+			self.locations[2] = (center-1,3) # [2][3][-] | [-][-][2]
+			self.locations[3] = (center,3)   # 		     |
 			self.tile_type = TILE_TYPE_JS
 
 

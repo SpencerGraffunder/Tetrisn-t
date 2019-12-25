@@ -10,11 +10,9 @@ from collections import deque
 import sys
 
 
-board_width = 10
-board_height = 20
 window_height = 800
 window_width = 800
-board_height_buffer = 2
+BOARD_HEIGHT_buffer = 2
 frame_rate = 60
 
 fall_delay_values = {
@@ -73,7 +71,7 @@ class Game(States):
 		self.next = 'menu'
 
 		self.fall_delay = 150
-		self.tile_size = window_height // board_height
+		self.tile_size = window_height // BOARD_HEIGHT
 		self.active_piece = None
 		# stores the type of piece active_piece is and passes it to the Piece() function
 		self.active_piece_type = None
@@ -125,7 +123,7 @@ class Game(States):
 		self.sprites[TILE_TYPE_GRAY_HLDOWN]  = pygame.image.load(os.path.join(wd,'grayHL/grayHLdown.bmp')).convert()
 
 		# Fill board with empty tiles
-		self.board = [[Tile() for j in range(board_width)] for i in range(board_height+board_height_buffer)]
+		self.board = [[Tile() for j in range(BOARD_WIDTH)] for i in range(BOARD_HEIGHT+BOARD_HEIGHT_buffer)]
 
 
 	def do_event(self, event):
@@ -262,7 +260,7 @@ class Game(States):
 			for line in lines_to_clear:
 				self.board.pop(line)
 				self.board = deque(self.board)
-				self.board.appendleft([Tile() for j in range(board_width)])
+				self.board.appendleft([Tile() for j in range(BOARD_WIDTH)])
 				self.board = list(self.board)
 
 			# Score the points
@@ -289,12 +287,21 @@ class Game(States):
 
 	def draw(self, screen):
 
+		center = 2
+
+		# to determine spawn positions
+		width = BOARD_WIDTH
+		if width % 2 == 0: # even board width
+			center = width // 2
+		elif width % 2 == 1: # odd board width
+			center = (width+1) // 2
+
 		screen.fill((0, 0, 0))
 
 		# fill right of board with gray for background
-		for col_index in range(0+board_width-1, 10+board_width):
-			for row_index in range(0, board_height):
-				if col_index not in range(0+board_width-1+4, 0+board_width-1+8) or row_index not in range(1, 3):
+		for col_index in range(0+BOARD_WIDTH-1, 10+BOARD_WIDTH):
+			for row_index in range(0, BOARD_HEIGHT):
+				if col_index not in range(0+BOARD_WIDTH-1+4, 0+BOARD_WIDTH-1+8) or row_index not in range(1, 3):
 					scaled_image = pygame.transform.scale(self.sprites[TILE_TYPE_GRAY], (self.tile_size, self.tile_size))
 					screen.blit(scaled_image, (col_index * self.tile_size, row_index * self.tile_size))
 
@@ -306,19 +313,19 @@ class Game(States):
 		if self.active_piece != None:
 			for location in self.active_piece.locations:
 				scaled_image = pygame.transform.scale(self.sprites[self.active_piece.tile_type], (self.tile_size, self.tile_size))
-				screen.blit(scaled_image, (location[0] * self.tile_size, (location[1] - board_height_buffer) * self.tile_size))
+				screen.blit(scaled_image, (location[0] * self.tile_size, (location[1] - BOARD_HEIGHT_buffer) * self.tile_size))
 
 		if self.next_piece != None:
 			# draw next piece
 			for row_index in range(2, 4):
-				for col_index in range(3, 8):
+				for col_index in range(center-2, center+1+1):
 					for location in self.next_piece.locations:
 						if location == (col_index, row_index):
 							scaled_image = pygame.transform.scale(self.sprites[self.next_piece.tile_type], (self.tile_size, self.tile_size))
-							screen.blit(scaled_image, ((location[0] + board_width) * self.tile_size, (location[1] - 1) * self.tile_size))
+							screen.blit(scaled_image, ((location[0] + 5 + BOARD_WIDTH//2) * self.tile_size, (location[1] - 1) * self.tile_size))
 
 		# draw purdy stuff
-		# bw = board_width
+		# bw = BOARD_WIDTH
 		# blank_locations = [()]
 
 
