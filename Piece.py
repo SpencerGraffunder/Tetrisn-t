@@ -92,10 +92,15 @@ class Piece:
 		
 	def rotate(self, rotation_direction, locations = None, rotation = None):
 	
+		save_rotation = False
 		if locations == None:
 			locations = self.locations
 		if rotation == None:
+			save_rotation = True
 			rotation = self.rotation
+
+
+		new_rotation = rotation
 	
 		if self.piece_type == PIECE_TYPE_O: # for the meme
 			pass
@@ -137,24 +142,28 @@ class Piece:
 				# General rotate CW:
 				for i, location in enumerate(locations):
 					locations[i] = ((pivot[1]-location[1])+pivot[0],(location[0]-pivot[0])+pivot[1])
-				rotation = (rotation+90) % 360
+				new_rotation = (rotation+90) % 360
 			elif turn == TURN_CCW:
 				# General rotate CCW:
 				for i, location in enumerate(locations):
 					locations[i] = ((location[1]-pivot[1])+pivot[0],(pivot[0]-location[0])+pivot[1])
-				rotation = (rotation-90) % 360
+				new_rotation = (rotation-90) % 360
 		elif self.piece_type == PIECE_TYPE_T or self.piece_type == PIECE_TYPE_L or self.piece_type == PIECE_TYPE_J: # the four-rotation-position pieces
 			pivot = copy(locations[1])
 			if rotation_direction == ROTATION_CW:
 				# General rotate CW:
 				for i, location in enumerate(locations):
 					locations[i] = ((pivot[1]-location[1])+pivot[0],(location[0]-pivot[0])+pivot[1])
-				rotation = (rotation+90) % 360
+				new_rotation = (rotation+90) % 360
 			elif rotation_direction == ROTATION_CCW:
 				# General rotate CCW:
 				for i, location in enumerate(locations):
 					locations[i] = ((location[1]-pivot[1])+pivot[0],(pivot[0]-location[0])+pivot[1])
-				rotation = (rotation-90) % 360
+				new_rotation = (rotation-90) % 360
+
+		if save_rotation:
+			self.rotation = new_rotation
+
 				
 				
 	def can_rotate(self, board, rotation_direction):
