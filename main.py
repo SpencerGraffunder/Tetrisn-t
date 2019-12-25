@@ -287,10 +287,8 @@ class Game(States):
 					self.score += 300 * (self.current_level + 1)
 				elif num_lines == 4: # BOOM Tetrisn't for Jeffn't
 					self.score += 1200 * (self.current_level + 1)
-				print(self.score)
 					
 				self.current_level += 1
-				print(self.current_level)
 				
 				if self.current_level in fall_delay_values.keys():
 					self.fall_threshold = fall_delay_values[self.current_level]
@@ -338,8 +336,23 @@ class Game(States):
 							screen.blit(scaled_image, ((location[0] + 5 + BOARD_WIDTH//2) * self.tile_size, (location[1] - 1) * self.tile_size))
 
 		# draw purdy stuff
-		# bw = BOARD_WIDTH
-		# blank_locations = [()]
+		# leftHL_locations = [()]
+
+		# display score
+		score_str = 'Score: %d' % (self.score)
+		score_text_font        = pygame.font.Font('freesansbold.ttf', 20)
+		score_text             = score_text_font.render(score_str, True, (0, 128, 0))
+		score_text_rect        = score_text.get_rect()
+		score_text_rect.center = ((BOARD_WIDTH + 4) * self.tile_size, 3.5 * self.tile_size)
+		screen.blit(score_text, score_text_rect)
+
+		# display level
+		level_str = 'Level: %d' % (self.current_level)
+		level_text_font        = pygame.font.Font('freesansbold.ttf', 20)
+		level_text             = level_text_font.render(level_str, True, (0, 128, 0))
+		level_text_rect        = level_text.get_rect()
+		level_text_rect.center = ((BOARD_WIDTH + 4) * self.tile_size, 4 * self.tile_size)
+		screen.blit(level_text, level_text_rect)
 
 
 class Control:
