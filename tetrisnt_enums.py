@@ -1,4 +1,4 @@
-BOARD_WIDTH  = 10 # cannot be less than 4
+BOARD_WIDTH  = 4 # cannot be less than 4
 BOARD_HEIGHT = 20 # should be about twice BOARD_WIDTH
 
 DIRECTION_DOWN  = 0
