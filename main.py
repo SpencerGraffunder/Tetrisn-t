@@ -14,7 +14,7 @@ board_width = 10
 board_height = 20
 window_height = 400
 window_width = 400
-board_height_buffer = 0
+board_height_buffer = 2
 frame_rate = 60
 
 fall_delay_values = {
@@ -161,49 +161,6 @@ class Game(States):
 				self.is_move_right_pressed = False
 			if event.key == pygame.K_s:
 				self.is_move_down_pressed = False
-		
-
-	# Check if lines can be cleared, clear them, shift stuff down, update score
-	def clear_lines(self):
-
-		# Store all lines that can be cleared
-		lines_to_clear = []
-
-		# Add all clearable lines to list
-		for row_index, row in enumerate(self.board):
-			can_clear = True
-			for tile in row:
-				if tile.tile_type == TILE_TYPE_BLANK:
-					can_clear = False
-			if can_clear:
-				lines_to_clear.append(row_index)
-				
-		# Move upper lines down
-		for line in lines_to_clear:
-			self.board.pop(line)
-			self.board = deque(self.board)
-			self.board.appendleft([Tile() for j in range(board_width)])
-			self.board = list(self.board)
-
-		# Score the points
-		num_lines = len(lines_to_clear)
-		if num_lines != 0:
-			if num_lines == 1:
-				self.score += 40 * (self.current_level + 1)
-			elif num_lines == 2:
-				self.score += 100 * (self.current_level + 1)
-			elif num_lines == 3:
-				self.score += 300 * (self.current_level + 1)
-			elif num_lines == 4: # BOOM Tetrisn't for Jeffn't
-				self.score += 1200 * (self.current_level + 1)
-			print(self.score)
-				
-			self.current_level += 1
-			print(self.current_level)
-			
-			if self.current_level in fall_delay_values.keys():
-				self.fall_threshold = fall_delay_values[self.current_level]
-				
 			
 
 	def update(self, screen, dt):
@@ -273,24 +230,59 @@ class Game(States):
 
 
 		elif self.tetris_state == TETRIS_STATE_CLEAR:
-			# pdb.set_trace()
-			self.clear_lines()
+			# Store all lines that can be cleared
+			lines_to_clear = []
+
+			# Add all clearable lines to list
+			for row_index, row in enumerate(self.board):
+				can_clear = True
+				for tile in row:
+					if tile.tile_type == TILE_TYPE_BLANK:
+						can_clear = False
+				if can_clear:
+					lines_to_clear.append(row_index)
+					
+			# Move upper lines down
+			for line in lines_to_clear:
+				self.board.pop(line)
+				self.board = deque(self.board)
+				self.board.appendleft([Tile() for j in range(board_width)])
+				self.board = list(self.board)
+
+			# Score the points
+			num_lines = len(lines_to_clear)
+			if num_lines != 0:
+				if num_lines == 1:
+					self.score += 40 * (self.current_level + 1)
+				elif num_lines == 2:
+					self.score += 100 * (self.current_level + 1)
+				elif num_lines == 3:
+					self.score += 300 * (self.current_level + 1)
+				elif num_lines == 4: # BOOM Tetrisn't for Jeffn't
+					self.score += 1200 * (self.current_level + 1)
+				print(self.score)
+					
+				self.current_level += 1
+				print(self.current_level)
+				
+				if self.current_level in fall_delay_values.keys():
+					self.fall_threshold = fall_delay_values[self.current_level]
 			self.tetris_state = TETRIS_STATE_SPAWN
 
 		self.draw(screen)
 
 	def draw(self, screen):
 
-		screen.fill((0,0,0))
+		screen.fill((0, 0, 0))
 
 		# fill right of board with gray for background
-		for col_index in range(0+board_width-1,10+board_width):
-			for row_index in range(0,board_height):
-				if col_index not in range(0+board_width-1+4,0+board_width-1+8) or row_index not in range(1,3):
+		for col_index in range(0+board_width-1, 10+board_width):
+			for row_index in range(0, board_height):
+				if col_index not in range(0+board_width-1+4, 0+board_width-1+8) or row_index not in range(1, 3):
 					scaled_image = pygame.transform.scale(self.sprites[TILE_TYPE_GRAY], (self.tile_size, self.tile_size))
 					screen.blit(scaled_image, (col_index * self.tile_size, row_index * self.tile_size))
 
-		for row_index, tile_row in enumerate(self.board):
+		for row_index, tile_row in enumerate(self.board[2:]):
 			for col_index, tile in enumerate(tile_row):
 				scaled_image = pygame.transform.scale(self.sprites[tile.tile_type], (self.tile_size, self.tile_size))
 				screen.blit(scaled_image, (col_index * self.tile_size, row_index * self.tile_size))
@@ -298,16 +290,16 @@ class Game(States):
 		if self.active_piece != None:
 			for location in self.active_piece.locations:
 				scaled_image = pygame.transform.scale(self.sprites[self.active_piece.tile_type], (self.tile_size, self.tile_size))
-				screen.blit(scaled_image, (location[0]*self.tile_size, location[1]*self.tile_size))
+				screen.blit(scaled_image, (location[0] * self.tile_size, (location[1] - board_height_buffer) * self.tile_size))
 
 		if self.next_piece != None:
 			# draw next piece
-			for row_index in range(0,2):
-				for col_index in range(3,8):
+			for row_index in range(2, 4):
+				for col_index in range(3, 8):
 					for location in self.next_piece.locations:
 						if location == (col_index, row_index):
 							scaled_image = pygame.transform.scale(self.sprites[self.next_piece.tile_type], (self.tile_size, self.tile_size))
-							screen.blit(scaled_image, ((location[0]+board_width)*self.tile_size, (location[1]+1)*self.tile_size))
+							screen.blit(scaled_image, ((location[0] + board_width) * self.tile_size, (location[1] - 1) * self.tile_size))
 
 		# draw purdy stuff
 		# bw = board_width
