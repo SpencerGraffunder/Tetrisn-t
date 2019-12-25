@@ -12,7 +12,7 @@ import sys
 
 window_height = 800
 window_width = 800
-BOARD_HEIGHT_buffer = 2
+board_height_buffer = 2
 frame_rate = 60
 
 fall_delay_values = {
@@ -35,6 +35,7 @@ fall_delay_values = {
 
 
 class States(object):
+
 	def __init__(self):
 		self.done = False
 		self.next = None
@@ -43,6 +44,7 @@ class States(object):
 
 		
 class Menu(States):
+
 	def __init__(self):
 		States.__init__(self)
 		self.next = 'game'
@@ -50,14 +52,17 @@ class Menu(States):
 		self.text = self.font.render('Tetrisn\'t', True, (0, 128, 0))
 		self.text_rect = self.text.get_rect()
 		self.text_rect.center = (window_width//2, window_height//2)
+
 	def do_event(self, event):
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_SPACE:
 				self.done = True
 			if event.key == pygame.K_ESCAPE:
 				self.quit = True
+
 	def update(self, screen, dt):
 		self.draw(screen)
+
 	def draw(self, screen):
 		screen.fill((100,255,0))
 		screen.blit(self.text, self.text_rect)
@@ -124,7 +129,7 @@ class Game(States):
 		self.sprites[TILE_TYPE_GRAY_HLDOWN]  = pygame.image.load(os.path.join(wd,'grayHL/grayHLdown.bmp')).convert()
 
 		# Fill board with empty tiles
-		self.board = [[Tile() for j in range(BOARD_WIDTH)] for i in range(BOARD_HEIGHT+BOARD_HEIGHT_buffer)]
+		self.board = [[Tile() for j in range(BOARD_WIDTH)] for i in range(BOARD_HEIGHT+board_height_buffer)]
 
 
 	def do_event(self, event):
@@ -185,9 +190,15 @@ class Game(States):
 	def update(self, screen, dt):
 
 		keys = pygame.key.get_pressed()
-		self.is_move_left_pressed = keys[pygame.K_a]
-		self.is_move_right_pressed = keys[pygame.K_d]
+		if not self.is_move_left_pressed:
+			if keys[pygame.K_a]:
+				self.is_move_left_pressed = True
+				das_counter = 0
 
+		if not self.is_move_right_pressed:
+			if keys[pygame.K_d]:
+				self.is_move_right_pressed = True
+				das_counter = 0
 
 		if self.tetris_state == TETRIS_STATE_SPAWN:
 
@@ -245,7 +256,7 @@ class Game(States):
 
 			self.fall_counter += 1
 
-			if self.fall_counter > self.fall_threshold:
+			if self.fall_counter > self.fall_threshold and self.active_piece != None:
 				if not self.active_piece.can_move(self.board, DIRECTION_DOWN):
 					self.lock_piece()
 				else:
@@ -324,7 +335,7 @@ class Game(States):
 		if self.active_piece != None:
 			for location in self.active_piece.locations:
 				scaled_image = pygame.transform.scale(self.sprites[self.active_piece.tile_type], (self.tile_size, self.tile_size))
-				screen.blit(scaled_image, (location[0] * self.tile_size, (location[1] - BOARD_HEIGHT_buffer) * self.tile_size))
+				screen.blit(scaled_image, (location[0] * self.tile_size, (location[1] - board_height_buffer) * self.tile_size))
 
 		if self.next_piece != None:
 			# draw next piece
