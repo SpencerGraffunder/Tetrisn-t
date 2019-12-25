@@ -79,8 +79,11 @@ class Piece:
 		self.move(direction, test_locations)
 				
 		for location in test_locations:
-			if location[1] >= len(board) or location[0] < 0 or location[0] >= len(board[0]):
+			if location[1] >= len(board)     \
+			or location[0] <  0              \
+			or location[0] >= len(board[0]):
 				return False
+
 			if board[location[1]][location[0]].tile_type != TILE_TYPE_BLANK:
 				return False
 		
