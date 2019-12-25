@@ -43,9 +43,9 @@ class Piece:
 			self.locations[3] = (6,3) #			  |           |           |
 			self.tile_type = TILE_TYPE_JS
 		elif self.piece_type == PIECE_TYPE_Z:
-			self.locations[0] = (4,2) # [-][-][-] | [-][-][0]
-			self.locations[1] = (5,2) # [0][1][-] | [-][2][1]
-			self.locations[2] = (5,3) # [-][2][3] | [-][3][-]
+			self.locations[0] = (4,2) # [-][-][-] | [-][-][3]
+			self.locations[1] = (5,2) # [0][1][-] | [-][1][2]
+			self.locations[2] = (5,3) # [-][2][3] | [-][0][-]
 			self.locations[3] = (6,3) #			  |
 			self.tile_type = TILE_TYPE_LZ
 		elif self.piece_type == PIECE_TYPE_S:
@@ -96,22 +96,22 @@ class Piece:
 	
 		if self.piece_type == PIECE_TYPE_O: # for the meme
 			pass
-		elif self.piece_type == PIECE_TYPE_Z: # the special case
-			if rotation in [0,180]:
-				pivot = copy(locations[1])
-				locations[0] = (pivot[0]+1,pivot[1]-1)
-				locations[1] = (pivot[0]+1,pivot[1])
-				locations[2] = pivot
-				locations[3] = (pivot[0],pivot[1]+1)
-				rotation = (rotation+90) % 360
-			elif rotation in [90,270]:
-				pivot = copy(locations[2])
-				locations[0] = (pivot[0]-1,pivot[1])
-				locations[1] = pivot
-				locations[2] = (pivot[0],pivot[1]+1)
-				locations[3] = (pivot[0]+1,pivot[1]+1)
-				rotation = (rotation+90) % 360
-		elif self.piece_type == PIECE_TYPE_I or self.piece_type == PIECE_TYPE_S: # the two-rotation-position pieces that aren't special
+		# elif self.piece_type == PIECE_TYPE_Z: # the special case
+		# 	if rotation in [0,180]:
+		# 		pivot = copy(locations[1])
+		# 		locations[0] = (pivot[0]+1,pivot[1]-1)
+		# 		locations[1] = (pivot[0]+1,pivot[1])
+		# 		locations[2] = pivot
+		# 		locations[3] = (pivot[0],pivot[1]+1)
+		# 		rotation = (rotation+90) % 360
+		# 	elif rotation in [90,270]:
+		# 		pivot = copy(locations[2])
+		# 		locations[0] = (pivot[0]-1,pivot[1])
+		# 		locations[1] = pivot
+		# 		locations[2] = (pivot[0],pivot[1]+1)
+		# 		locations[3] = (pivot[0]+1,pivot[1]+1)
+		# 		rotation = (rotation+90) % 360
+		elif self.piece_type == PIECE_TYPE_I or self.piece_type == PIECE_TYPE_S or self.piece_type == PIECE_TYPE_Z: # the two-rotation-position pieces
 			if self.piece_type == PIECE_TYPE_I:
 				pivot = locations[2]
 				if rotation in [0,180]:
@@ -120,6 +120,12 @@ class Piece:
 					turn = TURN_CCW # turn to horizontal
 			elif self.piece_type == PIECE_TYPE_S:
 				pivot = copy(locations[0])
+				if rotation in [0,180]:
+					turn = TURN_CCW # turn to vertical
+				else:
+					turn = TURN_CW # turn to horizontal
+			elif self.piece_type == PIECE_TYPE_Z:
+				pivot = copy(locations[1])
 				if rotation in [0,180]:
 					turn = TURN_CCW # turn to vertical
 				else:
