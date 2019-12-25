@@ -100,6 +100,7 @@ class Game(States):
 		self.spawn_delay_counter = 0
 		self.spawn_delay_threshold = 10
 		self.tetris_state = TETRIS_STATE_SPAWN
+		self.last_lock_position = 0
 
 		
 		self.sprites = {}
@@ -162,7 +163,24 @@ class Game(States):
 				self.is_move_right_pressed = False
 			if event.key == pygame.K_s:
 				self.is_move_down_pressed = False
-			
+
+
+	def lock_piece(self):
+
+		max_row_index = 0
+		for location in self.active_piece.locations:
+			self.board[location[1]][location[0]] = Tile(self.active_piece.tile_type)
+			if location[1] > max_row_index:
+				max_row_index = location[1]
+
+		if self.active_piece.piece_type == PIECE_TYPE_I:
+			self.spawn_delay_threshold = ((max_row_index+2)//4)*2+10
+		else:
+			self.spawn_delay_threshold = ((max_row_index+1+2)//4)*2+10
+
+		self.active_piece = None
+		self.tetris_state = TETRIS_STATE_CLEAR
+
 
 	def update(self, screen, dt):
 
@@ -220,25 +238,20 @@ class Game(States):
 						if self.active_piece.can_move(self.board, DIRECTION_DOWN):
 							self.active_piece.move(DIRECTION_DOWN)
 							self.fall_counter = 0
-						else: # Lock piece
-							for location in self.active_piece.locations:
-								self.board[location[1]][location[0]] = Tile(self.active_piece.tile_type)
-							self.active_piece = None
-							self.tetris_state = TETRIS_STATE_CLEAR
+						else:
+							self.lock_piece()
+							
 						self.down_counter = 0
 
 			self.fall_counter += 1
 
 			if self.fall_counter > self.fall_threshold:
 				if not self.active_piece.can_move(self.board, DIRECTION_DOWN):
-					for location in self.active_piece.locations:
-						self.board[location[1]][location[0]] = Tile(self.active_piece.tile_type)
-					self.active_piece = None
-					self.tetris_state = TETRIS_STATE_CLEAR
-					self.fall_counter = 0
+					self.lock_piece()
 				else:
 					self.active_piece.move(DIRECTION_DOWN)
-					self.fall_counter = 0
+
+				self.fall_counter = 0
 
 
 		elif self.tetris_state == TETRIS_STATE_CLEAR:
