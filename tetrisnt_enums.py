@@ -1,6 +1,3 @@
-BOARD_WIDTH  = 10 # cannot be less than 4
-BOARD_HEIGHT = 20 # should be about twice BOARD_WIDTH
-
 DIRECTION_DOWN  = 0
 DIRECTION_LEFT  = 1
 DIRECTION_RIGHT = 2
@@ -31,3 +28,29 @@ TILE_TYPE_GRAY_HLDOWN  = 8
 TETRIS_STATE_SPAWN = 0
 TETRIS_STATE_PLAY  = 1
 TETRIS_STATE_CLEAR = 2
+
+BOARD_WIDTH  = 14 # cannot be less than 4
+BOARD_HEIGHT = 20 # should be about twice BOARD_WIDTH
+
+window_height = 800
+window_width = 1000
+board_height_buffer = 2
+frame_rate = 60
+
+fall_delay_values = {
+	0:48,
+	1:43,
+	2:38,
+	3:33,
+	4:28,
+	5:23,
+	6:18,
+	7:13,
+	8:8,
+	9:6,
+	10:5,
+	13:4,
+	16:3,
+	19:2,
+	29:1
+}
