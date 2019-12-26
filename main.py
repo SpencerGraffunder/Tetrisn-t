@@ -89,7 +89,6 @@ class Game(States):
 
 		self.score = 0
 		self.current_level = 10
-		self.start_level = copy(self.current_level)
 		self.time_to_fall = False
 		self.fall_threshold = fall_delay_values[self.current_level]
 		self.fall_counter = 0
@@ -260,7 +259,7 @@ class Game(States):
 
 			self.fall_counter += 1
 
-			if self.fall_counter > self.fall_threshold and self.active_piece != None:
+			if self.fall_counter >= self.fall_threshold and self.active_piece != None:
 				if not self.active_piece.can_move(self.board, DIRECTION_DOWN):
 					self.lock_piece()
 				else:
