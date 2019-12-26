@@ -1,6 +1,8 @@
 TODO:
 create a useful debug mode to test frame data?
 
+determine if the fall speed is being correctly implimented (level 0 seems way too fast and level 30 seems way too slow as though it's at 2 and not 1)
+
 figure out why DAS doesn't always tuck pieces correctly and fix it if it's a problem
 	probably fixed
 
