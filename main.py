@@ -89,6 +89,7 @@ class Game(States):
 
 		self.score = 0
 		self.current_level = 10
+		self.start_level = copy(self.current_level)
 		self.time_to_fall = False
 		self.fall_threshold = fall_delay_values[self.current_level]
 		self.fall_counter = 0
@@ -106,8 +107,8 @@ class Game(States):
 		self.spawn_delay_threshold = 10
 		self.tetris_state = TETRIS_STATE_SPAWN
 		self.last_lock_position = 0
+		self.lines_cleared = 10 * self.current_level
 
-		
 		self.sprites = {}
 
 		self.board = []
@@ -301,11 +302,14 @@ class Game(States):
 					self.score += 300 * (self.current_level + 1)
 				elif num_lines == 4: # BOOM Tetrisn't for Jeffn't
 					self.score += 1200 * (self.current_level + 1)
-					
-				self.current_level += 1
+
+				self.lines_cleared += len(lines_to_clear)
+				if self.lines_cleared // 10 >= self.current_level + 1:
+					self.current_level += 1
 				
 				if self.current_level in fall_delay_values.keys():
 					self.fall_threshold = fall_delay_values[self.current_level]
+
 			self.tetris_state = TETRIS_STATE_SPAWN
 
 		self.draw(screen)

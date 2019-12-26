@@ -13,5 +13,8 @@ generalize the display score position and scale
 
 generalize the display level position and scale
 
-start local multiplayer
+local multiplayer
 
+make game over
+
+make main menu
