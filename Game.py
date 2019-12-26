@@ -16,11 +16,10 @@ class Game(States):
 
 		self.next = 'menu'
 
-		self.fall_delay = 150
+		self.players = [Player(), Player()]
+
 		self.tile_size = window_height // BOARD_HEIGHT
 		self.active_piece = None
-		# stores the type of piece active_piece is and passes it to the Piece() function
-		self.active_piece_type = None
 
 		# stores Piece object that holds data about next piece
 		self.next_piece = None
@@ -150,13 +149,13 @@ class Game(States):
 				# Spawn piece
 				# RNG piece choice decision
 				if self.next_piece_type == None:
-					self.active_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+					active_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
 				else:
-					self.active_piece_type = self.next_piece.piece_type
+					active_piece_type = self.next_piece.piece_type
 				self.next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-				if self.next_piece_type == self.active_piece_type:
+				if self.next_piece_type == active_piece_type:
 					self.next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-				self.active_piece = Piece(self.active_piece_type)
+				self.active_piece = Piece(active_piece_type)
 				self.next_piece   = Piece(self.next_piece_type)
 				self.tetris_state = TETRIS_STATE_PLAY
 				self.fall_counter = 0
@@ -173,17 +172,17 @@ class Game(States):
 							self.active_piece.move(DIRECTION_LEFT)
 							self.das_counter = 0
 							if self.das_threshold == 0:
-								self.das_threshold = 16
+								self.das_threshold = 8
 							else:
-								self.das_threshold = 6
+								self.das_threshold = 3
 					if self.is_move_right_pressed:
 						if self.active_piece.can_move(self.board, DIRECTION_RIGHT):
 							self.active_piece.move(DIRECTION_RIGHT)
 							self.das_counter = 0
 							if self.das_threshold == 0:
-								self.das_threshold = 16
+								self.das_threshold = 8
 							else:
-								self.das_threshold = 6
+								self.das_threshold = 3
 						
 			if self.is_move_down_pressed:
 				self.down_counter += 1
