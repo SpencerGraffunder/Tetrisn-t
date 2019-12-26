@@ -88,7 +88,7 @@ class Game(States):
 		self.next_piece_type = None
 
 		self.score = 0
-		self.current_level = 0
+		self.current_level = 10
 		self.time_to_fall = False
 		self.fall_threshold = fall_delay_values[self.current_level]
 		self.fall_counter = 0
@@ -231,15 +231,18 @@ class Game(States):
 						if self.active_piece.can_move(self.board, DIRECTION_LEFT):
 							self.active_piece.move(DIRECTION_LEFT)
 							self.das_counter = 0
+							if self.das_threshold == 0:
+								self.das_threshold = 16
+							else:
+								self.das_threshold = 6
 					if self.is_move_right_pressed:
 						if self.active_piece.can_move(self.board, DIRECTION_RIGHT):
 							self.active_piece.move(DIRECTION_RIGHT)
 							self.das_counter = 0
-
-					if self.das_threshold == 0:
-						self.das_threshold = 16
-					else:
-						self.das_threshold = 6
+							if self.das_threshold == 0:
+								self.das_threshold = 16
+							else:
+								self.das_threshold = 6
 						
 			if self.is_move_down_pressed:
 				self.down_counter += 1

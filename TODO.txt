@@ -2,13 +2,16 @@ TODO:
 create a useful debug mode to test frame data?
 
 figure out why DAS doesn't always tuck pieces correctly and fix it if it's a problem
+	probably fixed
 
-figure out why (with BOARD_WIDTH = 4) sometimes the program crashes due to the direction down code (line 249) not being passed a piece type (it gets passed 'None'). I've found that it happens when holding down on keyboard when the piece is flush right and it clears a line or two, but has also happened with a long piece vertically on column 3 (2 with index by 0). Usually takes some time of playing for it to happen
-hypothesis 1: always on a line clear when going from level 16 to level 17
-hypothesis 1 failed due to a Z piece at rotation 90 being placed on the far right with no line clearing. Similar thing happened with an O piece. Also, once it was 17 to 18.
+figure out why (with BOARD_WIDTH = 4) 
+	sometimes the program crashes due to the direction down code (line 249) not being passed a piece type (it gets passed 'None'). I've found that it happens when holding down on keyboard when the piece is flush right and it clears a line or two, but has also happened with a long piece vertically on column 3 (2 with index by 0). Usually takes some time of playing for it to happen
+	hypothesis 1: always on a line clear when going from level 16 to level 17
+	hypothesis 1 failed due to a Z piece at rotation 90 being placed on the far right with no line clearing. Similar thing happened with an O piece. Also, once it was 17 to 18.
 
-generalize the display score position
+generalize the display score position and scale
 
-generalize the display level position
+generalize the display level position and scale
 
 start local multiplayer
+
