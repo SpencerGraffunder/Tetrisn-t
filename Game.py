@@ -45,6 +45,7 @@ class Game(States):
 		self.spawn_delay_counter = 0
 		self.spawn_delay_threshold = 10
 		self.tetris_state = TETRIS_STATE_SPAWN
+		self.clear_animation_counter = 0
 		self.last_lock_position = 0
 		self.lines_cleared = 10 * self.current_level
 

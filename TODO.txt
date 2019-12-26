@@ -19,4 +19,6 @@ local multiplayer
 
 make game over
 
+make animation for line clear (20 frames for clear plus the lock delay time all included in the animation)
+
 make main menu
