@@ -45,6 +45,7 @@ class Game(States):
 		self.spawn_delay_counter = 0
 		self.spawn_delay_threshold = 10
 		self.tetris_state = TETRIS_STATE_SPAWN
+		self.lines_to_clear = []
 		self.clear_animation_counter = 0
 		self.last_lock_position = 0
 		self.lines_cleared = 10 * self.current_level
@@ -125,7 +126,7 @@ class Game(States):
 			self.spawn_delay_threshold = ((max_row_index+1+2)//4)*2+10
 
 		self.active_piece = None
-		self.tetris_state = TETRIS_STATE_CLEAR
+		self.tetris_state = TETRIS_STATE_CHECK_CLEAR
 
 
 	def update(self, screen, dt):
@@ -141,28 +142,7 @@ class Game(States):
 				self.is_move_right_pressed = True
 				das_counter = 0
 
-		if self.tetris_state == TETRIS_STATE_SPAWN:
-
-			self.spawn_delay_counter += 1
-
-			if self.spawn_delay_counter > self.spawn_delay_threshold:
-
-				# Spawn piece
-				# RNG piece choice decision
-				if self.next_piece_type == None:
-					active_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-				else:
-					active_piece_type = self.next_piece.piece_type
-				self.next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-				if self.next_piece_type == active_piece_type:
-					self.next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-				self.active_piece = Piece(active_piece_type)
-				self.next_piece   = Piece(self.next_piece_type)
-				self.tetris_state = TETRIS_STATE_PLAY
-				self.fall_counter = 0
-				self.spawn_delay_counter = 0
-
-		elif self.tetris_state == TETRIS_STATE_PLAY:
+		if self.tetris_state == TETRIS_STATE_PLAY:
 			# Move piece logic
 			if self.is_move_left_pressed or self.is_move_right_pressed:
 				self.das_counter += 1
@@ -208,10 +188,9 @@ class Game(States):
 
 				self.fall_counter = 0
 
-
-		elif self.tetris_state == TETRIS_STATE_CLEAR:
+		elif self.tetris_state == TETRIS_STATE_CHECK_CLEAR:
 			# Store all lines that can be cleared
-			lines_to_clear = []
+			self.lines_to_clear = []
 
 			self.is_move_down_pressed = False
 
@@ -222,35 +201,70 @@ class Game(States):
 					if tile.tile_type == TILE_TYPE_BLANK:
 						can_clear = False
 				if can_clear:
-					lines_to_clear.append(row_index)
+					self.lines_to_clear.append(row_index)
+			
+			if len(self.lines_to_clear) > 0:
+				self.tetris_state = TETRIS_STATE_CLEAR
+				self.clear_animation_counter = 0
+			elif len(self.lines_to_clear) == 0:
+				self.tetris_state = TETRIS_STATE_SPAWN_DELAY
+
+
+		if self.tetris_state == TETRIS_STATE_CLEAR:
+			animation_length = self.spawn_delay_threshold + 20
+			self.clear_animation_counter += 1
+
+			if self.clear_animation_counter >= animation_length:
+				# Move upper lines down
+				for line in self.lines_to_clear:
+					self.board.pop(line)
+					self.board = deque(self.board)
+					self.board.appendleft([Tile() for j in range(BOARD_WIDTH)])
+					self.board = list(self.board)
+
+				# Score the points
+				num_lines = len(self.lines_to_clear)
+				if num_lines != 0:
+					if num_lines == 1:
+						self.score += 40 * (self.current_level + 1)
+					elif num_lines == 2:
+						self.score += 100 * (self.current_level + 1)
+					elif num_lines == 3:
+						self.score += 300 * (self.current_level + 1)
+					elif num_lines == 4: # BOOM Tetrisn't for Jeffn't
+						self.score += 1200 * (self.current_level + 1)
+
+					self.lines_cleared += len(self.lines_to_clear)
+					if self.lines_cleared // 10 >= self.current_level + 1:
+						self.current_level += 1
 					
-			# Move upper lines down
-			for line in lines_to_clear:
-				self.board.pop(line)
-				self.board = deque(self.board)
-				self.board.appendleft([Tile() for j in range(BOARD_WIDTH)])
-				self.board = list(self.board)
+					if self.current_level in fall_delay_values.keys():
+						self.fall_threshold = fall_delay_values[self.current_level]
 
-			# Score the points
-			num_lines = len(lines_to_clear)
-			if num_lines != 0:
-				if num_lines == 1:
-					self.score += 40 * (self.current_level + 1)
-				elif num_lines == 2:
-					self.score += 100 * (self.current_level + 1)
-				elif num_lines == 3:
-					self.score += 300 * (self.current_level + 1)
-				elif num_lines == 4: # BOOM Tetrisn't for Jeffn't
-					self.score += 1200 * (self.current_level + 1)
+				self.tetris_state = TETRIS_STATE_SPAWN
 
-				self.lines_cleared += len(lines_to_clear)
-				if self.lines_cleared // 10 >= self.current_level + 1:
-					self.current_level += 1
-				
-				if self.current_level in fall_delay_values.keys():
-					self.fall_threshold = fall_delay_values[self.current_level]
+		elif self.tetris_state == TETRIS_STATE_SPAWN_DELAY:
+			self.spawn_delay_counter += 1
 
-			self.tetris_state = TETRIS_STATE_SPAWN
+			if self.spawn_delay_counter > self.spawn_delay_threshold:
+				self.tetris_state = TETRIS_STATE_SPAWN
+
+		if self.tetris_state == TETRIS_STATE_SPAWN:
+			# Spawn piece
+			# RNG piece choice decision
+			if self.next_piece_type == None:
+				active_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+			else:
+				active_piece_type = self.next_piece.piece_type
+			self.next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+			if self.next_piece_type == active_piece_type:
+				self.next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+			self.active_piece = Piece(active_piece_type)
+			self.next_piece   = Piece(self.next_piece_type)
+			self.tetris_state = TETRIS_STATE_PLAY
+			self.fall_counter = 0
+			self.spawn_delay_counter = 0
+
 
 		self.draw(screen)
 
