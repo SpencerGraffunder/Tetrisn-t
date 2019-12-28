@@ -104,10 +104,11 @@ class Piece:
 				return CANT_MOVE_BOARD
 
 			for player in players:
-				if player.active_piece != self and player.active_piece != None:
-					for other_location in player.active_piece.locations:
-						if other_location == location:
-							return CANT_MOVE_PIECE
+				if player.active_piece != None:
+					if player.active_piece.player_number != self.player_number:
+						for other_location in player.active_piece.locations:
+							if other_location == location:
+								return CANT_MOVE_PIECE
 		
 		return CAN_MOVE
 
@@ -202,10 +203,11 @@ class Piece:
 				return False
 		
 			for player in players:
-				if player.active_piece != self:
-					for other_location in player.active_piece.locations:
-						if other_location == location:
-							return False
+				if player.active_piece != None:
+					if player.active_piece.player_number != self.player_number:
+						for other_location in player.active_piece.locations:
+							if other_location == location:
+								return False
 
 
 		return True
