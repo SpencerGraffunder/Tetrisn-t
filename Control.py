@@ -15,7 +15,8 @@ class Control:
 			self.done = True
 		elif self.state.done:
 			self.flip_state()
-		self.state.update(self.screen, dt)
+		for player_number in [0,1]:
+			self.state.update(self.screen, dt, player_number)
 	def flip_state(self):
 		self.state.done = False
 		previous, self.state_name = self.state_name, self.state.next
@@ -25,7 +26,8 @@ class Control:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				self.done = True
-			self.state.do_event(event)
+			for player_number in [0,1]:
+				self.state.do_event(event, player_number)
 	def main_game_loop(self):
 		while not self.done:
 			delta_time = self.clock.tick(frame_rate)/1000.0

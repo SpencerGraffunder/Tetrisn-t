@@ -16,35 +16,14 @@ class Game(States):
 
 		self.next = 'menu'
 
-		self.players = [Player(), Player()]
+		self.players = [Player(0), Player(1)]
 
 		self.tile_size = window_height // BOARD_HEIGHT
-		self.active_piece = None
-
-		# stores Piece object that holds data about next piece
-		self.next_piece = None
-
-		# stores the type of piece next_piece is and passes it to the Piece() function
-		self.next_piece_type = None
 
 		self.score = 0
-		self.current_level = 10
-		self.time_to_fall = False
+		self.current_level = 0
 		self.fall_threshold = fall_delay_values[self.current_level]
-		self.fall_counter = 0
-		self.time_to_move = False
-		self.time_next_move = 0
-		self.time_next_fall = 0
-		self.time_next_rotate = 0
-		self.das_counter = 0
-		self.das_threshold = 0
-		self.down_counter = 0
-		self.is_move_right_pressed = False
-		self.is_move_left_pressed = False
-		self.is_move_down_pressed = False
-		self.spawn_delay_counter = 0
-		self.spawn_delay_threshold = 10
-		self.tetris_state = TETRIS_STATE_SPAWN
+
 		self.last_lock_position = 0
 		self.lines_cleared = 10 * self.current_level
 
@@ -72,147 +51,148 @@ class Game(States):
 		self.board = [[Tile() for j in range(BOARD_WIDTH)] for i in range(BOARD_HEIGHT+board_height_buffer)]
 
 
-	def do_event(self, event):
+	def do_event(self, event, player_number):
 	
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE:
 				self.done = True
 			
-			if self.active_piece != None:
-				if event.key == pygame.K_LEFT:
-					if self.active_piece.can_rotate(self.board, ROTATION_CCW):
-						self.active_piece.rotate(ROTATION_CCW)
+			if self.players[player_number].active_piece != None:
+				if event.key == keybindings[player_number][KEYBINDING_CCW]:
+					if self.players[player_number].active_piece.can_rotate(self.board, ROTATION_CCW):
+						self.players[player_number].active_piece.rotate(ROTATION_CCW)
 						self.time_to_rotate = False
-				if event.key == pygame.K_RIGHT:
-					if self.active_piece.can_rotate(self.board, ROTATION_CW):
-						self.active_piece.rotate(ROTATION_CW)
+				if event.key == keybindings[player_number][KEYBINDING_CW]:
+					if self.players[player_number].active_piece.can_rotate(self.board, ROTATION_CW):
+						self.players[player_number].active_piece.rotate(ROTATION_CW)
 						self.time_to_rotate = False
 						
-				if event.key == pygame.K_a:
-					self.is_move_left_pressed = True
-					self.das_threshold = 0
+				if event.key == keybindings[player_number][KEYBINDING_LEFT]:
+					self.players[player_number].is_move_left_pressed = True
+					self.players[player_number].das_threshold = 0
+					self.players[player_number].das_counter = 0
+				if event.key == keybindings[player_number][KEYBINDING_RIGHT]:
+					self.players[player_number].is_move_right_pressed = True
+					self.players[player_number].das_threshold = 0
 					self.das_counter = 0
-				if event.key == pygame.K_d:
-					self.is_move_right_pressed = True
-					self.das_threshold = 0
-					self.das_counter = 0
-				if event.key == pygame.K_s:
-					self.is_move_down_pressed = True
-					self.down_counter = 0
-				self.time_to_move = False
+				if event.key == keybindings[player_number][KEYBINDING_DOWN]:
+					self.players[player_number].is_move_down_pressed = True
+					self.players[player_number].down_counter = 0
 				
 		if event.type == pygame.KEYUP:
-			if event.key == pygame.K_a:
-				self.is_move_left_pressed = False
-			if event.key == pygame.K_d:
-				self.is_move_right_pressed = False
-			if event.key == pygame.K_s:
-				self.is_move_down_pressed = False
+			if event.key == keybindings[player_number][KEYBINDING_LEFT]:
+				self.players[player_number].is_move_left_pressed = False
+			if event.key == keybindings[player_number][KEYBINDING_RIGHT]:
+				self.players[player_number].is_move_right_pressed = False
+			if event.key == keybindings[player_number][KEYBINDING_DOWN]:
+				self.players[player_number].is_move_down_pressed = False
 
 
-	def lock_piece(self):
+	def lock_piece(self, player_number):
 
 		max_row_index = 0
-		for location in self.active_piece.locations:
-			self.board[location[1]][location[0]] = Tile(self.active_piece.tile_type)
+		for location in self.players[player_number].active_piece.locations:
+			self.board[location[1]][location[0]] = Tile(self.players[player_number].active_piece.tile_type)
 			if location[1] > max_row_index:
 				max_row_index = location[1]
 
-		if self.active_piece.piece_type == PIECE_TYPE_I:
-			self.spawn_delay_threshold = ((max_row_index+2)//4)*2+10
+		if self.players[player_number].active_piece.piece_type == PIECE_TYPE_I:
+			self.players[player_number].spawn_delay_threshold = ((max_row_index+2)//4)*2+10
 		else:
-			self.spawn_delay_threshold = ((max_row_index+1+2)//4)*2+10
+			self.players[player_number].spawn_delay_threshold = ((max_row_index+1+2)//4)*2+10
 
-		self.active_piece = None
-		self.tetris_state = TETRIS_STATE_CLEAR
+		self.players[player_number].active_piece = None
+		self.players[player_number].player_state = TETRIS_STATE_CLEAR
 
 
-	def update(self, screen, dt):
+	def update(self, screen, dt, player_number):
+
+		# player_number = self.player_number
 
 		keys = pygame.key.get_pressed()
-		if not self.is_move_left_pressed:
-			if keys[pygame.K_a]:
-				self.is_move_left_pressed = True
+		if not self.players[player_number].is_move_left_pressed:
+			if keys[keybindings[player_number][KEYBINDING_LEFT]]:
+				self.players[player_number].is_move_left_pressed = True
 				das_counter = 0
 
-		if not self.is_move_right_pressed:
-			if keys[pygame.K_d]:
-				self.is_move_right_pressed = True
+		if not self.players[player_number].is_move_right_pressed:
+			if keys[keybindings[player_number][KEYBINDING_RIGHT]]:
+				self.players[player_number].is_move_right_pressed = True
 				das_counter = 0
 
-		if self.tetris_state == TETRIS_STATE_SPAWN:
+		if self.players[player_number].player_state == TETRIS_STATE_SPAWN:
 
-			self.spawn_delay_counter += 1
+			self.players[player_number].spawn_delay_counter += 1
 
-			if self.spawn_delay_counter > self.spawn_delay_threshold:
+			if self.players[player_number].spawn_delay_counter > self.players[player_number].spawn_delay_threshold:
 
 				# Spawn piece
 				# RNG piece choice decision
-				if self.next_piece_type == None:
+				if self.players[player_number].next_piece_type == None:
 					active_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
 				else:
-					active_piece_type = self.next_piece.piece_type
-				self.next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-				if self.next_piece_type == active_piece_type:
-					self.next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-				self.active_piece = Piece(active_piece_type)
-				self.next_piece   = Piece(self.next_piece_type)
-				self.tetris_state = TETRIS_STATE_PLAY
-				self.fall_counter = 0
-				self.spawn_delay_counter = 0
+					active_piece_type = self.players[player_number].next_piece.piece_type
+				self.players[player_number].next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+				if self.players[player_number].next_piece_type == active_piece_type:
+					self.players[player_number].next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+				self.players[player_number].active_piece = Piece(active_piece_type)
+				self.players[player_number].next_piece   = Piece(self.players[player_number].next_piece_type)
+				self.players[player_number].player_state = TETRIS_STATE_PLAY
+				self.players[player_number].fall_counter = 0
+				self.players[player_number].spawn_delay_counter = 0
 
-		elif self.tetris_state == TETRIS_STATE_PLAY:
+		elif self.players[player_number].player_state == TETRIS_STATE_PLAY:
 			# Move piece logic
-			if self.is_move_left_pressed or self.is_move_right_pressed:
-				self.das_counter += 1
+			if self.players[player_number].is_move_left_pressed or self.players[player_number].is_move_right_pressed:
+				self.players[player_number].das_counter += 1
 			
-				if self.das_counter > self.das_threshold:
-					if self.is_move_left_pressed:
-						if self.active_piece.can_move(self.board, DIRECTION_LEFT):
-							self.active_piece.move(DIRECTION_LEFT)
-							self.das_counter = 0
-							if self.das_threshold == 0:
-								self.das_threshold = 8
+				if self.players[player_number].das_counter > self.players[player_number].das_threshold:
+					if self.players[player_number].is_move_left_pressed:
+						if self.players[player_number].active_piece.can_move(self.board, DIRECTION_LEFT):
+							self.players[player_number].active_piece.move(DIRECTION_LEFT)
+							self.players[player_number].das_counter = 0
+							if self.players[player_number].das_threshold == 0:
+								self.players[player_number].das_threshold = 8
 							else:
-								self.das_threshold = 3
-					if self.is_move_right_pressed:
-						if self.active_piece.can_move(self.board, DIRECTION_RIGHT):
-							self.active_piece.move(DIRECTION_RIGHT)
-							self.das_counter = 0
-							if self.das_threshold == 0:
-								self.das_threshold = 8
+								self.players[player_number].das_threshold = 3
+					if self.players[player_number].is_move_right_pressed:
+						if self.players[player_number].active_piece.can_move(self.board, DIRECTION_RIGHT):
+							self.players[player_number].active_piece.move(DIRECTION_RIGHT)
+							self.players[player_number].das_counter = 0
+							if self.players[player_number].das_threshold == 0:
+								self.players[player_number].das_threshold = 8
 							else:
-								self.das_threshold = 3
+								self.players[player_number].das_threshold = 3
 						
-			if self.is_move_down_pressed:
-				self.down_counter += 1
+			if self.players[player_number].is_move_down_pressed:
+				self.players[player_number].down_counter += 1
 				
-				if self.down_counter > 2:
-					if self.is_move_down_pressed:
-						if self.active_piece.can_move(self.board, DIRECTION_DOWN):
-							self.active_piece.move(DIRECTION_DOWN)
-							self.fall_counter = 0
+				if self.players[player_number].down_counter > 2:
+					if self.players[player_number].is_move_down_pressed:
+						if self.players[player_number].active_piece.can_move(self.board, DIRECTION_DOWN):
+							self.players[player_number].active_piece.move(DIRECTION_DOWN)
+							self.players[player_number].fall_counter = 0
 						else:
-							self.lock_piece()
+							self.lock_piece(player_number)
 							
-						self.down_counter = 0
+						self.players[player_number].down_counter = 0
 
-			self.fall_counter += 1
+			self.players[player_number].fall_counter += 1
 
-			if self.fall_counter >= self.fall_threshold and self.active_piece != None:
-				if not self.active_piece.can_move(self.board, DIRECTION_DOWN):
-					self.lock_piece()
+			if self.players[player_number].fall_counter >= self.fall_threshold and self.players[player_number].active_piece != None:
+				if not self.players[player_number].active_piece.can_move(self.board, DIRECTION_DOWN):
+					self.lock_piece(player_number)
 				else:
-					self.active_piece.move(DIRECTION_DOWN)
+					self.players[player_number].active_piece.move(DIRECTION_DOWN)
 
-				self.fall_counter = 0
+				self.players[player_number].fall_counter = 0
 
 
-		elif self.tetris_state == TETRIS_STATE_CLEAR:
+		elif self.players[player_number].player_state == TETRIS_STATE_CLEAR:
 			# Store all lines that can be cleared
 			lines_to_clear = []
 
-			self.is_move_down_pressed = False
+			self.players[player_number].is_move_down_pressed = False
 
 			# Add all clearable lines to list
 			for row_index, row in enumerate(self.board):
@@ -249,7 +229,7 @@ class Game(States):
 				if self.current_level in fall_delay_values.keys():
 					self.fall_threshold = fall_delay_values[self.current_level]
 
-			self.tetris_state = TETRIS_STATE_SPAWN
+			self.players[player_number].player_state = TETRIS_STATE_SPAWN
 
 		self.draw(screen)
 
@@ -278,19 +258,20 @@ class Game(States):
 				scaled_image = pygame.transform.scale(self.sprites[tile.tile_type], (self.tile_size, self.tile_size))
 				screen.blit(scaled_image, (col_index * self.tile_size, row_index * self.tile_size))
 
-		if self.active_piece != None:
-			for location in self.active_piece.locations:
-				scaled_image = pygame.transform.scale(self.sprites[self.active_piece.tile_type], (self.tile_size, self.tile_size))
-				screen.blit(scaled_image, (location[0] * self.tile_size, (location[1] - board_height_buffer) * self.tile_size))
+		for player in self.players:
+			if player.active_piece != None:
+				for location in player.active_piece.locations:
+					scaled_image = pygame.transform.scale(self.sprites[player.active_piece.tile_type], (self.tile_size, self.tile_size))
+					screen.blit(scaled_image, (location[0] * self.tile_size, (location[1] - board_height_buffer) * self.tile_size))
 
-		if self.next_piece != None:
-			# draw next piece
-			for row_index in range(2, 4):
-				for col_index in range(center-2, center+1+1):
-					for location in self.next_piece.locations:
-						if location == (col_index, row_index):
-							scaled_image = pygame.transform.scale(self.sprites[self.next_piece.tile_type], (self.tile_size, self.tile_size))
-							screen.blit(scaled_image, ((location[0] + 5 + BOARD_WIDTH//2) * self.tile_size, (location[1] - 1) * self.tile_size))
+			if player.next_piece != None:
+				# draw next piece
+				for row_index in range(2, 4):
+					for col_index in range(center-2, center+1+1):
+						for location in player.next_piece.locations:
+							if location == (col_index, row_index):
+								scaled_image = pygame.transform.scale(self.sprites[player.next_piece.tile_type], (self.tile_size, self.tile_size))
+								screen.blit(scaled_image, ((location[0] + 5 + BOARD_WIDTH//2) * self.tile_size, (location[1] - 1) * self.tile_size))
 
 		# draw purdy stuff
 		# leftHL_locations = [()]

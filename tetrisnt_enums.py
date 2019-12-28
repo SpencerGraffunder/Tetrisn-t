@@ -1,3 +1,5 @@
+import pygame
+
 DIRECTION_DOWN  = 0
 DIRECTION_LEFT  = 1
 DIRECTION_RIGHT = 2
@@ -29,6 +31,10 @@ TETRIS_STATE_SPAWN = 0
 TETRIS_STATE_PLAY  = 1
 TETRIS_STATE_CLEAR = 2
 
+PLAYER_STATE_SPAWN = 0
+PLAYER_STATE_PLAY  = 1
+PLAYER_STATE_CLEAR = 2
+
 BOARD_WIDTH  = 14 # cannot be less than 4
 BOARD_HEIGHT = 20 # should be about twice BOARD_WIDTH
 
@@ -54,3 +60,23 @@ fall_delay_values = {
 	19:2,
 	29:1
 }
+
+keybindings = {
+# player,      left,       down,       right,      ccw,        cw
+	0 : (pygame.K_a, pygame.K_s, pygame.K_d, pygame.K_q, pygame.K_e),
+	1 : (pygame.K_j, pygame.K_k, pygame.K_l, pygame.K_u, pygame.K_o)
+}
+KEYBINDING_LEFT = 0
+KEYBINDING_DOWN = 1
+KEYBINDING_RIGHT = 2
+KEYBINDING_CCW = 3
+KEYBINDING_CW = 4
+
+
+
+
+
+
+
+
+
