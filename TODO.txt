@@ -19,4 +19,8 @@ local multiplayer
 
 make game over
 
+make animation for line clear (20 frames for clear plus the lock delay time all included in the animation)
+
+make colored outlines for active pieces in multiplayer to indicated the player controlling each piece
+
 make main menu
