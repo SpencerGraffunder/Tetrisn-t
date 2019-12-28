@@ -59,11 +59,11 @@ class Game(States):
 			
 			if self.players[player_number].active_piece != None:
 				if event.key == keybindings[player_number][KEYBINDING_CCW]:
-					if self.players[player_number].active_piece.can_rotate(self.board, ROTATION_CCW):
+					if self.players[player_number].active_piece.can_rotate(self.board, self.players, ROTATION_CCW):
 						self.players[player_number].active_piece.rotate(ROTATION_CCW)
 						self.time_to_rotate = False
 				if event.key == keybindings[player_number][KEYBINDING_CW]:
-					if self.players[player_number].active_piece.can_rotate(self.board, ROTATION_CW):
+					if self.players[player_number].active_piece.can_rotate(self.board, self.players, ROTATION_CW):
 						self.players[player_number].active_piece.rotate(ROTATION_CW)
 						self.time_to_rotate = False
 						
@@ -135,8 +135,8 @@ class Game(States):
 				self.players[player_number].next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
 				if self.players[player_number].next_piece_type == active_piece_type:
 					self.players[player_number].next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-				self.players[player_number].active_piece = Piece(active_piece_type)
-				self.players[player_number].next_piece   = Piece(self.players[player_number].next_piece_type)
+				self.players[player_number].active_piece = Piece(active_piece_type, player_number)
+				self.players[player_number].next_piece   = Piece(self.players[player_number].next_piece_type, player_number)
 				self.players[player_number].player_state = TETRIS_STATE_PLAY
 				self.players[player_number].fall_counter = 0
 				self.players[player_number].spawn_delay_counter = 0
@@ -148,7 +148,7 @@ class Game(States):
 			
 				if self.players[player_number].das_counter > self.players[player_number].das_threshold:
 					if self.players[player_number].is_move_left_pressed:
-						if self.players[player_number].active_piece.can_move(self.board, DIRECTION_LEFT):
+						if self.players[player_number].active_piece.can_move(self.board, self.players, DIRECTION_LEFT) == CAN_MOVE:
 							self.players[player_number].active_piece.move(DIRECTION_LEFT)
 							self.players[player_number].das_counter = 0
 							if self.players[player_number].das_threshold == 0:
@@ -156,7 +156,7 @@ class Game(States):
 							else:
 								self.players[player_number].das_threshold = 3
 					if self.players[player_number].is_move_right_pressed:
-						if self.players[player_number].active_piece.can_move(self.board, DIRECTION_RIGHT):
+						if self.players[player_number].active_piece.can_move(self.board, self.players, DIRECTION_RIGHT) == CAN_MOVE:
 							self.players[player_number].active_piece.move(DIRECTION_RIGHT)
 							self.players[player_number].das_counter = 0
 							if self.players[player_number].das_threshold == 0:
@@ -169,22 +169,25 @@ class Game(States):
 				
 				if self.players[player_number].down_counter > 2:
 					if self.players[player_number].is_move_down_pressed:
-						if self.players[player_number].active_piece.can_move(self.board, DIRECTION_DOWN):
+						if self.players[player_number].active_piece.can_move(self.board, self.players, DIRECTION_DOWN) == CAN_MOVE:
 							self.players[player_number].active_piece.move(DIRECTION_DOWN)
 							self.players[player_number].fall_counter = 0
-						else:
+						elif self.players[player_number].active_piece.can_move(self.board, self.players, DIRECTION_DOWN) == CANT_MOVE_BOARD:
 							self.lock_piece(player_number)
-							
+						elif self.players[player_number].active_piece.can_move(self.board, self.players, DIRECTION_DOWN) == CANT_MOVE_PIECE:
+							pass
+
 						self.players[player_number].down_counter = 0
 
 			self.players[player_number].fall_counter += 1
 
 			if self.players[player_number].fall_counter >= self.fall_threshold and self.players[player_number].active_piece != None:
-				if not self.players[player_number].active_piece.can_move(self.board, DIRECTION_DOWN):
+				if   self.players[player_number].active_piece.can_move(self.board, self.players, DIRECTION_DOWN) == CANT_MOVE_BOARD:
 					self.lock_piece(player_number)
-				else:
+				elif self.players[player_number].active_piece.can_move(self.board, self.players, DIRECTION_DOWN) == CAN_MOVE:
 					self.players[player_number].active_piece.move(DIRECTION_DOWN)
-
+				elif self.players[player_number].active_piece.can_move(self.board, self.players, DIRECTION_DOWN) == CANT_MOVE_PIECE:
+					pass
 				self.players[player_number].fall_counter = 0
 
 

@@ -5,13 +5,14 @@ from copy import copy
 
 class Piece:
 
-	def __init__(self, piece_type):
+	def __init__(self, piece_type, player_number):
 	
 		self.piece_type = 0
 		self.tile_type = 0
 		self.rotation = 0
 		self.locations = [None, None, None, None] # col,row
 		self.piece_type = piece_type
+		self.player_number = player_number
 
 		center = 2
 
@@ -21,6 +22,11 @@ class Piece:
 			center = width // 2
 		elif width % 2 == 1: # odd board width
 			center = (width+1) // 2
+
+		if player_number == 0:
+			center -= width // 4
+		elif player_number == 1:
+			center += width // 4
 
 		if self.piece_type == PIECE_TYPE_I:
 			self.locations[0] = (center-2,2) # [-][-][-][-] | [-][-][0][-]
@@ -82,7 +88,7 @@ class Piece:
 				locations[index] = (location[0]+1,location[1])
 				
 				
-	def can_move(self, board, direction):
+	def can_move(self, board, players, direction):
 	
 		test_locations = copy(self.locations)
 		
@@ -92,12 +98,18 @@ class Piece:
 			if location[1] >= len(board)     \
 			or location[0] <  0              \
 			or location[0] >= len(board[0]):
-				return False
+				return CANT_MOVE_BOARD
 
 			if board[location[1]][location[0]].tile_type != TILE_TYPE_BLANK:
-				return False
+				return CANT_MOVE_BOARD
+
+			for player in players:
+				if player.active_piece != self and player.active_piece != None:
+					for other_location in player.active_piece.locations:
+						if other_location == location:
+							return CANT_MOVE_PIECE
 		
-		return True
+		return CAN_MOVE
 
 		
 	def rotate(self, rotation_direction, locations = None, rotation = None):
@@ -176,7 +188,7 @@ class Piece:
 
 				
 				
-	def can_rotate(self, board, rotation_direction):
+	def can_rotate(self, board, players, rotation_direction):
 	
 		test_locations = copy(self.locations)
 		test_rotation = copy(self.rotation)
@@ -189,4 +201,21 @@ class Piece:
 			if board[location[1]][location[0]].tile_type != TILE_TYPE_BLANK:
 				return False
 		
+			for player in players:
+				if player.active_piece != self:
+					for other_location in player.active_piece.locations:
+						if other_location == location:
+							return False
+
+
 		return True
+
+
+
+
+
+
+
+
+
+
