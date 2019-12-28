@@ -22,6 +22,7 @@ make animation for line clear (20 frames for clear plus the lock delay time all 
 	time set aside for clear. make the animation
 
 fix the bug that occurs when one player clears a line and during the clear animation another player places a piece
+	sometimes it clears one more line than it needs to. Once when I scored a tetris and placed a piece from the other player about the same time, it cleared the entire board, and there were about 3 rows with tiles above the tetris
 
 make colored outlines for active pieces in multiplayer to indicated the player controlling each piece
 
