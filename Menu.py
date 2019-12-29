@@ -10,7 +10,7 @@ class Menu(States):
 		self.font = pygame.font.Font('freesansbold.ttf', 72)
 		self.text = self.font.render('Tetrisn\'t', True, (0, 128, 0))
 		self.text_rect = self.text.get_rect()
-		self.text_rect.center = (window_width//2, window_height//2)
+		self.text_rect.center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
 
 	def do_event(self, event):
 		if event.type == pygame.KEYDOWN:

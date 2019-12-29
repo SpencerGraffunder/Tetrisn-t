@@ -18,11 +18,9 @@ class Game(States):
 
 		self.players = [Player(0), Player(1)]
 
-		self.tile_size = window_height // BOARD_HEIGHT
-
 		self.score = 0
 		self.current_level = 0
-		self.fall_threshold = fall_delay_values[self.current_level]
+		self.fall_threshold = FALL_DELAY_VALUES[self.current_level]
 		self.fall_counter = 0
 		self.time_to_move = False
 		self.time_next_move = 0
@@ -62,7 +60,7 @@ class Game(States):
 		self.sprites[TILE_TYPE_GRAY_HLDOWN]  = pygame.image.load(os.path.join(wd,'grayHL/grayHLdown.bmp')).convert()
 
 		# Fill board with empty tiles
-		self.board = [[Tile() for j in range(BOARD_WIDTH)] for i in range(BOARD_HEIGHT+board_height_buffer)]
+		self.board = [[Tile() for j in range(BOARD_WIDTH)] for i in range(BOARD_HEIGHT+BOARD_HEIGHT_BUFFER)]
 
 
 	def do_event(self, event, player_number):
@@ -72,33 +70,33 @@ class Game(States):
 				self.done = True
 			
 			if self.players[player_number].active_piece != None:
-				if event.key == keybindings[player_number][KEYBINDING_CCW]:
+				if event.key == KEYBINDINGS[player_number][KEYBINDING_CCW]:
 					if self.players[player_number].active_piece.can_rotate(self.board, self.players, ROTATION_CCW):
 						self.players[player_number].active_piece.rotate(ROTATION_CCW)
 						self.time_to_rotate = False
-				if event.key == keybindings[player_number][KEYBINDING_CW]:
+				if event.key == KEYBINDINGS[player_number][KEYBINDING_CW]:
 					if self.players[player_number].active_piece.can_rotate(self.board, self.players, ROTATION_CW):
 						self.players[player_number].active_piece.rotate(ROTATION_CW)
 						self.time_to_rotate = False
 						
-				if event.key == keybindings[player_number][KEYBINDING_LEFT]:
+				if event.key == KEYBINDINGS[player_number][KEYBINDING_LEFT]:
 					self.players[player_number].is_move_left_pressed = True
 					self.players[player_number].das_threshold = 0
 					self.players[player_number].das_counter = 0
-				if event.key == keybindings[player_number][KEYBINDING_RIGHT]:
+				if event.key == KEYBINDINGS[player_number][KEYBINDING_RIGHT]:
 					self.players[player_number].is_move_right_pressed = True
 					self.players[player_number].das_threshold = 0
 					self.das_counter = 0
-				if event.key == keybindings[player_number][KEYBINDING_DOWN]:
+				if event.key == KEYBINDINGS[player_number][KEYBINDING_DOWN]:
 					self.players[player_number].is_move_down_pressed = True
 					self.players[player_number].down_counter = 0
 				
 		if event.type == pygame.KEYUP:
-			if event.key == keybindings[player_number][KEYBINDING_LEFT]:
+			if event.key == KEYBINDINGS[player_number][KEYBINDING_LEFT]:
 				self.players[player_number].is_move_left_pressed = False
-			if event.key == keybindings[player_number][KEYBINDING_RIGHT]:
+			if event.key == KEYBINDINGS[player_number][KEYBINDING_RIGHT]:
 				self.players[player_number].is_move_right_pressed = False
-			if event.key == keybindings[player_number][KEYBINDING_DOWN]:
+			if event.key == KEYBINDINGS[player_number][KEYBINDING_DOWN]:
 				self.players[player_number].is_move_down_pressed = False
 
 
@@ -127,12 +125,12 @@ class Game(States):
 
 		keys = pygame.key.get_pressed()
 		if not self.players[player_number].is_move_left_pressed:
-			if keys[keybindings[player_number][KEYBINDING_LEFT]]:
+			if keys[KEYBINDINGS[player_number][KEYBINDING_LEFT]]:
 				self.players[player_number].is_move_left_pressed = True
 				das_counter = 0
 
 		if not self.players[player_number].is_move_right_pressed:
-			if keys[keybindings[player_number][KEYBINDING_RIGHT]]:
+			if keys[KEYBINDINGS[player_number][KEYBINDING_RIGHT]]:
 				self.players[player_number].is_move_right_pressed = True
 				das_counter = 0
 
@@ -257,8 +255,8 @@ class Game(States):
 					if self.lines_cleared // 10 >= self.current_level + 1:
 						self.current_level += 1
 					
-					if self.current_level in fall_delay_values.keys():
-						self.fall_threshold = fall_delay_values[self.current_level]
+					if self.current_level in FALL_DELAY_VALUES.keys():
+						self.fall_threshold = FALL_DELAY_VALUES[self.current_level]
 
 				self.players[player_number].player_state = TETRIS_STATE_SPAWN
 
@@ -288,43 +286,61 @@ class Game(States):
 
 	def draw(self, screen):
 
-		center = 2
+		screen.fill((150, 150, 150))
 
-		# to determine spawn positions
-		width = BOARD_WIDTH
-		if width % 2 == 0: # even board width
-			center = width // 2
-		elif width % 2 == 1: # odd board width
-			center = (width+1) // 2
-
-		screen.fill((0, 0, 0))
+		centering_offset = (WINDOW_WIDTH - (TILE_SIZE * BOARD_WIDTH)) // 2
 
 		# fill right of board with gray for background
-		for col_index in range(0+BOARD_WIDTH-1, 10+BOARD_WIDTH):
-			for row_index in range(0, BOARD_HEIGHT):
-				if col_index not in range(0+BOARD_WIDTH-1+4, 0+BOARD_WIDTH-1+8) or row_index not in range(1, 3):
-					scaled_image = pygame.transform.scale(self.sprites[TILE_TYPE_GRAY], (self.tile_size, self.tile_size))
-					screen.blit(scaled_image, (col_index * self.tile_size, row_index * self.tile_size))
+		# for col_index in range(0+BOARD_WIDTH-1, 10+BOARD_WIDTH):
+		# 	for row_index in range(0, BOARD_HEIGHT):
+		# 		if col_index not in range(0+BOARD_WIDTH-1+4, 0+BOARD_WIDTH-1+8) or row_index not in range(1, 3):
+		# 			scaled_image = pygame.transform.scale(self.sprites[TILE_TYPE_GRAY], (TILE_SIZE, TILE_SIZE))
+		# 			screen.blit(scaled_image, (col_index * TILE_SIZE, row_index * TILE_SIZE))
 
 		for row_index, tile_row in enumerate(self.board[2:]):
 			for col_index, tile in enumerate(tile_row):
-				scaled_image = pygame.transform.scale(self.sprites[tile.tile_type], (self.tile_size, self.tile_size))
-				screen.blit(scaled_image, (col_index * self.tile_size, row_index * self.tile_size))
+				scaled_image = pygame.transform.scale(self.sprites[tile.tile_type], (TILE_SIZE, TILE_SIZE))
+				screen.blit(scaled_image, (col_index * TILE_SIZE + centering_offset, row_index * TILE_SIZE))
 
 		for player in self.players:
+
+			# to determine spawn positions
+			if BOARD_WIDTH % 2 == 0: # even board width
+				center = BOARD_WIDTH // 2
+			elif BOARD_WIDTH % 2 == 1: # odd board width
+				center = (BOARD_WIDTH+1) // 2
+
+
 			if player.active_piece != None:
 				for location in player.active_piece.locations:
-					scaled_image = pygame.transform.scale(self.sprites[player.active_piece.tile_type], (self.tile_size, self.tile_size))
-					screen.blit(scaled_image, (location[0] * self.tile_size, (location[1] - board_height_buffer) * self.tile_size))
+					scaled_image = pygame.transform.scale(self.sprites[player.active_piece.tile_type], (TILE_SIZE, TILE_SIZE))
+					screen.blit(scaled_image, (location[0] * TILE_SIZE + centering_offset, (location[1] - BOARD_HEIGHT_BUFFER) * TILE_SIZE))
 
-			if player.next_piece != None:
-				# draw next piece
-				for row_index in range(2, 4):
-					for col_index in range(center-2, center+1+1):
-						for location in player.next_piece.locations:
-							if location == (col_index, row_index):
-								scaled_image = pygame.transform.scale(self.sprites[player.next_piece.tile_type], (self.tile_size, self.tile_size))
-								screen.blit(scaled_image, ((location[0] + 5 + BOARD_WIDTH//2) * self.tile_size, (location[1] - 1) * self.tile_size))
+		# Offset from center of screen to start drawing the next piece
+		p0_offset = - ((BOARD_WIDTH // 2) * TILE_SIZE) - (5 * TILE_SIZE)
+		p1_offset =    (BOARD_WIDTH // 2) * TILE_SIZE  + (1 * TILE_SIZE)
+		center_screen = WINDOW_WIDTH // 2
+
+		if self.players[0].next_piece != None:
+			# draw next piece
+			for row_index in range(2, 6):
+				for col_index in range(2, 6):
+					for location in self.players[0].next_piece.locations:
+						if location == (col_index, row_index):
+							scaled_image = pygame.transform.scale(self.sprites[self.players[0].next_piece.tile_type], (TILE_SIZE, TILE_SIZE))
+							x = center_screen + p0_offset + ((location[0] - 2) * TILE_SIZE)
+							y = (location[1] - 1) * TILE_SIZE
+							screen.blit(scaled_image, (x, y))
+
+		if self.players[1].next_piece != None:
+			for row_index in range(2, 4):
+				for col_index in range(8, 12):
+					for location in self.players[1].next_piece.locations:
+						if location == (col_index, row_index):
+							scaled_image = pygame.transform.scale(self.sprites[self.players[1].next_piece.tile_type], (TILE_SIZE, TILE_SIZE))
+							x = center_screen + p1_offset + ((location[0] - 8) * TILE_SIZE)
+							y = (location[1] - 1) * TILE_SIZE
+							screen.blit(scaled_image, (x, y))
 
 		# draw purdy stuff
 		# leftHL_locations = [()]
@@ -334,7 +350,7 @@ class Game(States):
 		score_text_font        = pygame.font.Font('freesansbold.ttf', 20)
 		score_text             = score_text_font.render(score_str, True, (0, 128, 0))
 		score_text_rect        = score_text.get_rect()
-		score_text_rect.center = ((BOARD_WIDTH + 4) * self.tile_size, int(3.5 * self.tile_size))
+		score_text_rect.center = ((BOARD_WIDTH + 4) * TILE_SIZE, int(3.5 * TILE_SIZE))
 		screen.blit(score_text, score_text_rect)
 
 		# display level
@@ -342,5 +358,5 @@ class Game(States):
 		level_text_font        = pygame.font.Font('freesansbold.ttf', 20)
 		level_text             = level_text_font.render(level_str, True, (0, 128, 0))
 		level_text_rect        = level_text.get_rect()
-		level_text_rect.center = ((BOARD_WIDTH + 4) * self.tile_size, 4 * self.tile_size)
+		level_text_rect.center = ((BOARD_WIDTH + 4) * TILE_SIZE, 4 * TILE_SIZE)
 		screen.blit(level_text, level_text_rect)

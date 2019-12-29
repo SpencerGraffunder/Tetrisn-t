@@ -45,12 +45,14 @@ PLAYER_STATE_CLEAR = 2
 BOARD_WIDTH  = 14 # cannot be less than 4
 BOARD_HEIGHT = 20 # should be about twice BOARD_WIDTH
 
-window_height = 800
-window_width = 1000
-board_height_buffer = 2
-frame_rate = 60
+WINDOW_HEIGHT = 800
+WINDOW_WIDTH = 1000
+BOARD_HEIGHT_BUFFER = 2
+FRAME_RATE = 60
 
-fall_delay_values = {
+TILE_SIZE = WINDOW_HEIGHT // BOARD_HEIGHT
+
+FALL_DELAY_VALUES = {
 	0:48,
 	1:43,
 	2:38,
@@ -68,7 +70,7 @@ fall_delay_values = {
 	29:1
 }
 
-keybindings = {
+KEYBINDINGS = {
 # player,      left,       down,       right,      ccw,        cw
 	0 : (pygame.K_a, pygame.K_s, pygame.K_d, pygame.K_q, pygame.K_e),
 	1 : (pygame.K_j, pygame.K_k, pygame.K_l, pygame.K_u, pygame.K_o)

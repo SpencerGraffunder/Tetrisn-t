@@ -17,16 +17,15 @@ class Piece:
 		center = 2
 
 		# to determine spawn positions
-		width = BOARD_WIDTH
-		if width % 2 == 0: # even board width
-			center = width // 2
-		elif width % 2 == 1: # odd board width
-			center = (width+1) // 2
+		if BOARD_WIDTH % 2 == 0: # even board width
+			center = BOARD_WIDTH // 2
+		elif BOARD_WIDTH % 2 == 1: # odd board width
+			center = (BOARD_WIDTH+1) // 2
 
 		if player_number == 0:
-			center -= width // 4
+			center -= BOARD_WIDTH // 4
 		elif player_number == 1:
-			center += width // 4
+			center += BOARD_WIDTH // 4
 
 		if self.piece_type == PIECE_TYPE_I:
 			self.locations[0] = (center-2,2) # [-][-][-][-] | [-][-][0][-]
