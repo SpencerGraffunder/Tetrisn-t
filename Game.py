@@ -8,6 +8,7 @@ from Player import *
 import random
 from collections import deque
 from tetrisnt_enums import *
+from draw_text import *
 
 class Game(States):
 	def __init__(self):
@@ -347,16 +348,8 @@ class Game(States):
 
 		# display score
 		score_str = 'Score: %d' % (self.score)
-		score_text_font        = pygame.font.Font('freesansbold.ttf', 20)
-		score_text             = score_text_font.render(score_str, True, (0, 128, 0))
-		score_text_rect        = score_text.get_rect()
-		score_text_rect.center = ((BOARD_WIDTH + 4) * TILE_SIZE, int(3.5 * TILE_SIZE))
-		screen.blit(score_text, score_text_rect)
+		draw_text(screen, score_str, 20, ((BOARD_WIDTH + 4) * TILE_SIZE, 3.5 * TILE_SIZE), (0, 128, 0))
 
 		# display level
 		level_str = 'Level: %d' % (self.current_level)
-		level_text_font        = pygame.font.Font('freesansbold.ttf', 20)
-		level_text             = level_text_font.render(level_str, True, (0, 128, 0))
-		level_text_rect        = level_text.get_rect()
-		level_text_rect.center = ((BOARD_WIDTH + 4) * TILE_SIZE, 4 * TILE_SIZE)
-		screen.blit(level_text, level_text_rect)
+		draw_text(screen, level_str, 20, ((BOARD_WIDTH + 4) * TILE_SIZE, 4 * TILE_SIZE), (0, 128, 0))
