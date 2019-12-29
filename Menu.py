@@ -1,7 +1,7 @@
 from States import *
 import pygame
 from tetrisnt_enums import *
-from draw_text import *
+from DRAW_TEXT import *
 
 class Menu(States):
 
