@@ -5,6 +5,7 @@ from copy import copy
 from States import *
 from Menu import *
 from Game import *
+from Game_over import *
 import sys
 from Control import *
 from Text import *
@@ -14,7 +15,8 @@ program = Control()
 
 state_dict = {
 	'menu': Menu(),
-	'game': Game()
+	'game': Game(),
+	'game over': Game_over()
 }
 
 logo = pygame.image.load('iconsmall.bmp')
