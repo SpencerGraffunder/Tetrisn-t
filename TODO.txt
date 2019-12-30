@@ -1,29 +1,26 @@
 TODO:
 create a useful debug mode to test frame data?
 
-<<<<<<< HEAD
-=======
 determine if the fall speed is being correctly implimented (level 0 seems way too fast and level 30 seems way too slow as though it's at 2 and not 1)
 	probably fixed
 
 figure out why DAS doesn't always tuck pieces correctly and fix it if it's a problem
 	probably fixed
 
->>>>>>> d158d0a3644fbc0464e45fd611be63db402b63fd
 figure out why (with BOARD_WIDTH = 4) 
 	sometimes the program crashes due to the direction down code (line 249) not being passed a piece type (it gets passed 'None'). I've found that it happens when holding down on keyboard when the piece is flush right and it clears a line or two, but has also happened with a long piece vertically on column 3 (2 with index by 0). Usually takes some time of playing for it to happen
 	hypothesis 1: always on a line clear when going from level 16 to level 17
 	hypothesis 1 failed due to a Z piece at rotation 90 being placed on the far right with no line clearing. Similar thing happened with an O piece. Also, once it was 17 to 18.
 
 generalize the display score position and scale
+	almost
 
 generalize the display level position and scale
+	almost
 
-<<<<<<< HEAD
 fix multiplayer next_piece
+	works for specifically BOARD_WIDTH = 14
 
-=======
->>>>>>> d158d0a3644fbc0464e45fd611be63db402b63fd
 make game over
 
 make animation for line clear (20 frames for clear plus the lock delay time all included in the animation)

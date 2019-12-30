@@ -38,6 +38,7 @@ class Game(States):
 		self.clear_animation_counter = 0
 		self.last_lock_position = 0
 		self.lines_cleared = 10 * self.current_level
+		self.die_counter = 0
 
 		self.sprites = {}
 
@@ -102,12 +103,14 @@ class Game(States):
 
 
 	def lock_piece(self, player_number):
-
+		piece_locked_into_another_piece = False
 		max_row_index = 0
 		for location in self.players[player_number].active_piece.locations:
 			self.board[location[1]][location[0]] = Tile(self.players[player_number].active_piece.tile_type)
 			if location[1] > max_row_index:
 				max_row_index = location[1]
+			if self.board[location[1]][location[0]].tile_type != TILE_TYPE_BLANK:
+				piece_locked_into_another_piece = True
 
 		if self.players[player_number].active_piece.piece_type == PIECE_TYPE_I:
 			self.players[player_number].spawn_delay_threshold = ((max_row_index+2)//4)*2+10
@@ -115,10 +118,12 @@ class Game(States):
 			self.players[player_number].spawn_delay_threshold = ((max_row_index+1+2)//4)*2+10
 
 		self.players[player_number].active_piece = None
-		self.players[player_number].player_state = TETRIS_STATE_CLEAR
+		if piece_locked_into_another_piece == False:
+			self.players[player_number].player_state = TETRIS_STATE_CHECK_CLEAR
+		else:
+			for player in self.players:
+				player.player_state = TETRIS_STATE_DIE
 
-		self.active_piece = None
-		self.players[player_number].player_state = TETRIS_STATE_CHECK_CLEAR
 
 	def update(self, screen, dt, player_number):
 
@@ -296,6 +301,17 @@ class Game(States):
 			self.players[player_number].player_state = TETRIS_STATE_PLAY
 			self.players[player_number].fall_counter = 0
 			self.players[player_number].spawn_delay_counter = 0
+
+		if self.players[player_number].player_state == TETRIS_STATE_DIE:
+			self.die_counter += 1
+			if self.die_counter >= 120: # wait 2 seconds
+				for player in self.players:
+					player.player_state = TETRIS_STATE_GAME_OVER
+
+		if self.players[player_number].player_state == TETRIS_STATE_GAME_OVER:
+			self.next = 'game over'
+			self.done = True
+
 
 		self.draw(screen)
 
