@@ -25,4 +25,6 @@ class Player:
 		self.spawn_delay_threshold = 10
 
 		self.player_state = PLAYER_STATE_SPAWN
+		
+		self.lines_to_clear = None
 

@@ -65,11 +65,11 @@ class Game(States):
 
 
 	def do_event(self, event, player_number):
-	
+
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE:
 				self.done = True
-			
+
 			if self.players[player_number].active_piece != None:
 				if event.key == KEYBINDINGS[player_number][KEYBINDING_CCW]:
 					if self.players[player_number].active_piece.can_rotate(self.board, self.players, ROTATION_CCW):
@@ -79,7 +79,7 @@ class Game(States):
 					if self.players[player_number].active_piece.can_rotate(self.board, self.players, ROTATION_CW):
 						self.players[player_number].active_piece.rotate(ROTATION_CW)
 						self.time_to_rotate = False
-						
+
 				if event.key == KEYBINDINGS[player_number][KEYBINDING_LEFT]:
 					self.players[player_number].is_move_left_pressed = True
 					self.players[player_number].das_threshold = 0
@@ -91,7 +91,7 @@ class Game(States):
 				if event.key == KEYBINDINGS[player_number][KEYBINDING_DOWN]:
 					self.players[player_number].is_move_down_pressed = True
 					self.players[player_number].down_counter = 0
-				
+
 		if event.type == pygame.KEYUP:
 			if event.key == KEYBINDINGS[player_number][KEYBINDING_LEFT]:
 				self.players[player_number].is_move_left_pressed = False
@@ -160,7 +160,7 @@ class Game(States):
 			# Move piece logic
 			if self.players[player_number].is_move_left_pressed or self.players[player_number].is_move_right_pressed:
 				self.players[player_number].das_counter += 1
-			
+
 				if self.players[player_number].das_counter > self.players[player_number].das_threshold:
 					if self.players[player_number].is_move_left_pressed:
 						if self.players[player_number].active_piece.can_move(self.board, self.players, DIRECTION_LEFT) == CAN_MOVE:
@@ -178,10 +178,10 @@ class Game(States):
 								self.players[player_number].das_threshold = 8
 							else:
 								self.players[player_number].das_threshold = 3
-						
+
 			if self.players[player_number].is_move_down_pressed:
 				self.players[player_number].down_counter += 1
-				
+
 				if self.players[player_number].down_counter > 2:
 					if self.players[player_number].is_move_down_pressed:
 						if self.players[player_number].active_piece.can_move(self.board, self.players, DIRECTION_DOWN) == CAN_MOVE:
@@ -220,7 +220,7 @@ class Game(States):
 						can_clear = False
 				if can_clear:
 					self.lines_to_clear.append(row_index)
-			
+
 			if len(self.lines_to_clear) > 0:
 				self.players[player_number].player_state = TETRIS_STATE_CLEAR
 				self.clear_animation_counter = 0
@@ -255,7 +255,7 @@ class Game(States):
 					self.lines_cleared += len(self.lines_to_clear)
 					if self.lines_cleared // 10 >= self.current_level + 1:
 						self.current_level += 1
-					
+
 					if self.current_level in FALL_DELAY_VALUES.keys():
 						self.fall_threshold = FALL_DELAY_VALUES[self.current_level]
 
@@ -348,8 +348,8 @@ class Game(States):
 
 		# display score
 		score_str = 'Score: %d' % (self.score)
-		text.draw(screen, score_str, 'SMALL', ((BOARD_WIDTH + 4) * TILE_SIZE, 3.5 * TILE_SIZE), (0, 128, 0))
+		text.draw(screen, score_str, 'LARGE', ((BOARD_WIDTH + 4) * TILE_SIZE, 3.5 * TILE_SIZE), (0, 128, 0))
 
 		# display level
 		level_str = 'Level: %d' % (self.current_level)
-		text.draw(screen, level_str, 'SMALL', ((BOARD_WIDTH + 4) * TILE_SIZE, 4 * TILE_SIZE), (0, 128, 0))
+		text.draw(screen, level_str, 'LARGE', ((BOARD_WIDTH + 4) * TILE_SIZE, 4 * TILE_SIZE), (0, 128, 0))
