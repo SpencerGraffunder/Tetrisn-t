@@ -8,7 +8,7 @@ from Player import *
 import random
 from collections import deque
 from tetrisnt_enums import *
-from DRAW_TEXT import *
+from Text import *
 
 class Game(States):
 	def __init__(self):

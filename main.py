@@ -7,7 +7,7 @@ from Menu import *
 from Game import *
 import sys
 from Control import *
-from DRAW_TEXT import *
+from Text import *
 
 pygame.init()
 program = Control()
