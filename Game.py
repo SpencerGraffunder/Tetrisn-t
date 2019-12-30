@@ -67,6 +67,7 @@ class Game(States):
 
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE:
+				self.next = 'menu'
 				self.done = True
 
 			if self.players[player_number].active_piece != None:
@@ -222,6 +223,11 @@ class Game(States):
 
 			if len(self.players[player_number].lines_to_clear) > 0:
 				self.players[player_number].player_state = TETRIS_STATE_CLEAR
+				for player in self.players:
+					if player != self.players[player_number]:
+						if player.player_state == TETRIS_STATE_CLEAR:
+							player.player_state = TETRIS_STATE_CHECK_CLEAR
+				self.players[player_number].have_lines_shifted = False
 				self.clear_animation_counter = 0
 			elif len(self.players[player_number].lines_to_clear) == 0:
 				self.players[player_number].player_state = TETRIS_STATE_SPAWN_DELAY
@@ -230,6 +236,13 @@ class Game(States):
 		if self.players[player_number].player_state == TETRIS_STATE_CLEAR:
 			animation_length = self.spawn_delay_threshold + 20
 			self.clear_animation_counter += 1
+			
+			# for player in self.players:
+				# if player != self.players[player_number]:
+					# if player.player_state == TETRIS_STATE_CLEAR:
+						# player.player_state = TETRIS_STATE_CHECK_CLEAR
+						# pdb.set_trace()
+						
 
 			if self.clear_animation_counter >= animation_length:
 				# Move upper lines down
@@ -259,6 +272,7 @@ class Game(States):
 						self.fall_threshold = FALL_DELAY_VALUES[self.current_level]
 
 				self.players[player_number].player_state = TETRIS_STATE_SPAWN
+				self.players[player_number].lines_to_clear = []
 
 		elif self.players[player_number].player_state == TETRIS_STATE_SPAWN_DELAY:
 			self.spawn_delay_counter += 1
@@ -273,6 +287,7 @@ class Game(States):
 				active_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
 			else:
 				active_piece_type = self.players[player_number].next_piece.piece_type
+			active_piece_type = PIECE_TYPE_I
 			self.players[player_number].next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
 			if self.players[player_number].next_piece_type == active_piece_type:
 				self.players[player_number].next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])

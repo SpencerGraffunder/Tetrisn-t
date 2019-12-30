@@ -26,5 +26,6 @@ class Player:
 
 		self.player_state = PLAYER_STATE_SPAWN
 		
-		self.lines_to_clear = None
+		self.lines_to_clear = []
+		self.have_lines_shifted = False
 
