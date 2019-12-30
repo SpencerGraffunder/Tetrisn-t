@@ -15,8 +15,11 @@ class Control:
 			self.done = True
 		elif self.state.done:
 			self.flip_state()
-		for player_number in [0,1]:
-			self.state.update(self.screen, dt, player_number)
+		if isinstance(self.state, Player):
+			for player_number in [0,1]:	
+				self.state.update(self.screen, dt, player_number)
+		else:
+			self.state.update(self.screen, dt)
 	def flip_state(self):
 		self.state.done = False
 		previous, self.state_name = self.state_name, self.state.next
