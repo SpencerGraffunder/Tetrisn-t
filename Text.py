@@ -1,4 +1,5 @@
 import pygame
+from tetrisnt_enums import *
 
 class Text:
 
@@ -7,9 +8,9 @@ class Text:
 		
 	
 	def load_fonts(self):
-		LARGE_FONT_SIZE  = 90
-		MEDIUM_FONT_SIZE = 50
-		SMALL_FONT_SIZE  = 20
+		LARGE_FONT_SIZE  = WINDOW_HEIGHT//5
+		MEDIUM_FONT_SIZE = WINDOW_HEIGHT//10
+		SMALL_FONT_SIZE  = WINDOW_HEIGHT//20
 		self.fonts = {
 			'LARGE'  : pygame.font.Font('munro-small.ttf', LARGE_FONT_SIZE),
 			'MEDIUM' : pygame.font.Font('munro-small.ttf', MEDIUM_FONT_SIZE),
