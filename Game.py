@@ -346,9 +346,12 @@ class Game(States):
 		# leftHL_locations = [()]
 
 		# display score
-		score_str = 'Score: %d' % (self.score)
-		text.draw(screen, score_str, 'LARGE', ((BOARD_WIDTH + 4) * TILE_SIZE, 3.5 * TILE_SIZE), (0, 128, 0))
+		score_str1 = 'Score:'
+		text.draw(screen, score_str1, 'SMALL', ((WINDOW_WIDTH) - (4 * TILE_SIZE), (BOARD_HEIGHT - 3) * TILE_SIZE), (0, 128, 0))
+
+		score_str2 = '%d' % (self.score)
+		text.draw(screen, score_str2, 'SMALL',  ((WINDOW_WIDTH) - (4 * TILE_SIZE), (BOARD_HEIGHT - 2) * TILE_SIZE), (0, 128, 0))
 
 		# display level
 		level_str = 'Level: %d' % (self.current_level)
-		text.draw(screen, level_str, 'LARGE', ((BOARD_WIDTH + 4) * TILE_SIZE, 4 * TILE_SIZE), (0, 128, 0))
+		text.draw(screen, level_str, 'SMALL', ((WINDOW_WIDTH) - (4 * TILE_SIZE), (BOARD_HEIGHT - 4) * TILE_SIZE), (0, 128, 0))
