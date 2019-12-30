@@ -35,7 +35,6 @@ class Game(States):
 		self.is_move_down_pressed = False
 		self.spawn_delay_counter = 0
 		self.spawn_delay_threshold = 10
-		self.lines_to_clear = []
 		self.clear_animation_counter = 0
 		self.last_lock_position = 0
 		self.lines_cleared = 10 * self.current_level
@@ -208,7 +207,7 @@ class Game(States):
 
 		elif self.players[player_number].player_state == TETRIS_STATE_CHECK_CLEAR:
 			# Store all lines that can be cleared
-			self.lines_to_clear = []
+			self.players[player_number].lines_to_clear = []
 
 			self.players[player_number].is_move_down_pressed = False
 
@@ -219,12 +218,12 @@ class Game(States):
 					if tile.tile_type == TILE_TYPE_BLANK:
 						can_clear = False
 				if can_clear:
-					self.lines_to_clear.append(row_index)
+					self.players[player_number].lines_to_clear.append(row_index)
 
-			if len(self.lines_to_clear) > 0:
+			if len(self.players[player_number].lines_to_clear) > 0:
 				self.players[player_number].player_state = TETRIS_STATE_CLEAR
 				self.clear_animation_counter = 0
-			elif len(self.lines_to_clear) == 0:
+			elif len(self.players[player_number].lines_to_clear) == 0:
 				self.players[player_number].player_state = TETRIS_STATE_SPAWN_DELAY
 
 
@@ -234,14 +233,14 @@ class Game(States):
 
 			if self.clear_animation_counter >= animation_length:
 				# Move upper lines down
-				for line in self.lines_to_clear:
+				for line in self.players[player_number].lines_to_clear:
 					self.board.pop(line)
 					self.board = deque(self.board)
 					self.board.appendleft([Tile() for j in range(BOARD_WIDTH)])
 					self.board = list(self.board)
 
 				# Score the points
-				num_lines = len(self.lines_to_clear)
+				num_lines = len(self.players[player_number].lines_to_clear)
 				if num_lines != 0:
 					if num_lines == 1:
 						self.score += 40 * (self.current_level + 1)
@@ -252,7 +251,7 @@ class Game(States):
 					elif num_lines == 4: # BOOM Tetrisn't for Jeffn't
 						self.score += 1200 * (self.current_level + 1)
 
-					self.lines_cleared += len(self.lines_to_clear)
+					self.lines_cleared += len(self.players[player_number].lines_to_clear)
 					if self.lines_cleared // 10 >= self.current_level + 1:
 						self.current_level += 1
 
