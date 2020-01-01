@@ -1,5 +1,7 @@
 import pygame
 from tetrisnt_enums import *
+from Game import *
+import pdb
 
 class Control:
 	def __init__(self):
@@ -15,11 +17,7 @@ class Control:
 			self.done = True
 		elif self.state.done:
 			self.flip_state()
-		if isinstance(self.state, Player):
-			for player_number in [0,1]:	
-				self.state.update(self.screen, dt, player_number)
-		else:
-			self.state.update(self.screen, dt)
+		self.state.update(self.screen, dt)
 	def flip_state(self):
 		self.state.done = False
 		previous, self.state_name = self.state_name, self.state.next
@@ -29,8 +27,7 @@ class Control:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				self.done = True
-			for player_number in [0,1]:
-				self.state.do_event(event, player_number)
+			self.state.do_event(event)
 	def main_game_loop(self):
 		while not self.done:
 			delta_time = self.clock.tick(FRAME_RATE)/1000.0

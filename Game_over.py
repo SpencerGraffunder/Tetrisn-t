@@ -24,5 +24,5 @@ class Game_over(States):
 		self.draw(screen)
 
 	def draw(self, screen):
-		screen.fill((100,255,0))
-		screen.blit(self.text, self.text_rect)
+		screen.fill((100,255,100))
+		text.draw(screen, 'Game Over', 'LARGE', (WINDOW_WIDTH//2, WINDOW_HEIGHT//2), (128, 50, 0))
