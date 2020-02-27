@@ -3,7 +3,7 @@ import pygame
 from tetrisnt_enums import *
 from Text import *
 
-class Game_over(States):
+class Game_Over(States):
 
 	def __init__(self):
 		States.__init__(self)
