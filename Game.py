@@ -66,10 +66,10 @@ class Game(States):
 
 	def do_event(self, event):
     
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_BACKQUOTE:
-                pdb.set_trace()
-	
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_BACKQUOTE:
+				pdb.set_trace()
+
 		for player_number in [0, 1]:
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_ESCAPE:
