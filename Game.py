@@ -33,7 +33,6 @@ class Game(States):
 		self.is_move_right_pressed = False
 		self.is_move_left_pressed = False
 		self.is_move_down_pressed = False
-		self.spawn_delay_counter = 0
 		self.spawn_delay_threshold = 10
 		self.last_lock_position = 0
 		self.lines_cleared = 10 * self.current_level
@@ -233,15 +232,10 @@ class Game(States):
 
 				if len(self.players[player_number].lines_to_clear) > 0:
 					self.players[player_number].player_state = TETRIS_STATE_CLEAR
-					for player in self.players:
-						if player != self.players[player_number]:
-							if player.player_state == TETRIS_STATE_CLEAR:
-								player.player_state = TETRIS_STATE_CHECK_CLEAR
 					self.players[player_number].have_lines_shifted = False
 					self.players[player_number].clear_animation_counter = 0
 				elif len(self.players[player_number].lines_to_clear) == 0:
 					self.players[player_number].player_state = TETRIS_STATE_SPAWN_DELAY
-
 
 			if self.players[player_number].player_state == TETRIS_STATE_CLEAR:
 				animation_length = self.spawn_delay_threshold + 20
@@ -262,8 +256,19 @@ class Game(States):
 						self.board.appendleft([Tile() for j in range(BOARD_WIDTH)])
 						self.board = list(self.board)
 
-					# Score the points
 					num_lines = len(self.players[player_number].lines_to_clear)
+					new_lines_to_clear = []
+
+					for line_index in self.players[(player_number + 1) % 2].lines_to_clear:   # polyplayer
+						for line_to_clear in self.players[player_number].lines_to_clear:
+							if line_index < line_to_clear:
+								new_lines_to_clear.append(line_index + num_lines)
+							else:
+								new_lines_to_clear.append(line_index)
+
+					self.players[(player_number + 1) % 2].lines_to_clear = new_lines_to_clear
+
+					# Score the points
 					if num_lines != 0:
 						if num_lines == 1:
 							self.score += 40 * (self.current_level + 1)
@@ -285,9 +290,9 @@ class Game(States):
 					self.players[player_number].lines_to_clear = []
 
 			elif self.players[player_number].player_state == TETRIS_STATE_SPAWN_DELAY:
-				self.spawn_delay_counter += 1
+				self.players[player_number].spawn_delay_counter += 1
 
-				if self.spawn_delay_counter > self.spawn_delay_threshold:
+				if self.players[player_number].spawn_delay_counter > self.spawn_delay_threshold:
 					self.players[player_number].player_state = TETRIS_STATE_SPAWN
 
 			if self.players[player_number].player_state == TETRIS_STATE_SPAWN:
