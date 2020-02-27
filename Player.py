@@ -10,6 +10,8 @@ class Player:
 		self.next_piece = None
 
 		self.next_piece_type = None
+
+		self.clear_animation_counter = 0
 		
 		self.fall_counter = 0
 		self.player_number = player_number
@@ -24,7 +26,7 @@ class Player:
 		self.spawn_delay_counter = 0
 		self.spawn_delay_threshold = 10
 
-		self.player_state = PLAYER_STATE_SPAWN
+		self.player_state = TETRIS_STATE_SPAWN
 		
 		self.lines_to_clear = []
 		self.have_lines_shifted = False

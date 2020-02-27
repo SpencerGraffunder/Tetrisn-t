@@ -35,7 +35,6 @@ class Game(States):
 		self.is_move_down_pressed = False
 		self.spawn_delay_counter = 0
 		self.spawn_delay_threshold = 10
-		self.clear_animation_counter = 0
 		self.last_lock_position = 0
 		self.lines_cleared = 10 * self.current_level
 		self.die_counter = 0
@@ -238,14 +237,14 @@ class Game(States):
 							if player.player_state == TETRIS_STATE_CLEAR:
 								player.player_state = TETRIS_STATE_CHECK_CLEAR
 					self.players[player_number].have_lines_shifted = False
-					self.clear_animation_counter = 0
+					self.players[player_number].clear_animation_counter = 0
 				elif len(self.players[player_number].lines_to_clear) == 0:
 					self.players[player_number].player_state = TETRIS_STATE_SPAWN_DELAY
 
 
 			if self.players[player_number].player_state == TETRIS_STATE_CLEAR:
 				animation_length = self.spawn_delay_threshold + 20
-				self.clear_animation_counter += 1
+				self.players[player_number].clear_animation_counter += 1
 				
 				# for player in self.players:
 					# if player != self.players[player_number]:
@@ -254,7 +253,7 @@ class Game(States):
 							# pdb.set_trace()
 							
 
-				if self.clear_animation_counter >= animation_length:
+				if self.players[player_number].clear_animation_counter >= animation_length:
 					# Move upper lines down
 					for line in self.players[player_number].lines_to_clear:
 						self.board.pop(line)
