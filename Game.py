@@ -228,7 +228,8 @@ class Game(States):
 						if tile.tile_type == TILE_TYPE_BLANK:
 							can_clear = False
 					if can_clear:
-						self.players[player_number].lines_to_clear.append(row_index)
+						if row_index not in self.players[(player_number + 1) % 2].lines_to_clear: # polyplayer
+							self.players[player_number].lines_to_clear.append(row_index)
 
 				if len(self.players[player_number].lines_to_clear) > 0:
 					self.players[player_number].player_state = TETRIS_STATE_CLEAR
