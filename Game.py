@@ -227,8 +227,10 @@ class Game(States):
 						if tile.tile_type == TILE_TYPE_BLANK:
 							can_clear = False
 					if can_clear:
-						if row_index not in self.players[(player_number + 1) % 2].lines_to_clear: # polyplayer
-							self.players[player_number].lines_to_clear.append(row_index)
+						for player in self.players:
+							if player != self.players[player_number]:
+								if row_index not in player.lines_to_clear:
+									self.players[player_number].lines_to_clear.append(row_index)
 
 				if len(self.players[player_number].lines_to_clear) > 0:
 					self.players[player_number].player_state = TETRIS_STATE_CLEAR
@@ -240,13 +242,6 @@ class Game(States):
 			if self.players[player_number].player_state == TETRIS_STATE_CLEAR:
 				animation_length = self.spawn_delay_threshold + 20
 				self.players[player_number].clear_animation_counter += 1
-				
-				# for player in self.players:
-					# if player != self.players[player_number]:
-						# if player.player_state == TETRIS_STATE_CLEAR:
-							# player.player_state = TETRIS_STATE_CHECK_CLEAR
-							# pdb.set_trace()
-							
 
 				if self.players[player_number].clear_animation_counter >= animation_length:
 					# Move upper lines down
@@ -259,12 +254,14 @@ class Game(States):
 					num_lines = len(self.players[player_number].lines_to_clear)
 					new_lines_to_clear = []
 
-					for line_index in self.players[(player_number + 1) % 2].lines_to_clear:   # polyplayer
-						for line_to_clear in self.players[player_number].lines_to_clear:
-							if line_index < line_to_clear:
-								new_lines_to_clear.append(line_index + num_lines)
-							else:
-								new_lines_to_clear.append(line_index)
+					for player in self.players:
+						if player != self.players[player_number]:
+							for line_index in player.lines_to_clear:
+								for line_to_clear in self.players[player_number].lines_to_clear:
+									if line_index < line_to_clear:
+										new_lines_to_clear.append(line_index + num_lines)
+									else:
+										new_lines_to_clear.append(line_index)
 
 					self.players[(player_number + 1) % 2].lines_to_clear = new_lines_to_clear
 
