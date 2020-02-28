@@ -8,14 +8,14 @@ class Menu(States):
 	def __init__(self):
 		States.__init__(self)
 		self.next = 'game'
-		self.font = pygame.font.Font('freesansbold.ttf', 72)
-		self.text = self.font.render('Tetrisn\'t', True, (0, 128, 0))
-		self.text_rect = self.text.get_rect()
-		self.text_rect.center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
 
 	def do_event(self, event):
 		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_SPACE:
+			if event.key == pygame.K_1:
+				PLAYER_COUNT = 1
+				self.done = True
+			if event.key == pygame.K_0:
+				PLAYER_COUNT = 0
 				self.done = True
 			if event.key == pygame.K_ESCAPE:
 				self.quit = True
@@ -23,6 +23,17 @@ class Menu(States):
 	def update(self, screen, dt):
 		self.draw(screen)
 
+
 	def draw(self, screen):
-		screen.fill((100,255,0))
-		screen.blit(self.text, self.text_rect)
+		screen.fill((150, 150, 150))
+
+		title_string = 'TETRISN\'T'
+		text.draw(screen, title_string, 'LARGE', (WINDOW_WIDTH//2, WINDOW_HEIGHT//4), (0, 160, 0))
+		
+		subtitle_string = 'not a tetris game'
+		text.draw(screen, subtitle_string, 'SMALL', (WINDOW_WIDTH//2, WINDOW_HEIGHT*2//4), (0, 120, 0))
+
+		single_string = 'Press 1 for single player'
+		multi_string = 'Press 0 for multi player'
+		text.draw(screen, single_string, 'SMALL', (WINDOW_WIDTH*1//4, WINDOW_HEIGHT*3//4), (150, 0, 0))
+		text.draw(screen, multi_string, 'SMALL', (WINDOW_WIDTH*3//4, WINDOW_HEIGHT*3//4), (150, 0, 0))

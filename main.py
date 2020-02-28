@@ -22,7 +22,7 @@ state_dict = {
 logo = pygame.image.load('iconsmall.bmp')
 pygame.display.set_icon(logo)
 pygame.display.set_caption('Tetrisn\'t')
-program.setup_states(state_dict, 'game')
+program.setup_states(state_dict, 'menu')
 text.load_fonts()
 program.main_game_loop()
 pygame.quit()
