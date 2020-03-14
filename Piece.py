@@ -21,6 +21,7 @@ class Piece:
 			center = BOARD_WIDTH // 2
 		elif BOARD_WIDTH % 2 == 1: # odd board width
 			center = (BOARD_WIDTH+1) // 2
+		# center = (BOARD_WIDTH+(BOARD_WIDTH%2)) // 2
 
 		if player_number == 0:
 			center -= BOARD_WIDTH // 4
@@ -88,10 +89,13 @@ class Piece:
 				
 				
 	def can_move(self, board, players, direction):
-	
+
 		test_locations = copy(self.locations)
+
+		# If not spawning piece
+		if direction != None:
 		
-		self.move(direction, test_locations)
+			self.move(direction, test_locations)
 				
 		for location in test_locations:
 			if location[1] >= len(board)     \

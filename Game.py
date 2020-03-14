@@ -296,20 +296,34 @@ class Game(States):
 					self.players[player_number].player_state = TETRIS_STATE_SPAWN
 
 			if self.players[player_number].player_state == TETRIS_STATE_SPAWN:
-				# Spawn piece
-				# RNG piece choice decision
-				if self.players[player_number].next_piece_type == None:
-					active_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-				else:
-					active_piece_type = self.players[player_number].next_piece.piece_type
-				self.players[player_number].next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-				if self.players[player_number].next_piece_type == active_piece_type:
+
+				# Make sure not inside another player's piece
+				if self.players[player_number].next_piece != None and not self.players[player_number].next_piece.can_move(self.board, self.players, None):
+
+					# Spawn piece
+					# start of game
+					if self.players[player_number].next_piece_type == None:
+						active_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+					# not start of game
+					else:
+						active_piece_type = self.players[player_number].next_piece.piece_type
+
+					# pick next piece type
 					self.players[player_number].next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-				self.players[player_number].active_piece = Piece(active_piece_type, player_number)
-				self.players[player_number].next_piece   = Piece(self.players[player_number].next_piece_type, player_number)
-				self.players[player_number].player_state = TETRIS_STATE_PLAY
-				self.players[player_number].fall_counter = 0
-				self.players[player_number].spawn_delay_counter = 0
+
+					# Reroll
+					if self.players[player_number].next_piece_type == active_piece_type:
+						self.players[player_number].next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
+
+					# Make active piece
+					self.players[player_number].active_piece = Piece(active_piece_type, player_number)
+
+					# Make next piece
+					self.players[player_number].next_piece   = Piece(self.players[player_number].next_piece_type, player_number)
+
+					self.players[player_number].player_state = TETRIS_STATE_PLAY
+					self.players[player_number].fall_counter = 0
+					self.players[player_number].spawn_delay_counter = 0
 
 			if self.players[player_number].player_state == TETRIS_STATE_DIE:
 				self.die_counter += 1
