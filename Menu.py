@@ -12,11 +12,13 @@ class Menu(States):
 	def do_event(self, event):
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_1:
-				PLAYER_COUNT = 1
+				States.player_count = 1
 				self.done = True
+				States.just_started = True
 			if event.key == pygame.K_0:
-				PLAYER_COUNT = 0
+				States.player_count = 2
 				self.done = True
+				States.just_started = True
 			if event.key == pygame.K_ESCAPE:
 				self.quit = True
 

@@ -16,31 +16,12 @@ class Game(States):
 		States.__init__(self)
 
 		self.next = 'menu'
-
-		self.players = [Player(0), Player(1)]
-
-		self.score = 0
-		self.current_level = 0
-		self.fall_threshold = FALL_DELAY_VALUES[self.current_level]
-		self.fall_counter = 0
-		self.time_to_move = False
-		self.time_next_move = 0
-		self.time_next_fall = 0
-		self.time_next_rotate = 0
-		self.das_counter = 0
+		
 		self.das_threshold = 0
-		self.down_counter = 0
-		self.is_move_right_pressed = False
-		self.is_move_left_pressed = False
-		self.is_move_down_pressed = False
+		
 		self.spawn_delay_threshold = 10
-		self.last_lock_position = 0
-		self.lines_cleared = 10 * self.current_level
-		self.die_counter = 0
-
+		
 		self.sprites = {}
-
-		self.board = []
 
 		# load sprites
 		if getattr(sys, 'frozen', False):
@@ -58,8 +39,32 @@ class Game(States):
 		self.sprites[TILE_TYPE_GRAY_HLUP]    = pygame.image.load(os.path.join(wd,'grayHL/grayHLup.bmp')).convert()
 		self.sprites[TILE_TYPE_GRAY_HLDOWN]  = pygame.image.load(os.path.join(wd,'grayHL/grayHLdown.bmp')).convert()
 
+		self.reset()
+
+
+	def reset(self):
+
 		# Fill board with empty tiles
 		self.board = [[Tile() for j in range(BOARD_WIDTH)] for i in range(BOARD_HEIGHT+BOARD_HEIGHT_BUFFER)]
+
+		self.current_level = 0
+		self.fall_threshold = FALL_DELAY_VALUES[self.current_level]
+		self.last_lock_position = 0
+		self.lines_cleared = 10 * self.current_level
+		self.die_counter = 0
+		self.down_counter = 0
+		self.is_move_right_pressed = False
+		self.is_move_left_pressed = False
+		self.is_move_down_pressed = False
+		self.fall_counter = 0
+		self.time_to_move = False
+		self.time_next_move = 0
+		self.time_next_fall = 0
+		self.time_next_rotate = 0
+		self.das_counter = 0
+		self.score = 0
+
+		self.players = [Player(x) for x in range(States.player_count)]
 
 
 	def do_event(self, event):
@@ -68,7 +73,7 @@ class Game(States):
 			if event.key == pygame.K_BACKQUOTE:
 				pdb.set_trace()
 
-		for player_number in [0, 1]:
+		for player_number in range(States.player_count):
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_ESCAPE:
 					self.next = 'menu'
@@ -130,7 +135,11 @@ class Game(States):
 
 	def update(self, screen, dt):
 
-		for player_number in [0,1]:
+		if States.just_started:
+			self.reset()
+			States.just_started = False
+
+		for player_number in range(States.player_count):
 
 			keys = pygame.key.get_pressed()
 			if not self.players[player_number].is_move_left_pressed:
@@ -374,26 +383,17 @@ class Game(States):
 		p1_offset =    (BOARD_WIDTH // 2) * TILE_SIZE  + (1 * TILE_SIZE)
 		center_screen = WINDOW_WIDTH // 2
 
-		if self.players[0].next_piece != None:
-			# draw next piece
-			for row_index in range(2, 6):
-				for col_index in range(2, 6):
-					for location in self.players[0].next_piece.locations:
-						if location == (col_index, row_index):
-							scaled_image = pygame.transform.scale(self.sprites[self.players[0].next_piece.tile_type], (TILE_SIZE, TILE_SIZE))
-							x = center_screen + p0_offset + ((location[0] - 2) * TILE_SIZE)
-							y = (location[1] - 1) * TILE_SIZE
-							screen.blit(scaled_image, (x, y))
-
-		if self.players[1].next_piece != None:
-			for row_index in range(2, 4):
-				for col_index in range(8, 12):
-					for location in self.players[1].next_piece.locations:
-						if location == (col_index, row_index):
-							scaled_image = pygame.transform.scale(self.sprites[self.players[1].next_piece.tile_type], (TILE_SIZE, TILE_SIZE))
-							x = center_screen + p1_offset + ((location[0] - 8) * TILE_SIZE)
-							y = (location[1] - 1) * TILE_SIZE
-							screen.blit(scaled_image, (x, y))
+		# draw next piece
+		for player in self.players:
+			if player.next_piece != None:
+				for row_index in range(2, 6):
+					for col_index in range(2, 6):
+						for location in player.next_piece.locations:
+							if location == (col_index, row_index):
+								scaled_image = pygame.transform.scale(self.sprites[player.next_piece.tile_type], (TILE_SIZE, TILE_SIZE))
+								x = center_screen + p0_offset + ((location[0] - 2) * TILE_SIZE)
+								y = (location[1] - 1) * TILE_SIZE
+								screen.blit(scaled_image, (x, y))
 
 		# draw purdy stuff
 		# leftHL_locations = [()]
