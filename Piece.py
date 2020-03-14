@@ -88,13 +88,13 @@ class Piece:
 				locations[index] = (location[0]+1,location[1])
 				
 				
+	# Direction == None for no direction (spawning)
 	def can_move(self, board, players, direction):
 
 		test_locations = copy(self.locations)
 
 		# If not spawning piece
 		if direction != None:
-		
 			self.move(direction, test_locations)
 				
 		for location in test_locations:
@@ -103,8 +103,9 @@ class Piece:
 			or location[0] >= len(board[0]):
 				return CANT_MOVE_BOARD
 
-			if board[location[1]][location[0]].tile_type != TILE_TYPE_BLANK:
-				return CANT_MOVE_BOARD
+			if direction != None:
+				if board[location[1]][location[0]].tile_type != TILE_TYPE_BLANK:
+					return CANT_MOVE_BOARD
 
 			for player in players:
 				if player.active_piece != None:
