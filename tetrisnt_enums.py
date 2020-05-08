@@ -69,6 +69,11 @@ FALL_DELAY_VALUES = {
 	29:1
 }
 
+DAS_VALUES = {
+	1: (6, 16),
+	2: (3, 8)
+}
+
 KEYBINDINGS = {
 # player,      left,       down,       right,      ccw,        cw
 	0 : (pygame.K_a, pygame.K_s, pygame.K_d, pygame.K_q, pygame.K_e),

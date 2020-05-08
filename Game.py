@@ -187,17 +187,17 @@ class Game(States):
 								self.players[player_number].active_piece.move(DIRECTION_LEFT)
 								self.players[player_number].das_counter = 0
 								if self.players[player_number].das_threshold == 0:
-									self.players[player_number].das_threshold = 8
+									self.players[player_number].das_threshold = DAS_VALUES[States.player_count][1]
 								else:
-									self.players[player_number].das_threshold = 3
+									self.players[player_number].das_threshold = DAS_VALUES[States.player_count][0]
 						if self.players[player_number].is_move_right_pressed:
 							if self.players[player_number].active_piece.can_move(self.board, self.players, DIRECTION_RIGHT) == CAN_MOVE:
 								self.players[player_number].active_piece.move(DIRECTION_RIGHT)
 								self.players[player_number].das_counter = 0
 								if self.players[player_number].das_threshold == 0:
-									self.players[player_number].das_threshold = 8
+									self.players[player_number].das_threshold = DAS_VALUES[States.player_count][1]
 								else:
-									self.players[player_number].das_threshold = 3
+									self.players[player_number].das_threshold = DAS_VALUES[States.player_count][0]
 
 				if self.players[player_number].is_move_down_pressed:
 					self.players[player_number].down_counter += 1
@@ -239,10 +239,14 @@ class Game(States):
 						if tile.tile_type == TILE_TYPE_BLANK:
 							can_clear = False
 					if can_clear:
+						print('derp')
 						for player in self.players:
-							if player != self.players[player_number]:
-								if row_index not in player.lines_to_clear:
-									self.players[player_number].lines_to_clear.append(row_index)
+							if States.player_count > 1:
+								if player != self.players[player_number]:
+									if row_index not in player.lines_to_clear:
+										self.players[player_number].lines_to_clear.append(row_index)
+							else:
+								self.players[player_number].lines_to_clear.append(row_index)
 
 				if len(self.players[player_number].lines_to_clear) > 0:
 					self.players[player_number].player_state = TETRIS_STATE_CLEAR
@@ -266,16 +270,17 @@ class Game(States):
 					num_lines = len(self.players[player_number].lines_to_clear)
 					new_lines_to_clear = []
 
-					for player in self.players:
-						if player != self.players[player_number]:
-							for line_index in player.lines_to_clear:
-								for line_to_clear in self.players[player_number].lines_to_clear:
-									if line_index < line_to_clear:
-										new_lines_to_clear.append(line_index + num_lines)
-									else:
-										new_lines_to_clear.append(line_index)
+					if States.player_count > 1:
+						for player in self.players:
+							if player != self.players[player_number]:
+								for line_index in player.lines_to_clear:
+									for line_to_clear in self.players[player_number].lines_to_clear:
+										if line_index < line_to_clear:
+											new_lines_to_clear.append(line_index + num_lines)
+										else:
+											new_lines_to_clear.append(line_index)
 
-					self.players[(player_number + 1) % 2].lines_to_clear = new_lines_to_clear
+						self.players[(player_number + 1) % 2].lines_to_clear = new_lines_to_clear
 
 					# Score the points
 					if num_lines != 0:
