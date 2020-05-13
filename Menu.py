@@ -24,15 +24,53 @@ class Menu(States):
 		elif self.menu_state == LEVEL_SELECT_MENU_STATE: # level select
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_0:
-					States.current_level = 2
+					States.current_level = 0
 					self.done = True
 					States.just_started = True
 				if event.key == pygame.K_1:
 					States.current_level = 1
 					self.done = True
 					States.just_started = True
+				if event.key == pygame.K_2:
+					States.current_level = 2
+					self.done = True
+					States.just_started = True
+				if event.key == pygame.K_3:
+					States.current_level = 3
+					self.done = True
+					States.just_started = True
+				if event.key == pygame.K_4:
+					States.current_level = 4
+					self.done = True
+					States.just_started = True
+				if event.key == pygame.K_5:
+					States.current_level = 5
+					self.done = True
+					States.just_started = True
+				if event.key == pygame.K_6:
+					States.current_level = 6
+					self.done = True
+					States.just_started = True
+				if event.key == pygame.K_7:
+					States.current_level = 7
+					self.done = True
+					States.just_started = True
+				if event.key == pygame.K_8:
+					States.current_level = 8
+					self.done = True
+					States.just_started = True
+				if event.key == pygame.K_9:
+					States.current_level = 9
+					self.done = True
+					States.just_started = True
 				if event.key == pygame.K_ESCAPE:
 					self.quit = True
+
+				# add 10 if LSHIFT is pressed
+				keys = pygame.key.get_pressed()
+				if keys[pygame.K_LSHIFT]:
+					States.current_level += 10
+
 
 	def update(self, screen, dt):
 		self.draw(screen)

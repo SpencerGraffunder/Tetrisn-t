@@ -48,8 +48,14 @@ class Game(States):
 		# Fill board with empty tiles
 		self.board = [[Tile() for j in range(self.board_width)] for i in range(BOARD_HEIGHT+BOARD_HEIGHT_BUFFER)]
 
-		self.current_level = 0
-		self.fall_threshold = FALL_DELAY_VALUES[self.current_level]
+		self.current_level = States.current_level
+		# find the greatest level less than self.current_level in FALL_DELAY_VALUES and set the speed to that level's speed
+		x = self.current_level
+		while x > 0:
+			if x in FALL_DELAY_VALUES.keys():
+				self.fall_threshold = FALL_DELAY_VALUES[x]
+				break
+			x -= 1
 		self.last_lock_position = 0
 		self.lines_cleared = 10 * self.current_level
 		self.die_counter = 0
