@@ -68,8 +68,12 @@ class Menu(States):
 
 				# add 10 if LSHIFT is pressed
 				keys = pygame.key.get_pressed()
-				if keys[pygame.K_LSHIFT]:
+				if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
 					States.current_level += 10
+
+				# when we get a keypress, set the state back to player number select state so when you hit ESC it goes there
+				if self.done == True:
+					self.menu_state = PLAYER_NUMBER_MENU_STATE
 
 
 	def update(self, screen, dt):
