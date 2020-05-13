@@ -239,7 +239,6 @@ class Game(States):
 						if tile.tile_type == TILE_TYPE_BLANK:
 							can_clear = False
 					if can_clear:
-						print('derp')
 						for player in self.players:
 							if States.player_count > 1:
 								if player != self.players[player_number]:
