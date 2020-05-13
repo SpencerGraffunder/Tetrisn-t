@@ -8,10 +8,6 @@ class Game_Over(States):
 	def __init__(self):
 		States.__init__(self)
 		self.next = 'game over'
-		self.font = pygame.font.Font('freesansbold.ttf', 72)
-		self.text = self.font.render('Tetrisn\'t', True, (0, 128, 0))
-		self.text_rect = self.text.get_rect()
-		self.text_rect.center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
 
 	def do_event(self, event):
 		if event.type == pygame.KEYDOWN:
