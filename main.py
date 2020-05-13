@@ -19,8 +19,8 @@ state_dict = {
 	'game over': Game_Over()
 }
 
-logo = pygame.image.load('iconsmall.bmp')
-pygame.display.set_icon(logo)
+# logo = pygame.image.load('iconsmall.bmp')
+# pygame.display.set_icon(logo)
 pygame.display.set_caption('Tetrisn\'t')
 program.setup_states(state_dict, 'menu')
 text.load_fonts()

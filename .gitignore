@@ -1,6 +1,4 @@
-graytiles
 __pycache__
 build
-main.spec
-comile.py
+dist
 *.pyc
