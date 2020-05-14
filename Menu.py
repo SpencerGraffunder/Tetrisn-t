@@ -1,6 +1,6 @@
 from States import *
 import pygame
-from tetrisnt_enums import *
+from Globals import *
 from Text import *
 
 class Menu(States):

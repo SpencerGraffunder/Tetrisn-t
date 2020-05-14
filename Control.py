@@ -1,5 +1,5 @@
 import pygame
-from tetrisnt_enums import *
+from Globals import *
 from Game import *
 import pdb
 

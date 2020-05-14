@@ -1,6 +1,6 @@
 import pygame
 import pdb
-from tetrisnt_enums import *
+from Globals import *
 from copy import copy
 from States import *
 from Menu import *

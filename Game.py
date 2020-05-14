@@ -7,7 +7,7 @@ from Piece import *
 from Player import *
 import random
 from collections import deque
-from tetrisnt_enums import *
+from Globals import *
 from Text import *
 
 class Game(States):

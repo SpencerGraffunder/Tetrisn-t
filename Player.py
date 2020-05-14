@@ -1,4 +1,4 @@
-from tetrisnt_enums import *
+from Globals import *
 import pygame
 
 
