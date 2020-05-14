@@ -25,6 +25,7 @@ class Game(States):
 
 		# load sprites
 		if getattr(sys, 'frozen', False):
+			# if running from a single executable, get some path stuff to make it work
 			wd = sys._MEIPASS
 		else:
 			wd = ''
@@ -33,12 +34,7 @@ class Game(States):
 		self.sprites[TILE_TYPE_IOT]          = pygame.image.load(os.path.join(wd,'IOTblock.bmp')).convert()
 		self.sprites[TILE_TYPE_JS]           = pygame.image.load(os.path.join(wd,'JSblock.bmp')).convert()
 		self.sprites[TILE_TYPE_LZ]           = pygame.image.load(os.path.join(wd,'LZblock.bmp')).convert()
-		# self.sprites[TILE_TYPE_GRAY]         = pygame.image.load(os.path.join(wd,'grayHL/lightgray.bmp')).convert()
-		# self.sprites[TILE_TYPE_GRAY_HLLEFT]  = pygame.image.load(os.path.join(wd,'grayHL/grayHLleft.bmp')).convert()
-		# self.sprites[TILE_TYPE_GRAY_HLRIGHT] = pygame.image.load(os.path.join(wd,'grayHL/grayHLright.bmp')).convert()
-		# self.sprites[TILE_TYPE_GRAY_HLUP]    = pygame.image.load(os.path.join(wd,'grayHL/grayHLup.bmp')).convert()
-		# self.sprites[TILE_TYPE_GRAY_HLDOWN]  = pygame.image.load(os.path.join(wd,'grayHL/grayHLdown.bmp')).convert()
-
+		
 		self.reset()
 
 
@@ -49,6 +45,7 @@ class Game(States):
 		self.board = [[Tile() for j in range(self.board_width)] for i in range(BOARD_HEIGHT+BOARD_HEIGHT_BUFFER)]
 
 		self.current_level = States.current_level
+		
 		# find the greatest level less than self.current_level in FALL_DELAY_VALUES and set the speed to that level's speed
 		x = self.current_level
 		while x >= 0:
@@ -314,36 +311,6 @@ class Game(States):
 				if self.players[player_number].spawn_delay_counter > self.spawn_delay_threshold:
 					self.players[player_number].player_state = TETRIS_STATE_SPAWN
 
-			# if self.players[player_number].player_state == TETRIS_STATE_SPAWN:
-
-			# 	# Make sure not inside another player's piece
-			# 	if self.players[player_number].next_piece != None and self.players[player_number].next_piece.can_move(self.board, self.players, None) == CAN_MOVE:
-			# 		pdb.set_trace()
-			# 		# Spawn piece
-			# 		# start of game
-			# 		if self.players[player_number].next_piece_type == None:
-			# 			active_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-			# 		# not start of game
-			# 		else:
-			# 			active_piece_type = self.players[player_number].next_piece.piece_type
-
-			# 		# pick next piece type
-			# 		self.players[player_number].next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-
-			# 		# Reroll
-			# 		if self.players[player_number].next_piece_type == active_piece_type:
-			# 			self.players[player_number].next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-
-			# 		# Make active piece
-			# 		self.players[player_number].active_piece = Piece(active_piece_type, player_number)
-
-			# 		# Make next piece
-			# 		self.players[player_number].next_piece   = Piece(self.players[player_number].next_piece_type, player_number)
-
-			# 		self.players[player_number].player_state = TETRIS_STATE_PLAY
-			# 		self.players[player_number].fall_counter = 0
-			# 		self.players[player_number].spawn_delay_counter = 0
-
 			if self.players[player_number].player_state == TETRIS_STATE_DIE:
 				self.die_counter += 1
 				if self.die_counter >= 120: # wait 2 seconds
@@ -363,13 +330,6 @@ class Game(States):
 
 		centering_offset = (WINDOW_WIDTH - (TILE_SIZE * self.board_width)) // 2
 
-		# fill right of board with gray for background
-		# for col_index in range(0+self.board_width-1, 10+self.board_width):
-		# 	for row_index in range(0, BOARD_HEIGHT):
-		# 		if col_index not in range(0+self.board_width-1+4, 0+self.board_width-1+8) or row_index not in range(1, 3):
-		# 			scaled_image = pygame.transform.scale(self.sprites[TILE_TYPE_GRAY], (TILE_SIZE, TILE_SIZE))
-		# 			screen.blit(scaled_image, (col_index * TILE_SIZE, row_index * TILE_SIZE))
-
 		for row_index, tile_row in enumerate(self.board[2:]):
 			for col_index, tile in enumerate(tile_row):
 				scaled_image = pygame.transform.scale(self.sprites[tile.tile_type], (TILE_SIZE, TILE_SIZE))
@@ -388,14 +348,6 @@ class Game(States):
 				for location in player.active_piece.locations:
 					scaled_image = pygame.transform.scale(self.sprites[player.active_piece.tile_type], (TILE_SIZE, TILE_SIZE))
 					screen.blit(scaled_image, (location[0] * TILE_SIZE + centering_offset, (location[1] - BOARD_HEIGHT_BUFFER) * TILE_SIZE))
-
-		# next_piece_positions = []
-		# for player in self.players:
-		# 	next_piece_x = None
-		# 	next_piece_y = None
-
-		# 	next_piece_x = ((self.board_width // 2) * TILE_SIZE) + ()
-
 
 		# Need to generalize for n players
 		# Offset from center of screen to start drawing the next piece
@@ -424,9 +376,6 @@ class Game(States):
 								x = center_screen + p1_offset + ((location[0] - 8) * TILE_SIZE)
 								y = (location[1] - 1) * TILE_SIZE
 								screen.blit(scaled_image, (x, y))
-
-		# draw purdy stuff
-		# leftHL_locations = [()]
 
 		# display score
 		score_str1 = 'Score:'
