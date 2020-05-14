@@ -1,12 +1,18 @@
 import pygame
 
+# Capitol for constants, non for globals
+
+#################
+### CONSTANTS ###
+#################
+
 DIRECTION_DOWN  = 0
 DIRECTION_LEFT  = 1
 DIRECTION_RIGHT = 2
 
 CANT_MOVE_PIECE = 0
 CANT_MOVE_BOARD = 1
-CAN_MOVE = 2
+CAN_MOVE        = 2
 
 ROTATION_CW  = 0
 ROTATION_CCW = 1
@@ -42,6 +48,10 @@ TETRIS_STATE_CLEAR       = 4
 TETRIS_STATE_DIE         = 5
 TETRIS_STATE_GAME_OVER   = 6
 
+#################
+###  GLOBALS  ###
+#################
+
 BOARD_WIDTH  = 14 # cannot be less than 4
 SINGLE_PLAYER_BOARD_WIDTH = 10
 MULTI_PLAYER_BOARD_WIDTH = 14
@@ -55,26 +65,28 @@ FRAME_RATE = 60
 TILE_SIZE = min(WINDOW_WIDTH,WINDOW_HEIGHT) // max(BOARD_WIDTH,BOARD_HEIGHT)
 
 FALL_DELAY_VALUES = {
-	0:48,
-	1:43,
-	2:38,
-	3:33,
-	4:28,
-	5:23,
-	6:18,
-	7:13,
-	8:8,
-	9:6,
-	10:5,
-	13:4,
-	16:3,
-	19:2,
-	29:1
+  # level  frames till fall
+	0:     48,
+	1:     43,
+	2:     38,
+	3:     33,
+	4:     28,
+	5:     23,
+	6:     18,
+	7:     13,
+	8:     8,
+	9:     6,
+	10:    5,
+	13:    4,
+	16:    3,
+	19:    2,
+	29:    1
 }
 
 DAS_VALUES = {
-	1: (6, 16),
-	2: (3, 8)
+  # mode   repeated delay   first delay
+	1:     (6,              16),
+	2:     (3,              8)
 }
 
 KEYBINDINGS = {
