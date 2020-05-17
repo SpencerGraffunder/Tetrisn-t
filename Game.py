@@ -173,8 +173,8 @@ class Game(States):
 						self.players[player_number].next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
 						if self.players[player_number].next_piece_type == active_piece_type:
 							self.players[player_number].next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
-						self.players[player_number].active_piece = Piece(active_piece_type, player_number)
-						self.players[player_number].next_piece   = Piece(self.players[player_number].next_piece_type, player_number)
+						self.players[player_number].active_piece = Piece(active_piece_type, player_number, self.players[player_number].spawn_column) # this puts the active piece in the board
+						self.players[player_number].next_piece   = Piece(self.players[player_number].next_piece_type, player_number, self.players[player_number].spawn_column) # this puts the next piece in the next piece box
 						self.players[player_number].player_state = TETRIS_STATE_PLAY
 						self.players[player_number].fall_counter = 0
 						self.players[player_number].spawn_delay_counter = 0
@@ -252,7 +252,6 @@ class Game(States):
 
 				if len(self.players[player_number].lines_to_clear) > 0:
 					self.players[player_number].player_state = TETRIS_STATE_CLEAR
-					self.players[player_number].have_lines_shifted = False
 					self.players[player_number].clear_animation_counter = 0
 				elif len(self.players[player_number].lines_to_clear) == 0:
 					self.players[player_number].player_state = TETRIS_STATE_SPAWN_DELAY
