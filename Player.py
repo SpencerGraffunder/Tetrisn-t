@@ -1,6 +1,6 @@
 from Constants import *
 import pygame
-
+import Globals
 
 class Player:
 
@@ -33,4 +33,4 @@ class Player:
 		self.lines_to_clear = []
 
 		# split the board into PLAYER_COUNT equal sections (using floats), find the middle of the section we care about using the average, and favor right via the columns being index by 0
-		self.spawn_column = int(((BOARD_WIDTH / PLAYER_COUNT) * player_number + (BOARD_WIDTH / PLAYER_COUNT) * (player_number + 1)) / 2)
+		self.spawn_column = int(((Globals.BOARD_WIDTH / Globals.PLAYER_COUNT) * player_number + (Globals.BOARD_WIDTH / Globals.PLAYER_COUNT) * (player_number + 1)) / 2)
