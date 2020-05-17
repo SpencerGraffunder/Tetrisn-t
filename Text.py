@@ -1,7 +1,8 @@
 import pygame
-from Globals import *
+from Constants import *
 import os
 import sys
+import Globals
 
 # Example
 # text.draw(screen, score_str1, 'SMALL', ((WINDOW_WIDTH) - (4 * TILE_SIZE), (BOARD_HEIGHT - 3) * TILE_SIZE), (0, 128, 0))
@@ -13,9 +14,9 @@ class Text:
 		
 	
 	def load_fonts(self):
-		LARGE_FONT_SIZE	 = WINDOW_HEIGHT//5
-		MEDIUM_FONT_SIZE = WINDOW_HEIGHT//10
-		SMALL_FONT_SIZE	 = WINDOW_HEIGHT//20
+		LARGE_FONT_SIZE	 = Globals.WINDOW_HEIGHT//5
+		MEDIUM_FONT_SIZE = Globals.WINDOW_HEIGHT//10
+		SMALL_FONT_SIZE	 = Globals.WINDOW_HEIGHT//20
 		
 		if getattr(sys, 'frozen', False):
 			wd = sys._MEIPASS

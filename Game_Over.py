@@ -1,6 +1,6 @@
 from States import *
 import pygame
-from Globals import *
+from Constants import *
 from Text import *
 
 class Game_Over(States):

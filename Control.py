@@ -1,12 +1,13 @@
 import pygame
-from Globals import *
+from Constants import *
+import Globals
 from Game import *
 import pdb
 
 class Control:
 	def __init__(self):
 		self.done = False
-		self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+		self.screen = pygame.display.set_mode((Globals.WINDOW_WIDTH, Globals.WINDOW_HEIGHT))
 		self.clock = pygame.time.Clock()
 
 	def setup_states(self, state_dict, start_state):

@@ -1,7 +1,8 @@
-from Globals import *
+from Constants import *
 import pdb
 import sys
 from copy import copy
+import Globals
 
 class Piece:
 
@@ -13,6 +14,12 @@ class Piece:
 		self.piece_type = piece_type
 		self.player_number = player_number
 
+		if Globals.BOARD_WIDTH % 2 == 0: # even board width
+			center = Globals.BOARD_WIDTH // 2
+		elif Globals.BOARD_WIDTH % 2 == 1: # odd board width
+			center = (Globals.BOARD_WIDTH+1) // 2
+			center -= Globals.BOARD_WIDTH // 4
+			center += Globals.BOARD_WIDTH // 4
 		if self.piece_type == PIECE_TYPE_I:
 			self.locations[0] = (spawn_column-2,2) # [-][-][-][-] | [-][-][0][-]
 			self.locations[1] = (spawn_column-1,2) # [-][-][-][-] | [-][-][1][-]
