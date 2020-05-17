@@ -1,4 +1,4 @@
-from Globals import *
+from Constants import *
 import pygame
 
 

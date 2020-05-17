@@ -1,6 +1,6 @@
 import pygame
 import pdb
-from Globals import *
+from Constants import *
 from copy import copy
 from States import *
 from Menu import *

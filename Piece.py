@@ -1,7 +1,8 @@
-from Globals import *
+from Constants import *
 import pdb
 import sys
 from copy import copy
+import Globals
 
 class Piece:
 
@@ -17,16 +18,16 @@ class Piece:
 		center = 2
 
 		# to determine spawn positions
-		if BOARD_WIDTH % 2 == 0: # even board width
-			center = BOARD_WIDTH // 2
-		elif BOARD_WIDTH % 2 == 1: # odd board width
-			center = (BOARD_WIDTH+1) // 2
+		if Globals.BOARD_WIDTH % 2 == 0: # even board width
+			center = Globals.BOARD_WIDTH // 2
+		elif Globals.BOARD_WIDTH % 2 == 1: # odd board width
+			center = (Globals.BOARD_WIDTH+1) // 2
 		# center = (BOARD_WIDTH+(BOARD_WIDTH%2)) // 2
 
 		if player_number == 0:
-			center -= BOARD_WIDTH // 4
+			center -= Globals.BOARD_WIDTH // 4
 		elif player_number == 1:
-			center += BOARD_WIDTH // 4
+			center += Globals.BOARD_WIDTH // 4
 
 		if self.piece_type == PIECE_TYPE_I:
 			self.locations[0] = (center-2,2) # [-][-][-][-] | [-][-][0][-]

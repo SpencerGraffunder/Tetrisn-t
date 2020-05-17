@@ -7,7 +7,8 @@ from Piece import *
 from Player import *
 import random
 from collections import deque
-from Globals import *
+import Globals
+from Constants import *
 from Text import *
 
 class Game(States):
@@ -40,19 +41,20 @@ class Game(States):
 
 	def reset(self):
 
-		self.board_width = SINGLE_PLAYER_BOARD_WIDTH if PLAYER_COUNT == 1 else MULTI_PLAYER_BOARD_WIDTH
+		print('resetting')
+		self.board_width = Globals.SINGLE_PLAYER_BOARD_WIDTH if Globals.PLAYER_COUNT == 1 else Globals.MULTI_PLAYER_BOARD_WIDTH
 		# Fill board with empty tiles
-		self.board = [[Tile() for j in range(self.board_width)] for i in range(BOARD_HEIGHT+BOARD_HEIGHT_BUFFER)]
+		self.board = [[Tile() for j in range(self.board_width)] for i in range(Globals.BOARD_HEIGHT+BOARD_HEIGHT_BUFFER)]
 		
 		# find the greatest level less than CURRENT_LEVEL in FALL_DELAY_VALUES and set the speed to that level's speed
-		x = CURRENT_LEVEL
+		x = Globals.CURRENT_LEVEL
 		while x >= 0:
 			if x in FALL_DELAY_VALUES.keys():
 				self.fall_threshold = FALL_DELAY_VALUES[x]
 				break
 			x -= 1
 		self.last_lock_position = 0
-		self.lines_cleared = 10 * CURRENT_LEVEL
+		self.lines_cleared = 10 * Globals.CURRENT_LEVEL
 		self.die_counter = 0
 		self.down_counter = 0
 		self.is_move_right_pressed = False
@@ -66,7 +68,7 @@ class Game(States):
 		self.das_counter = 0
 		self.score = 0
 
-		self.players = [Player(x) for x in range(PLAYER_COUNT)]
+		self.players = [Player(x) for x in range(Globals.PLAYER_COUNT)]
 
 
 	def do_event(self, event):
@@ -75,7 +77,7 @@ class Game(States):
 			if event.key == pygame.K_BACKQUOTE:
 				pdb.set_trace()
 
-		for player_number in range(PLAYER_COUNT):
+		for player_number in range(Globals.PLAYER_COUNT):
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_ESCAPE:
 					self.next = 'menu'
@@ -137,13 +139,12 @@ class Game(States):
 
 	def update(self, screen, dt):
 
-		if GAME_JUST_STARTED:
+		if Globals.GAME_JUST_STARTED:
 			self.reset()
-			pdb.set_trace()
-			GAME_JUST_STARTED = False
+			Globals.GAME_JUST_STARTED = False
 			print('resetting GAME_JUST_STARTED')
 
-		for player_number in range(PLAYER_COUNT):
+		for player_number in range(Globals.PLAYER_COUNT):
 
 			keys = pygame.key.get_pressed()
 			if not self.players[player_number].is_move_left_pressed:
@@ -190,17 +191,17 @@ class Game(States):
 								self.players[player_number].active_piece.move(DIRECTION_LEFT)
 								self.players[player_number].das_counter = 0
 								if self.players[player_number].das_threshold == 0:
-									self.players[player_number].das_threshold = DAS_VALUES[PLAYER_COUNT][1]
+									self.players[player_number].das_threshold = DAS_VALUES[Globals.PLAYER_COUNT][1]
 								else:
-									self.players[player_number].das_threshold = DAS_VALUES[PLAYER_COUNT][0]
+									self.players[player_number].das_threshold = DAS_VALUES[Globals.PLAYER_COUNT][0]
 						if self.players[player_number].is_move_right_pressed:
 							if self.players[player_number].active_piece.can_move(self.board, self.players, DIRECTION_RIGHT) == CAN_MOVE:
 								self.players[player_number].active_piece.move(DIRECTION_RIGHT)
 								self.players[player_number].das_counter = 0
 								if self.players[player_number].das_threshold == 0:
-									self.players[player_number].das_threshold = DAS_VALUES[PLAYER_COUNT][1]
+									self.players[player_number].das_threshold = DAS_VALUES[Globals.PLAYER_COUNT][1]
 								else:
-									self.players[player_number].das_threshold = DAS_VALUES[PLAYER_COUNT][0]
+									self.players[player_number].das_threshold = DAS_VALUES[Globals.PLAYER_COUNT][0]
 
 				if self.players[player_number].is_move_down_pressed:
 					self.players[player_number].down_counter += 1
@@ -243,7 +244,7 @@ class Game(States):
 							can_clear = False
 					if can_clear:
 						for player in self.players:
-							if PLAYER_COUNT > 1:
+							if Globals.PLAYER_COUNT > 1:
 								if player != self.players[player_number]:
 									if row_index not in player.lines_to_clear:
 										self.players[player_number].lines_to_clear.append(row_index)
@@ -272,7 +273,7 @@ class Game(States):
 					num_lines = len(self.players[player_number].lines_to_clear)
 					new_lines_to_clear = []
 
-					if PLAYER_COUNT > 1:
+					if Globals.PLAYER_COUNT > 1:
 						for player in self.players:
 							if player != self.players[player_number]:
 								for line_index in player.lines_to_clear:
@@ -287,20 +288,20 @@ class Game(States):
 					# Score the points
 					if num_lines != 0:
 						if num_lines == 1:
-							self.score += 40 * (CURRENT_LEVEL + 1)
+							self.score += 40 * (Globals.CURRENT_LEVEL + 1)
 						elif num_lines == 2:
-							self.score += 100 * (CURRENT_LEVEL + 1)
+							self.score += 100 * (Globals.CURRENT_LEVEL + 1)
 						elif num_lines == 3:
-							self.score += 300 * (CURRENT_LEVEL + 1)
+							self.score += 300 * (Globals.CURRENT_LEVEL + 1)
 						elif num_lines == 4: # BOOM Tetrisn't for Jeffn't
-							self.score += 1200 * (CURRENT_LEVEL + 1)
+							self.score += 1200 * (Globals.CURRENT_LEVEL + 1)
 
 						self.lines_cleared += len(self.players[player_number].lines_to_clear)
-						if self.lines_cleared // 10 >= CURRENT_LEVEL + 1:
-							CURRENT_LEVEL += 1
+						if self.lines_cleared // 10 >= Globals.CURRENT_LEVEL + 1:
+							Globals.CURRENT_LEVEL += 1
 
-						if CURRENT_LEVEL in FALL_DELAY_VALUES.keys():
-							self.fall_threshold = FALL_DELAY_VALUES[CURRENT_LEVEL]
+						if Globals.CURRENT_LEVEL in FALL_DELAY_VALUES.keys():
+							self.fall_threshold = FALL_DELAY_VALUES[Globals.CURRENT_LEVEL]
 
 					self.players[player_number].player_state = TETRIS_STATE_SPAWN
 					self.players[player_number].lines_to_clear = []
@@ -328,12 +329,12 @@ class Game(States):
 	
 		screen.fill((150, 150, 150))
 
-		centering_offset = (WINDOW_WIDTH - (TILE_SIZE * self.board_width)) // 2
+		centering_offset = (Globals.WINDOW_WIDTH - (Globals.TILE_SIZE * self.board_width)) // 2
 
 		for row_index, tile_row in enumerate(self.board[2:]):
 			for col_index, tile in enumerate(tile_row):
-				scaled_image = pygame.transform.scale(self.sprites[tile.tile_type], (TILE_SIZE, TILE_SIZE))
-				screen.blit(scaled_image, (col_index * TILE_SIZE + centering_offset, row_index * TILE_SIZE))
+				scaled_image = pygame.transform.scale(self.sprites[tile.tile_type], (Globals.TILE_SIZE, Globals.TILE_SIZE))
+				screen.blit(scaled_image, (col_index * Globals.TILE_SIZE + centering_offset, row_index * Globals.TILE_SIZE))
 
 		for player in self.players:
 
@@ -346,14 +347,14 @@ class Game(States):
 
 			if player.active_piece != None:
 				for location in player.active_piece.locations:
-					scaled_image = pygame.transform.scale(self.sprites[player.active_piece.tile_type], (TILE_SIZE, TILE_SIZE))
-					screen.blit(scaled_image, (location[0] * TILE_SIZE + centering_offset, (location[1] - BOARD_HEIGHT_BUFFER) * TILE_SIZE))
+					scaled_image = pygame.transform.scale(self.sprites[player.active_piece.tile_type], (Globals.TILE_SIZE, Globals.TILE_SIZE))
+					screen.blit(scaled_image, (location[0] * Globals.TILE_SIZE + centering_offset, (location[1] - BOARD_HEIGHT_BUFFER) * Globals.TILE_SIZE))
 
 		# Need to generalize for n players
 		# Offset from center of screen to start drawing the next piece
-		p0_offset = - ((self.board_width // 2) * TILE_SIZE) - (5 * TILE_SIZE)
-		p1_offset =    (self.board_width // 2) * TILE_SIZE  + (1 * TILE_SIZE)
-		center_screen = WINDOW_WIDTH // 2
+		p0_offset = - ((self.board_width // 2) * Globals.TILE_SIZE) - (5 * Globals.TILE_SIZE)
+		p1_offset =    (self.board_width // 2) * Globals.TILE_SIZE  + (1 * Globals.TILE_SIZE)
+		center_screen = Globals.WINDOW_WIDTH // 2
 
 		# Draw next piece
 		if self.players[0].next_piece != None:
@@ -361,9 +362,9 @@ class Game(States):
 				for col_index in range(2, 6):
 					for location in self.players[0].next_piece.locations:
 						if location == (col_index, row_index):
-							scaled_image = pygame.transform.scale(self.sprites[self.players[0].next_piece.tile_type], (TILE_SIZE, TILE_SIZE))
-							x = center_screen + p0_offset + ((location[0] - 2) * TILE_SIZE)
-							y = (location[1] - 1) * TILE_SIZE
+							scaled_image = pygame.transform.scale(self.sprites[self.players[0].next_piece.tile_type], (Globals.TILE_SIZE, Globals.TILE_SIZE))
+							x = center_screen + p0_offset + ((location[0] - 2) * Globals.TILE_SIZE)
+							y = (location[1] - 1) * Globals.TILE_SIZE
 							screen.blit(scaled_image, (x, y))
 
 		if len(self.players) > 1:
@@ -372,18 +373,18 @@ class Game(States):
 					for col_index in range(8, 12):
 						for location in self.players[1].next_piece.locations:
 							if location == (col_index, row_index):
-								scaled_image = pygame.transform.scale(self.sprites[self.players[1].next_piece.tile_type], (TILE_SIZE, TILE_SIZE))
-								x = center_screen + p1_offset + ((location[0] - 8) * TILE_SIZE)
-								y = (location[1] - 1) * TILE_SIZE
+								scaled_image = pygame.transform.scale(self.sprites[self.players[1].next_piece.tile_type], (Globals.TILE_SIZE, Globals.TILE_SIZE))
+								x = center_screen + p1_offset + ((location[0] - 8) * Globals.TILE_SIZE)
+								y = (location[1] - 1) * Globals.TILE_SIZE
 								screen.blit(scaled_image, (x, y))
 
 		# display score
 		score_str1 = 'Score:'
-		text.draw(screen, score_str1, 'SMALL', ((WINDOW_WIDTH) - (4 * TILE_SIZE), (BOARD_HEIGHT - 3) * TILE_SIZE), (0, 128, 0))
+		text.draw(screen, score_str1, 'SMALL', ((Globals.WINDOW_WIDTH) - (4 * Globals.TILE_SIZE), (Globals.BOARD_HEIGHT - 3) * Globals.TILE_SIZE), (0, 128, 0))
 
 		score_str2 = '%d' % (self.score)
-		text.draw(screen, score_str2, 'SMALL',  ((WINDOW_WIDTH) - (4 * TILE_SIZE), (BOARD_HEIGHT - 2) * TILE_SIZE), (0, 128, 0))
+		text.draw(screen, score_str2, 'SMALL',  ((Globals.WINDOW_WIDTH) - (4 * Globals.TILE_SIZE), (Globals.BOARD_HEIGHT - 2) * Globals.TILE_SIZE), (0, 128, 0))
 
 		# display level
-		level_str = 'Level: %d' % (CURRENT_LEVEL)
-		text.draw(screen, level_str, 'SMALL', ((WINDOW_WIDTH) - (4 * TILE_SIZE), (BOARD_HEIGHT - 4) * TILE_SIZE), (0, 128, 0))
+		level_str = 'Level: %d' % (Globals.CURRENT_LEVEL)
+		text.draw(screen, level_str, 'SMALL', ((Globals.WINDOW_WIDTH) - (4 * Globals.TILE_SIZE), (Globals.BOARD_HEIGHT - 4) * Globals.TILE_SIZE), (0, 128, 0))
