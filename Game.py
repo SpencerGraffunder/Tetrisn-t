@@ -40,21 +40,19 @@ class Game(States):
 
 	def reset(self):
 
-		self.board_width = SINGLE_PLAYER_BOARD_WIDTH if States.player_count == 1 else MULTI_PLAYER_BOARD_WIDTH
+		self.board_width = SINGLE_PLAYER_BOARD_WIDTH if PLAYER_COUNT == 1 else MULTI_PLAYER_BOARD_WIDTH
 		# Fill board with empty tiles
 		self.board = [[Tile() for j in range(self.board_width)] for i in range(BOARD_HEIGHT+BOARD_HEIGHT_BUFFER)]
-
-		self.current_level = States.current_level
 		
-		# find the greatest level less than self.current_level in FALL_DELAY_VALUES and set the speed to that level's speed
-		x = self.current_level
+		# find the greatest level less than CURRENT_LEVEL in FALL_DELAY_VALUES and set the speed to that level's speed
+		x = CURRENT_LEVEL
 		while x >= 0:
 			if x in FALL_DELAY_VALUES.keys():
 				self.fall_threshold = FALL_DELAY_VALUES[x]
 				break
 			x -= 1
 		self.last_lock_position = 0
-		self.lines_cleared = 10 * self.current_level
+		self.lines_cleared = 10 * CURRENT_LEVEL
 		self.die_counter = 0
 		self.down_counter = 0
 		self.is_move_right_pressed = False
@@ -68,7 +66,7 @@ class Game(States):
 		self.das_counter = 0
 		self.score = 0
 
-		self.players = [Player(x) for x in range(States.player_count)]
+		self.players = [Player(x) for x in range(PLAYER_COUNT)]
 
 
 	def do_event(self, event):
@@ -77,7 +75,7 @@ class Game(States):
 			if event.key == pygame.K_BACKQUOTE:
 				pdb.set_trace()
 
-		for player_number in range(States.player_count):
+		for player_number in range(PLAYER_COUNT):
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_ESCAPE:
 					self.next = 'menu'
@@ -139,11 +137,13 @@ class Game(States):
 
 	def update(self, screen, dt):
 
-		if States.just_started:
+		if GAME_JUST_STARTED:
 			self.reset()
-			States.just_started = False
+			pdb.set_trace()
+			GAME_JUST_STARTED = False
+			print('resetting GAME_JUST_STARTED')
 
-		for player_number in range(States.player_count):
+		for player_number in range(PLAYER_COUNT):
 
 			keys = pygame.key.get_pressed()
 			if not self.players[player_number].is_move_left_pressed:
@@ -190,17 +190,17 @@ class Game(States):
 								self.players[player_number].active_piece.move(DIRECTION_LEFT)
 								self.players[player_number].das_counter = 0
 								if self.players[player_number].das_threshold == 0:
-									self.players[player_number].das_threshold = DAS_VALUES[States.player_count][1]
+									self.players[player_number].das_threshold = DAS_VALUES[PLAYER_COUNT][1]
 								else:
-									self.players[player_number].das_threshold = DAS_VALUES[States.player_count][0]
+									self.players[player_number].das_threshold = DAS_VALUES[PLAYER_COUNT][0]
 						if self.players[player_number].is_move_right_pressed:
 							if self.players[player_number].active_piece.can_move(self.board, self.players, DIRECTION_RIGHT) == CAN_MOVE:
 								self.players[player_number].active_piece.move(DIRECTION_RIGHT)
 								self.players[player_number].das_counter = 0
 								if self.players[player_number].das_threshold == 0:
-									self.players[player_number].das_threshold = DAS_VALUES[States.player_count][1]
+									self.players[player_number].das_threshold = DAS_VALUES[PLAYER_COUNT][1]
 								else:
-									self.players[player_number].das_threshold = DAS_VALUES[States.player_count][0]
+									self.players[player_number].das_threshold = DAS_VALUES[PLAYER_COUNT][0]
 
 				if self.players[player_number].is_move_down_pressed:
 					self.players[player_number].down_counter += 1
@@ -243,7 +243,7 @@ class Game(States):
 							can_clear = False
 					if can_clear:
 						for player in self.players:
-							if States.player_count > 1:
+							if PLAYER_COUNT > 1:
 								if player != self.players[player_number]:
 									if row_index not in player.lines_to_clear:
 										self.players[player_number].lines_to_clear.append(row_index)
@@ -272,7 +272,7 @@ class Game(States):
 					num_lines = len(self.players[player_number].lines_to_clear)
 					new_lines_to_clear = []
 
-					if States.player_count > 1:
+					if PLAYER_COUNT > 1:
 						for player in self.players:
 							if player != self.players[player_number]:
 								for line_index in player.lines_to_clear:
@@ -287,20 +287,20 @@ class Game(States):
 					# Score the points
 					if num_lines != 0:
 						if num_lines == 1:
-							self.score += 40 * (self.current_level + 1)
+							self.score += 40 * (CURRENT_LEVEL + 1)
 						elif num_lines == 2:
-							self.score += 100 * (self.current_level + 1)
+							self.score += 100 * (CURRENT_LEVEL + 1)
 						elif num_lines == 3:
-							self.score += 300 * (self.current_level + 1)
+							self.score += 300 * (CURRENT_LEVEL + 1)
 						elif num_lines == 4: # BOOM Tetrisn't for Jeffn't
-							self.score += 1200 * (self.current_level + 1)
+							self.score += 1200 * (CURRENT_LEVEL + 1)
 
 						self.lines_cleared += len(self.players[player_number].lines_to_clear)
-						if self.lines_cleared // 10 >= self.current_level + 1:
-							self.current_level += 1
+						if self.lines_cleared // 10 >= CURRENT_LEVEL + 1:
+							CURRENT_LEVEL += 1
 
-						if self.current_level in FALL_DELAY_VALUES.keys():
-							self.fall_threshold = FALL_DELAY_VALUES[self.current_level]
+						if CURRENT_LEVEL in FALL_DELAY_VALUES.keys():
+							self.fall_threshold = FALL_DELAY_VALUES[CURRENT_LEVEL]
 
 					self.players[player_number].player_state = TETRIS_STATE_SPAWN
 					self.players[player_number].lines_to_clear = []
@@ -385,5 +385,5 @@ class Game(States):
 		text.draw(screen, score_str2, 'SMALL',  ((WINDOW_WIDTH) - (4 * TILE_SIZE), (BOARD_HEIGHT - 2) * TILE_SIZE), (0, 128, 0))
 
 		# display level
-		level_str = 'Level: %d' % (self.current_level)
+		level_str = 'Level: %d' % (CURRENT_LEVEL)
 		text.draw(screen, level_str, 'SMALL', ((WINDOW_WIDTH) - (4 * TILE_SIZE), (BOARD_HEIGHT - 4) * TILE_SIZE), (0, 128, 0))

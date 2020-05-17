@@ -5,4 +5,3 @@ class States(object):
 		self.done = False
 		self.next = None
 		self.quit = False
-		self.state_change_data = {}
