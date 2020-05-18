@@ -66,7 +66,6 @@ class Menu(States):
 				# when we get a keypress, set the state back to player number select state so when you hit ESC it goes there
 				if self.done == True:
 					Globals.GAME_JUST_STARTED = True
-					print('setting GAME_JUST_STARTED')
 					self.menu_state = PLAYER_NUMBER_MENU_STATE
 
 

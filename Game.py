@@ -41,7 +41,6 @@ class Game(States):
 
 	def reset(self):
 
-		print('resetting')
 		self.board_width = Globals.SINGLE_PLAYER_BOARD_WIDTH if Globals.PLAYER_COUNT == 1 else Globals.MULTI_PLAYER_BOARD_WIDTH
 		# Fill board with empty tiles
 		self.board = [[Tile() for j in range(self.board_width)] for i in range(Globals.BOARD_HEIGHT+BOARD_HEIGHT_BUFFER)]
@@ -142,7 +141,6 @@ class Game(States):
 		if Globals.GAME_JUST_STARTED:
 			self.reset()
 			Globals.GAME_JUST_STARTED = False
-			print('resetting GAME_JUST_STARTED')
 
 		for player_number in range(Globals.PLAYER_COUNT):
 

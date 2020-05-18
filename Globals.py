@@ -6,7 +6,6 @@
 PLAYER_COUNT = 1
 CURRENT_LEVEL = 0
 GAME_JUST_STARTED = False
-print('resetting GAME_JUST_STARTED')
 
 BOARD_WIDTH  = 14 # cannot be less than 4
 SINGLE_PLAYER_BOARD_WIDTH = 10
