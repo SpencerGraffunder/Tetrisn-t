@@ -58,15 +58,14 @@ class Menu(States):
 				if event.key == pygame.K_ESCAPE:
 					self.quit = True
 
+				# add 10 if LSHIFT is pressed
+				keys = pygame.key.get_pressed()
+				if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
+					Globals.CURRENT_LEVEL += 10
+
 				# when we get a keypress, set the state back to player number select state so when you hit ESC it goes there
 				if self.done == True:
-					# add 10 if LSHIFT is pressed
-					keys = pygame.key.get_pressed()
-					if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
-						Globals.CURRENT_LEVEL += 10
-					# get the game started
 					Globals.GAME_JUST_STARTED = True
-					# go to the menu where the user chooses the number of players after exiting the game
 					self.menu_state = PLAYER_NUMBER_MENU_STATE
 
 

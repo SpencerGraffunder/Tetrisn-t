@@ -6,8 +6,7 @@ import Globals
 
 class Piece:
 
-	def __init__(self, piece_type, player_number):
-	
+	def __init__(self, piece_type, player_number, spawn_column):
 		self.piece_type = 0
 		self.tile_type = 0
 		self.rotation = 0
@@ -15,14 +14,10 @@ class Piece:
 		self.piece_type = piece_type
 		self.player_number = player_number
 
-		center = 2
-
-		# to determine spawn positions
 		if Globals.BOARD_WIDTH % 2 == 0: # even board width
 			center = Globals.BOARD_WIDTH // 2
 		elif Globals.BOARD_WIDTH % 2 == 1: # odd board width
 			center = (Globals.BOARD_WIDTH+1) // 2
-		# center = (BOARD_WIDTH+(BOARD_WIDTH%2)) // 2
 
 		if player_number == 0:
 			center -= Globals.BOARD_WIDTH // 4
@@ -74,7 +69,7 @@ class Piece:
 
 
 	def move(self, direction = DIRECTION_DOWN, locations = None):
-	
+
 		if locations == None:
 			locations = self.locations
 			
