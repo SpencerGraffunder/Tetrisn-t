@@ -60,10 +60,10 @@ class Piece:
 
 
 	def move(self, direction = DIRECTION_DOWN, locations = None):
-	
+
 		if locations == None:
 			locations = self.locations
-			
+
 		if direction == DIRECTION_DOWN:
 			for index, location in enumerate(locations):
 				locations[index] = (location[0],location[1]+1)
@@ -73,8 +73,8 @@ class Piece:
 		elif direction == DIRECTION_RIGHT:
 			for index, location in enumerate(locations):
 				locations[index] = (location[0]+1,location[1])
-				
-				
+
+
 	# Direction == None for no direction (spawning)
 	def can_move(self, board, players, direction):
 
@@ -83,7 +83,7 @@ class Piece:
 		# If not spawning piece
 		if direction != None:
 			self.move(direction, test_locations)
-				
+
 		for location in test_locations:
 			if location[1] >= len(board)     \
 			or location[0] <  0              \
@@ -100,12 +100,12 @@ class Piece:
 						for other_location in player.active_piece.locations:
 							if other_location == location:
 								return CANT_MOVE_PIECE
-		
+
 		return CAN_MOVE
 
-		
+
 	def rotate(self, rotation_direction, locations = None, rotation = None):
-	
+
 		save_rotation = False
 		if locations == None:
 			locations = self.locations
@@ -115,7 +115,7 @@ class Piece:
 
 
 		new_rotation = rotation
-	
+
 		if self.piece_type == PIECE_TYPE_O: # for the meme
 			pass
 		elif self.piece_type == PIECE_TYPE_I or self.piece_type == PIECE_TYPE_S or self.piece_type == PIECE_TYPE_Z: # the two-rotation-position pieces
@@ -163,21 +163,20 @@ class Piece:
 		if save_rotation:
 			self.rotation = new_rotation
 
-				
-				
+
 	def can_rotate(self, board, players, rotation_direction):
-	
+
 		test_locations = copy(self.locations)
 		test_rotation = copy(self.rotation)
-		
+
 		self.rotate(rotation_direction, test_locations, test_rotation)
-				
+
 		for location in test_locations:
 			if location[1] >= len(board) or location[0] < 0 or location[0] >= len(board[0]):
 				return False
 			if board[location[1]][location[0]].tile_type != TILE_TYPE_BLANK:
 				return False
-		
+
 			for player in players:
 				if player.active_piece != None:
 					if player.active_piece.player_number != self.player_number:
@@ -187,13 +186,3 @@ class Piece:
 
 
 		return True
-
-
-
-
-
-
-
-
-
-

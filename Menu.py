@@ -62,6 +62,8 @@ class Menu(States):
 				if self.done == True:
 					# add 10 if LSHIFT is pressed
 					keys = pygame.key.get_pressed()
+					# set BOARD_WIDTH based on number of players
+					Globals.BOARD_WIDTH = 6 + 4 * Globals.PLAYER_COUNT
 					if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
 						Globals.CURRENT_LEVEL += 10
 					# get the game started

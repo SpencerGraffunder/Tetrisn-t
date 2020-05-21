@@ -7,7 +7,7 @@ PLAYER_COUNT = 1
 CURRENT_LEVEL = 0
 GAME_JUST_STARTED = False
 
-BOARD_WIDTH  = 14 # cannot be less than 4
+BOARD_WIDTH  = 10 # cannot be less than 4
 SINGLE_PLAYER_BOARD_WIDTH = 10
 MULTI_PLAYER_BOARD_WIDTH = 14
 BOARD_HEIGHT = 20 # should be about twice BOARD_WIDTH
