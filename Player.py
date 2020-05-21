@@ -1,33 +1,37 @@
 from Constants import *
+import Globals
 import pygame
 
 
 class Player:
 
 	def __init__(self, player_number):
-		self.active_piece = None
-
-		self.next_piece = None
-
-		self.next_piece_type = None
-
-		self.clear_animation_counter = 0
-		
-		self.fall_counter = 0
 		self.player_number = player_number
 
-		self.das_counter = 0
+		# piece given
+		self.active_piece    = None
+		self.next_piece      = None
+		self.next_piece_type = None
+
+		# clear/spawn
+		self.clear_animation_counter = 0
+		self.spawn_delay_counter     = 0
+		self.spawn_delay_threshold   = 10
+
+		# piece movement
+		self.fall_counter  = 0
+		self.das_counter   = 0
 		self.das_threshold = 0
-		self.down_counter = 0
+		self.down_counter  = 0
+
+		# controls
 		self.is_move_right_pressed = False
-		self.is_move_left_pressed = False
-		self.is_move_down_pressed = False
+		self.is_move_left_pressed  = False
+		self.is_move_down_pressed  = False
 
-		self.spawn_delay_counter = 0
-		self.spawn_delay_threshold = 10
-
-		self.player_state = TETRIS_STATE_SPAWN
-		
+		# state
+		self.player_state   = TETRIS_STATE_SPAWN
 		self.lines_to_clear = []
-		self.have_lines_shifted = False
 
+		# split the board into PLAYER_COUNT equal sections (using floats), find the middle of the section we care about using the average, and favor right via the columns being index by 0
+		self.spawn_column = int(((Globals.BOARD_WIDTH / Globals.PLAYER_COUNT) * player_number + (Globals.BOARD_WIDTH / Globals.PLAYER_COUNT) * (player_number + 1)) / 2)
