@@ -17,13 +17,11 @@ class Game(States):
 		States.__init__(self)
 
 		self.next = 'menu'
-		
-		self.das_threshold = 0
-		
-		self.spawn_delay_threshold = 10
-		
-		self.sprites = {}
 
+		self.das_threshold = 0
+		self.spawn_delay_threshold = 10
+
+		self.sprites = {}
 		# load sprites
 		if getattr(sys, 'frozen', False):
 			# if running from a single executable, get some path stuff to make it work
@@ -31,20 +29,21 @@ class Game(States):
 		else:
 			wd = ''
 		# Load sprites from image files and convert for performance
-		self.sprites[TILE_TYPE_BLANK]        = pygame.image.load(os.path.join(wd,'backgroundblock.bmp')).convert()
-		self.sprites[TILE_TYPE_IOT]          = pygame.image.load(os.path.join(wd,'IOTblock.bmp')).convert()
-		self.sprites[TILE_TYPE_JS]           = pygame.image.load(os.path.join(wd,'JSblock.bmp')).convert()
-		self.sprites[TILE_TYPE_LZ]           = pygame.image.load(os.path.join(wd,'LZblock.bmp')).convert()
-		
+		self.sprites[TILE_TYPE_BLANK] = pygame.image.load(os.path.join(wd,'backgroundblock.bmp')).convert()
+		self.sprites[TILE_TYPE_IOT]   = pygame.image.load(os.path.join(wd,'IOTblock.bmp')).convert()
+		self.sprites[TILE_TYPE_JS]    = pygame.image.load(os.path.join(wd,'JSblock.bmp')).convert()
+		self.sprites[TILE_TYPE_LZ]    = pygame.image.load(os.path.join(wd,'LZblock.bmp')).convert()
+
 		self.reset()
 
 
 	def reset(self):
 
 		self.board_width = Globals.SINGLE_PLAYER_BOARD_WIDTH if Globals.PLAYER_COUNT == 1 else Globals.MULTI_PLAYER_BOARD_WIDTH
+		Globals.TILE_SIZE = min(Globals.WINDOW_WIDTH,Globals.WINDOW_HEIGHT) // max(self.board_width,Globals.BOARD_HEIGHT)
 		# Fill board with empty tiles
 		self.board = [[Tile() for j in range(self.board_width)] for i in range(Globals.BOARD_HEIGHT+BOARD_HEIGHT_BUFFER)]
-		
+
 		# find the greatest level less than CURRENT_LEVEL in FALL_DELAY_VALUES and set the speed to that level's speed
 		x = Globals.CURRENT_LEVEL
 		while x >= 0:
@@ -67,11 +66,11 @@ class Game(States):
 		self.das_counter = 0
 		self.score = 0
 
-		self.players = [Player(x) for x in range(Globals.PLAYER_COUNT)]
+		self.players = [Player(x, self.board_width) for x in range(Globals.PLAYER_COUNT)]
 
 
 	def do_event(self, event):
-    
+
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_BACKQUOTE:
 				pdb.set_trace()
