@@ -40,6 +40,7 @@ class Game(States):
 	def reset(self):
 
 		self.board_width = Globals.SINGLE_PLAYER_BOARD_WIDTH if Globals.PLAYER_COUNT == 1 else Globals.MULTI_PLAYER_BOARD_WIDTH
+		Globals.TILE_SIZE = min(Globals.WINDOW_WIDTH,Globals.WINDOW_HEIGHT) // max(self.board_width,Globals.BOARD_HEIGHT)
 		# Fill board with empty tiles
 		self.board = [[Tile() for j in range(self.board_width)] for i in range(Globals.BOARD_HEIGHT+BOARD_HEIGHT_BUFFER)]
 
@@ -65,7 +66,7 @@ class Game(States):
 		self.das_counter = 0
 		self.score = 0
 
-		self.players = [Player(x) for x in range(Globals.PLAYER_COUNT)]
+		self.players = [Player(x, self.board_width) for x in range(Globals.PLAYER_COUNT)]
 
 
 	def do_event(self, event):
@@ -249,7 +250,6 @@ class Game(States):
 
 				if len(self.players[player_number].lines_to_clear) > 0:
 					self.players[player_number].player_state = TETRIS_STATE_CLEAR
-					self.players[player_number].have_lines_shifted = False
 					self.players[player_number].clear_animation_counter = 0
 				elif len(self.players[player_number].lines_to_clear) == 0:
 					self.players[player_number].player_state = TETRIS_STATE_SPAWN_DELAY
