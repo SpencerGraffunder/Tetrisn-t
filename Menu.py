@@ -22,8 +22,12 @@ class Menu(States):
 		
 			if self.menu_state == PLAYER_NUMBER_MENU_STATE: # player number select
 			
-				# Set the player count based on the key pressed
-				Globals.PLAYER_COUNT = int(pygame.key.name(event.key))
+				try:
+					# Set the player count based on the key pressed
+					Globals.PLAYER_COUNT = int(pygame.key.name(event.key))
+				except ValueError:
+					# Value was not an int so just return and wait for a real int
+					return
 				
 				# Bound the player count (can add more later)
 				if Globals.PLAYER_COUNT != 1:
@@ -36,13 +40,11 @@ class Menu(States):
 					
 				try:
 					# Get the value of the key pressed and cast to int
-					key_pressed = int(pygame.key.name(event.key))
+					Globals.CURRENT_LEVEL = int(pygame.key.name(event.key))
 				except ValueError:
 					# Value was not an int so just return and wait for a real int
 					return
 				
-				Globals.CURRENT_LEVEL = key_pressed
-
 				# add 10 if LSHIFT is pressed
 				keys = pygame.key.get_pressed()
 				if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
