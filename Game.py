@@ -30,9 +30,9 @@ class Game(States):
 			wd = ''
 		# Load sprites from image files and convert for performance
 		self.sprites[TILE_TYPE_BLANK] = pygame.image.load(os.path.join(wd,'backgroundblock.bmp')).convert()
-		self.sprites[TILE_TYPE_IOT]   = pygame.image.load(os.path.join(wd,'IOTblock.bmp')).convert()
-		self.sprites[TILE_TYPE_JS]    = pygame.image.load(os.path.join(wd,'JSblock.bmp')).convert()
-		self.sprites[TILE_TYPE_LZ]    = pygame.image.load(os.path.join(wd,'LZblock.bmp')).convert()
+		self.sprites[TILE_TYPE_IOT]	  = pygame.image.load(os.path.join(wd,'IOTblock.bmp')).convert()
+		self.sprites[TILE_TYPE_JS]	  = pygame.image.load(os.path.join(wd,'JSblock.bmp')).convert()
+		self.sprites[TILE_TYPE_LZ]	  = pygame.image.load(os.path.join(wd,'LZblock.bmp')).convert()
 
 		self.reset()
 
@@ -172,7 +172,7 @@ class Game(States):
 						if self.players[player_number].next_piece_type == active_piece_type:
 							self.players[player_number].next_piece_type = random.choice([PIECE_TYPE_I,PIECE_TYPE_O,PIECE_TYPE_T,PIECE_TYPE_L,PIECE_TYPE_J,PIECE_TYPE_Z,PIECE_TYPE_S])
 						self.players[player_number].active_piece = Piece(active_piece_type, player_number, self.players[player_number].spawn_column) # this puts the active piece in the board
-						self.players[player_number].next_piece   = Piece(self.players[player_number].next_piece_type, player_number, self.players[player_number].spawn_column) # this puts the next piece in the next piece box
+						self.players[player_number].next_piece	 = Piece(self.players[player_number].next_piece_type, player_number, self.players[player_number].spawn_column) # this puts the next piece in the next piece box
 						self.players[player_number].player_state = TETRIS_STATE_PLAY
 						self.players[player_number].fall_counter = 0
 						self.players[player_number].spawn_delay_counter = 0
@@ -218,7 +218,7 @@ class Game(States):
 				self.players[player_number].fall_counter += 1
 
 				if self.players[player_number].fall_counter >= self.fall_threshold and self.players[player_number].active_piece != None:
-					if   self.players[player_number].active_piece.can_move(self.board, self.players, DIRECTION_DOWN) == CANT_MOVE_BOARD:
+					if	 self.players[player_number].active_piece.can_move(self.board, self.players, DIRECTION_DOWN) == CANT_MOVE_BOARD:
 						self.lock_piece(player_number)
 					elif self.players[player_number].active_piece.can_move(self.board, self.players, DIRECTION_DOWN) == CAN_MOVE:
 						self.players[player_number].active_piece.move(DIRECTION_DOWN)
@@ -321,6 +321,7 @@ class Game(States):
 
 		self.draw(screen)
 
+
 	def draw(self, screen):
 	
 		screen.fill((150, 150, 150))
@@ -340,47 +341,49 @@ class Game(States):
 			elif self.board_width % 2 == 1: # odd board width
 				center = (self.board_width+1) // 2
 
-
+			# Draw active piece
 			if player.active_piece != None:
 				for location in player.active_piece.locations:
 					scaled_image = pygame.transform.scale(self.sprites[player.active_piece.tile_type], (Globals.TILE_SIZE, Globals.TILE_SIZE))
 					screen.blit(scaled_image, (location[0] * Globals.TILE_SIZE + centering_offset, (location[1] - BOARD_HEIGHT_BUFFER) * Globals.TILE_SIZE))
 
-		# Need to generalize for n players
-		# Offset from center of screen to start drawing the next piece
-		p0_offset = - ((self.board_width // 2) * Globals.TILE_SIZE) - (5 * Globals.TILE_SIZE)
-		p1_offset =    (self.board_width // 2) * Globals.TILE_SIZE  + (1 * Globals.TILE_SIZE)
-		center_screen = Globals.WINDOW_WIDTH // 2
-
-		# Draw next piece
-		if self.players[0].next_piece != None:
-			for row_index in range(2, 6):
-				for col_index in range(2, 6):
-					for location in self.players[0].next_piece.locations:
-						if location == (col_index, row_index):
-							scaled_image = pygame.transform.scale(self.sprites[self.players[0].next_piece.tile_type], (Globals.TILE_SIZE, Globals.TILE_SIZE))
-							x = center_screen + p0_offset + ((location[0] - 2) * Globals.TILE_SIZE)
-							y = (location[1] - 1) * Globals.TILE_SIZE
-							screen.blit(scaled_image, (x, y))
-
-		if len(self.players) > 1:
-			if self.players[1].next_piece != None:
-				for row_index in range(2, 4):
-					for col_index in range(8, 12):
-						for location in self.players[1].next_piece.locations:
-							if location == (col_index, row_index):
-								scaled_image = pygame.transform.scale(self.sprites[self.players[1].next_piece.tile_type], (Globals.TILE_SIZE, Globals.TILE_SIZE))
-								x = center_screen + p1_offset + ((location[0] - 8) * Globals.TILE_SIZE)
-								y = (location[1] - 1) * Globals.TILE_SIZE
-								screen.blit(scaled_image, (x, y))
+			# Draw next piece
+			if player.player_number != None and player.next_piece != None:
+				self.draw_next_piece(screen, player.player_number)
 
 		# display score
-		score_str1 = 'Score:'
-		text.draw(screen, score_str1, 'SMALL', ((Globals.WINDOW_WIDTH) - (4 * Globals.TILE_SIZE), (Globals.BOARD_HEIGHT - 3) * Globals.TILE_SIZE), (0, 128, 0))
+		score_title = 'Score:'
+		text.draw(screen, score_title, 'SMALL', ((Globals.WINDOW_WIDTH) - (4 * Globals.TILE_SIZE), (Globals.BOARD_HEIGHT - 3) * Globals.TILE_SIZE), (0, 128, 0))
 
-		score_str2 = '%d' % (self.score)
-		text.draw(screen, score_str2, 'SMALL',  ((Globals.WINDOW_WIDTH) - (4 * Globals.TILE_SIZE), (Globals.BOARD_HEIGHT - 2) * Globals.TILE_SIZE), (0, 128, 0))
+		score_val = '%d' % (self.score)
+		text.draw(screen, score_val, 'SMALL',	((Globals.WINDOW_WIDTH) - (4 * Globals.TILE_SIZE), (Globals.BOARD_HEIGHT - 2) * Globals.TILE_SIZE), (0, 128, 0))
 
 		# display level
 		level_str = 'Level: %d' % (Globals.CURRENT_LEVEL)
 		text.draw(screen, level_str, 'SMALL', ((Globals.WINDOW_WIDTH) - (4 * Globals.TILE_SIZE), (Globals.BOARD_HEIGHT - 4) * Globals.TILE_SIZE), (0, 128, 0))
+
+
+	def draw_next_piece(self, screen, player_number):
+	
+		screen_center_x = Globals.WINDOW_WIDTH // 2
+		player = self.players[player_number]
+		
+		if player_number%2 == 0:
+			# should be drawn on the left
+			x_offset = screen_center_x-(((self.board_width//2)+(3))*Globals.TILE_SIZE)
+		else:
+			# draw on the right
+			x_offset = screen_center_x+(((self.board_width//2)+(3))*Globals.TILE_SIZE)
+			
+		y_offset = (player_number//2)*((7)*Globals.TILE_SIZE)
+		
+		for tile in player.next_piece.locations:
+			scaled_image = pygame.transform.scale(self.sprites[player.next_piece.tile_type], (Globals.TILE_SIZE, Globals.TILE_SIZE))
+			screen.blit(scaled_image, (x_offset+((tile[0]-player.spawn_column)*Globals.TILE_SIZE), (tile[1])*Globals.TILE_SIZE+y_offset))
+			
+			
+			
+			
+		
+		
+		
