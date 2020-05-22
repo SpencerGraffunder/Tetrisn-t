@@ -24,9 +24,9 @@ class Text:
 			wd = ''
 		
 		self.fonts = {
-			'LARGE'	 : pygame.font.Font(os.path.join(wd, 'munro-small.ttf'), LARGE_FONT_SIZE),
-			'MEDIUM' : pygame.font.Font(os.path.join(wd, 'munro-small.ttf'), MEDIUM_FONT_SIZE),
-			'SMALL'	 : pygame.font.Font(os.path.join(wd, 'munro-small.ttf'), SMALL_FONT_SIZE)
+			'LARGE'	 : pygame.font.Font(os.path.join(wd, 'resources/munro-small.ttf'), LARGE_FONT_SIZE),
+			'MEDIUM' : pygame.font.Font(os.path.join(wd, 'resources/munro-small.ttf'), MEDIUM_FONT_SIZE),
+			'SMALL'	 : pygame.font.Font(os.path.join(wd, 'resources/munro-small.ttf'), SMALL_FONT_SIZE)
 		}
 
 

@@ -29,10 +29,10 @@ class Game(States):
 		else:
 			wd = ''
 		# Load sprites from image files and convert for performance
-		self.sprites[TILE_TYPE_BLANK] = pygame.image.load(os.path.join(wd,'backgroundblock.bmp')).convert()
-		self.sprites[TILE_TYPE_IOT]	  = pygame.image.load(os.path.join(wd,'IOTblock.bmp')).convert()
-		self.sprites[TILE_TYPE_JS]	  = pygame.image.load(os.path.join(wd,'JSblock.bmp')).convert()
-		self.sprites[TILE_TYPE_LZ]	  = pygame.image.load(os.path.join(wd,'LZblock.bmp')).convert()
+		self.sprites[TILE_TYPE_BLANK] = pygame.image.load(os.path.join(wd,'resources/backgroundblock.bmp')).convert()
+		self.sprites[TILE_TYPE_IOT]	  = pygame.image.load(os.path.join(wd,'resources/IOTblock.bmp')).convert()
+		self.sprites[TILE_TYPE_JS]	  = pygame.image.load(os.path.join(wd,'resources/JSblock.bmp')).convert()
+		self.sprites[TILE_TYPE_LZ]	  = pygame.image.load(os.path.join(wd,'resources/LZblock.bmp')).convert()
 
 		self.reset()
 
