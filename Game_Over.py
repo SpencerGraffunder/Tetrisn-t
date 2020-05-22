@@ -1,5 +1,6 @@
 from States import *
 import pygame
+import Globals
 from Constants import *
 from Text import *
 

@@ -13,61 +13,50 @@ class Menu(States):
 		self.next = 'game'
 
 	def do_event(self, event):
-		if self.menu_state == PLAYER_NUMBER_MENU_STATE: # player number select
-			if event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_1 or event.key == pygame.K_KP1:
-					Globals.PLAYER_COUNT = 1
-					self.menu_state = LEVEL_SELECT_MENU_STATE
-				if event.key == pygame.K_0 or event.key == pygame.K_KP0:
+	
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_ESCAPE:
+				# ESC pressed
+				self.quit = True
+				return
+		
+			if self.menu_state == PLAYER_NUMBER_MENU_STATE: # player number select
+			
+				try:
+					# Set the player count based on the key pressed
+					Globals.PLAYER_COUNT = int(pygame.key.name(event.key))
+				except ValueError:
+					# Value was not an int so just return and wait for a real int
+					return
+				
+				# Bound the player count (can add more later)
+				if Globals.PLAYER_COUNT != 1:
 					Globals.PLAYER_COUNT = 2
-					self.menu_state = LEVEL_SELECT_MENU_STATE
-				if event.key == pygame.K_ESCAPE:
-					self.quit = True
-		elif self.menu_state == LEVEL_SELECT_MENU_STATE: # level select
-			if event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_0 or event.key == pygame.K_KP0:
-					Globals.CURRENT_LEVEL = 0
-					self.done = True
-				if event.key == pygame.K_1 or event.key == pygame.K_KP1:
-					Globals.CURRENT_LEVEL = 1
-					self.done = True
-				if event.key == pygame.K_2 or event.key == pygame.K_KP2:
-					Globals.CURRENT_LEVEL = 2
-					self.done = True
-				if event.key == pygame.K_3 or event.key == pygame.K_KP3:
-					Globals.CURRENT_LEVEL = 3
-					self.done = True
-				if event.key == pygame.K_4 or event.key == pygame.K_KP4:
-					Globals.CURRENT_LEVEL = 4
-					self.done = True
-				if event.key == pygame.K_5 or event.key == pygame.K_KP5:
-					Globals.CURRENT_LEVEL = 5
-					self.done = True
-				if event.key == pygame.K_6 or event.key == pygame.K_KP6:
-					Globals.CURRENT_LEVEL = 6
-					self.done = True
-				if event.key == pygame.K_7 or event.key == pygame.K_KP7:
-					Globals.CURRENT_LEVEL = 7
-					self.done = True
-				if event.key == pygame.K_8 or event.key == pygame.K_KP8:
-					Globals.CURRENT_LEVEL = 8
-					self.done = True
-				if event.key == pygame.K_9 or event.key == pygame.K_KP9:
-					Globals.CURRENT_LEVEL = 9
-					self.done = True
-				if event.key == pygame.K_ESCAPE:
-					self.quit = True
-
+					
+				# Move to the next menu state
+				self.menu_state = LEVEL_SELECT_MENU_STATE
+					
+			elif self.menu_state == LEVEL_SELECT_MENU_STATE: # level select
+					
+				try:
+					# Get the value of the key pressed and cast to int
+					Globals.CURRENT_LEVEL = int(pygame.key.name(event.key))
+				except ValueError:
+					# Value was not an int so just return and wait for a real int
+					return
+				
 				# add 10 if LSHIFT is pressed
 				keys = pygame.key.get_pressed()
 				if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
-					current_level += 10
+					Globals.CURRENT_LEVEL += 10
 
-				# when we get a keypress, set the state back to player number select state so when you hit ESC it goes there
-				if self.done == True:
-					Globals.GAME_JUST_STARTED = True
-					self.menu_state = PLAYER_NUMBER_MENU_STATE
+				# start the game
+				Globals.GAME_JUST_STARTED = True
+				# go to the menu where the user chooses the number of players after quitting the game
+				self.menu_state = PLAYER_NUMBER_MENU_STATE
 
+				self.done = True
+				
 
 	def update(self, screen, dt):
 		self.draw(screen)
