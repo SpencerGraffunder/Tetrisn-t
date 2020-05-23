@@ -1,4 +1,4 @@
-from Constants import *
+from lib.Constants import *
 
 class Tile:
 	

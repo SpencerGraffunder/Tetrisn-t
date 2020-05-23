@@ -1,8 +1,8 @@
-from Constants import *
+from lib.Constants import *
 import pdb
 import sys
 from copy import copy
-import Globals
+import lib.Globals as Globals
 
 class Piece:
 

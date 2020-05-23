@@ -1,13 +1,12 @@
 import pygame
-from Constants import *
-import Globals
-from Game import *
+from lib.Constants import *
+import lib.Globals as Globals
 import pdb
 
 class Control:
 	def __init__(self):
 		self.done = False
-		self.screen = pygame.display.set_mode((Globals.WINDOW_WIDTH, Globals.WINDOW_HEIGHT))
+		self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 		self.clock = pygame.time.Clock()
 
 	def setup_states(self, state_dict, start_state):
@@ -22,20 +21,16 @@ class Control:
 			self.flip_state()
 		self.state.update(self.screen, dt)
 
+	def draw(self):
+		self.state.draw(self.screen)
+
 	def flip_state(self):
 		self.state.done = False
 		self.state_name = self.state.next
 		self.state = self.state_dict[self.state_name]
 
-	def event_loop(self):
-		for event in pygame.event.get():
-			if event.type == pygame.QUIT:
-				self.done = True
-			self.state.do_event(event)
-
 	def main_game_loop(self):
 		while not self.done:
 			delta_time = self.clock.tick(FRAME_RATE)/1000.0
-			self.event_loop()
 			self.update(delta_time)
-			pygame.display.update()
+			self.draw()

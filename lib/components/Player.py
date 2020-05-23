@@ -1,7 +1,6 @@
-from Constants import *
-import Globals
+from lib.Constants import *
+import lib.Globals as Globals
 import pygame
-import Globals
 
 class Player:
 
