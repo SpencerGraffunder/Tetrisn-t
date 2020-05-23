@@ -12,6 +12,7 @@ from Constants import *
 from Text import *
 
 class Game(States):
+
 	def __init__(self):
 
 		States.__init__(self)
@@ -65,7 +66,6 @@ class Game(States):
 		self.time_next_rotate = 0
 		self.das_counter = 0
 		self.score = 0
-		self.frame_counter = 0
 
 		self.players = [Player(x, self.board_width) for x in range(Globals.PLAYER_COUNT)]
 
@@ -116,6 +116,7 @@ class Game(States):
 
 
 	def lock_piece(self, player_number):
+	
 		piece_locked_into_another_piece = False
 		max_row_index = 0
 		for location in self.players[player_number].active_piece.locations:
@@ -139,8 +140,6 @@ class Game(States):
 
 
 	def update(self, screen, dt):
-
-		self.frame_counter+=1
 
 		if Globals.GAME_JUST_STARTED:
 			self.reset()
@@ -374,9 +373,3 @@ class Game(States):
 		for tile in player.next_piece.locations:
 			scaled_image = pygame.transform.scale(self.sprites[player.next_piece.tile_type], (Globals.TILE_SIZE, Globals.TILE_SIZE))
 			screen.blit(scaled_image, (x_offset+((tile[0]-player.spawn_column)*Globals.TILE_SIZE), (tile[1])*Globals.TILE_SIZE+y_offset))
-
-
-
-
-
-
