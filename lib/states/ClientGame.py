@@ -144,9 +144,3 @@ class ClientGame(States):
             screen.blit(scaled_image, (
             x_offset + ((tile[0] - player.spawn_column) * self.state.tile_size),
             (tile[1]) * self.state.tile_size + y_offset))
-
-
-
-
-
-

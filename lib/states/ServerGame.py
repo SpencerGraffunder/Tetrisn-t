@@ -57,6 +57,7 @@ class ServerGame(States):
 		self.time_next_rotate = 0
 		self.das_counter = 0
 		self.score = 0
+                self.frame_counter = 0
 
 		self.state.players = [Player(x, self.state.board_width) for x in range(Globals.PLAYER_COUNT)]
 
@@ -100,8 +101,10 @@ class ServerGame(States):
 			if event.type == pygame.KEYUP:
 				if event.key == KEYBINDINGS[player_number][KEYBINDING_LEFT]:
 					self.state.players[player_number].is_move_left_pressed = False
+                                        self.players[player_number].das_counter = 0
 				if event.key == KEYBINDINGS[player_number][KEYBINDING_RIGHT]:
 					self.state.players[player_number].is_move_right_pressed = False
+                                        self.players[player_number].das_counter = 0
 				if event.key == KEYBINDINGS[player_number][KEYBINDING_DOWN]:
 					self.state.players[player_number].is_move_down_pressed = False
 
@@ -129,6 +132,8 @@ class ServerGame(States):
 
 
 	def update(self, screen, dt):
+		self.frame_counter += 1
+
 		while Globals.connection.inputs:
 			self.input = Globals.connection.get_input()
 
@@ -140,17 +145,6 @@ class ServerGame(States):
 				Globals.GAME_JUST_STARTED = False
 
 		for player_number in range(Globals.PLAYER_COUNT):
-
-			keys = pygame.key.get_pressed()
-			if not self.state.players[player_number].is_move_left_pressed:
-				if keys[KEYBINDINGS[player_number][KEYBINDING_LEFT]]:
-					self.state.players[player_number].is_move_left_pressed = True
-					das_counter = 0
-
-			if not self.state.players[player_number].is_move_right_pressed:
-				if keys[KEYBINDINGS[player_number][KEYBINDING_RIGHT]]:
-					self.state.players[player_number].is_move_right_pressed = True
-					das_counter = 0
 
 			if self.state.players[player_number].player_state == TETRIS_STATE_SPAWN:
 
