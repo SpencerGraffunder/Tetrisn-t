@@ -57,7 +57,6 @@ class ServerGame(States):
 		self.time_next_rotate = 0
 		self.das_counter = 0
 		self.score = 0
-                self.frame_counter = 0
 
 		self.state.players = [Player(x, self.state.board_width) for x in range(Globals.PLAYER_COUNT)]
 
@@ -101,14 +100,15 @@ class ServerGame(States):
 			if event.type == pygame.KEYUP:
 				if event.key == KEYBINDINGS[player_number][KEYBINDING_LEFT]:
 					self.state.players[player_number].is_move_left_pressed = False
-                                        self.players[player_number].das_counter = 0
+					self.state.players[player_number].das_counter = 0
 				if event.key == KEYBINDINGS[player_number][KEYBINDING_RIGHT]:
 					self.state.players[player_number].is_move_right_pressed = False
-                                        self.players[player_number].das_counter = 0
+					self.state.players[player_number].das_counter = 0
 				if event.key == KEYBINDINGS[player_number][KEYBINDING_DOWN]:
 					self.state.players[player_number].is_move_down_pressed = False
 
 	def lock_piece(self, player_number):
+
 		piece_locked_into_another_piece = False
 		max_row_index = 0
 		for location in self.state.players[player_number].active_piece.locations:
@@ -132,7 +132,6 @@ class ServerGame(States):
 
 
 	def update(self, screen, dt):
-		self.frame_counter += 1
 
 		while Globals.connection.inputs:
 			self.input = Globals.connection.get_input()

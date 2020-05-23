@@ -141,6 +141,6 @@ class ClientGame(States):
             scaled_image = pygame.transform.scale(
                 self.sprites[player.next_piece.tile_type],
                 (self.state.tile_size, self.state.tile_size))
-            screen.blit(scaled_image, (
-            x_offset + ((tile[0] - player.spawn_column) * self.state.tile_size),
-            (tile[1]) * self.state.tile_size + y_offset))
+            screen.blit(scaled_image,
+                        (x_offset+((tile[0]-player.spawn_column)*self.state.tile_size),
+                         (tile[1])*Globals.TILE_SIZE+y_offset))
