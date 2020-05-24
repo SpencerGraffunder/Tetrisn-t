@@ -30,8 +30,8 @@ class ServerGame(States):
     def reset(self):
         self.state = GameState()
 
-        self.state.board_width = Globals.SINGLE_PLAYER_BOARD_WIDTH if Globals.PLAYER_COUNT == 1 else Globals.MULTI_PLAYER_BOARD_WIDTH
-        self.state.TILE_SIZE = min(WINDOW_WIDTH,WINDOW_HEIGHT) // max(self.state.board_width,Globals.BOARD_HEIGHT)
+        self.state.board_width = (4 * Globals.PLAYER_COUNT) + 6
+        self.state.tile_size = min(WINDOW_WIDTH,WINDOW_HEIGHT) // max(self.state.board_width,Globals.BOARD_HEIGHT)
         # Fill board with empty tiles
         self.state.board = [[Tile() for j in range(self.state.board_width)] for i in range(Globals.BOARD_HEIGHT+BOARD_HEIGHT_BUFFER)]
 

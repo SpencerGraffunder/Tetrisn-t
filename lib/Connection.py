@@ -40,8 +40,8 @@ class PlayerInput:
 
 class GameState:
     def __init__(self):
-        self.tile_size = min(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT) // max(Globals.SINGLE_PLAYER_BOARD_WIDTH,Globals.BOARD_HEIGHT)
-        self.board_width = Globals.SINGLE_PLAYER_BOARD_WIDTH
+        self.tile_size =  (4 * Globals.PLAYER_COUNT) + 6
+        self.board_width = Globals.BOARD_WIDTH
         self.board = []
         self.players = []
         self.current_level = 0
