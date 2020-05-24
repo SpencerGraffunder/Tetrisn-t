@@ -48,33 +48,33 @@ TETRIS_STATE_GAME_OVER   = 6
 
 FALL_DELAY_VALUES = {
   # level  frames till fall
-	0:     48,
-	1:     43,
-	2:     38,
-	3:     33,
-	4:     28,
-	5:     23,
-	6:     18,
-	7:     13,
-	8:     8,
-	9:     6,
-	10:    5,
-	13:    4,
-	16:    3,
-	19:    2,
-	29:    1
+    0:     48,
+    1:     43,
+    2:     38,
+    3:     33,
+    4:     28,
+    5:     23,
+    6:     18,
+    7:     13,
+    8:     8,
+    9:     6,
+    10:    5,
+    13:    4,
+    16:    3,
+    19:    2,
+    29:    1
 }
 
 DAS_VALUES = {
   # mode   repeated delay   first delay
-	1:     (6,              16),
-	2:     (3,              8)
+    1:     (6,              16),
+    2:     (3,              8)
 }
 
 KEYBINDINGS = {
 # player,      left,       down,       right,      ccw,        cw
-	0 : (pygame.K_a, pygame.K_s, pygame.K_d, pygame.K_q, pygame.K_e),
-	1 : (pygame.K_j, pygame.K_k, pygame.K_l, pygame.K_u, pygame.K_o)
+    0 : (pygame.K_a, pygame.K_s, pygame.K_d, pygame.K_q, pygame.K_e),
+    1 : (pygame.K_j, pygame.K_k, pygame.K_l, pygame.K_u, pygame.K_o)
 }
 KEYBINDING_LEFT = 0
 KEYBINDING_DOWN = 1

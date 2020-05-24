@@ -12,30 +12,30 @@ from lib.states.Control import *
 from lib.components.Text import *
 
 class Client:
-	def __init__(self):
-		pygame.init()
-		self.program = Control()
+    def __init__(self):
+        pygame.init()
+        self.program = Control()
 
-		self.state_dict = {
-			'menu': Menu(),
-			'client game': ClientGame(),
-			'game over': Game_Over()
-		}
+        self.state_dict = {
+            'menu': Menu(),
+            'client game': ClientGame(),
+            'game over': Game_Over()
+        }
 
-	def start(self):
-			"""
-		client_thread = Thread(target=self.client_loop)
-		client_thread.start()
+    def start(self):
+            """
+        client_thread = Thread(target=self.client_loop)
+        client_thread.start()
 
-	def client_loop(self):
-		try:"""
-			pygame.display.set_caption('Tetrisn\'t')
-			self.program.setup_states(self.state_dict, 'menu')
-			text.load_fonts()
-			self.program.main_game_loop()
-			pygame.quit()
-			sys.exit()
-			"""
-		except Exception as e:
-			print(e)
-	       """
+    def client_loop(self):
+        try:"""
+            pygame.display.set_caption('Tetrisn\'t')
+            self.program.setup_states(self.state_dict, 'menu')
+            text.load_fonts()
+            self.program.main_game_loop()
+            pygame.quit()
+            sys.exit()
+            """
+        except Exception as e:
+            print(e)
+           """

@@ -13,23 +13,23 @@ from lib.components.Text import *
 from lib.Connection import GameState
 
 class Connecting(States):
-	def __init__(self):
-		States.__init__(self)
+    def __init__(self):
+        States.__init__(self)
 
-		self.next = 'server game'
+        self.next = 'server game'
 
-		self.reset()
+        self.reset()
 
-	def reset(self):
-		self.done = False
+    def reset(self):
+        self.done = False
 
-	def update(self, screen, dt):
-		while Globals.connection.inputs:
-			player_input = Globals.connection.get_input()
-			if player_input.new_game:
-				self.done = True
-				Globals.connection.add_input(player_input)
-				break
+    def update(self, screen, dt):
+        while Globals.connection.inputs:
+            player_input = Globals.connection.get_input()
+            if player_input.new_game:
+                self.done = True
+                Globals.connection.add_input(player_input)
+                break
 
-	def draw(self, screen):
-		pass
+    def draw(self, screen):
+        pass
