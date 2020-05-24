@@ -103,6 +103,7 @@ class Game(States):
 				if event.key == KEYBINDINGS[player_number][KEYBINDING_DOWN]:
 					self.players[player_number].is_move_down_pressed = True
 					self.players[player_number].down_counter = 0
+					self.players[player_number].das_counter = 0
 
 			if event.type == pygame.KEYUP:
 				if event.key == KEYBINDINGS[player_number][KEYBINDING_LEFT]:
