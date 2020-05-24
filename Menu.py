@@ -13,38 +13,41 @@ class Menu(States):
         self.next = 'game'
 
     def do_event(self, event):
-    
+
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 # ESC pressed
                 self.quit = True
                 return
-        
+
             if self.menu_state == PLAYER_NUMBER_MENU_STATE: # player number select
-            
+
                 try:
                     # Set the player count based on the key pressed
                     Globals.PLAYER_COUNT = int(pygame.key.name(event.key))
                 except ValueError:
                     # Value was not an int so just return and wait for a real int
                     return
-                
+
                 # Bound the player count (can add more later)
                 if Globals.PLAYER_COUNT != 1:
                     Globals.PLAYER_COUNT = 2
-                    
+
+                Globals.BOARD_WIDTH = (4 * Globals.PLAYER_COUNT) + 6
+                TILE_SIZE = min(Globals.WINDOW_WIDTH,Globals.WINDOW_HEIGHT) // max(Globals.BOARD_WIDTH,Globals.BOARD_HEIGHT)
+
                 # Move to the next menu state
                 self.menu_state = LEVEL_SELECT_MENU_STATE
-                    
+
             elif self.menu_state == LEVEL_SELECT_MENU_STATE: # level select
-                    
+
                 try:
                     # Get the value of the key pressed and cast to int
                     Globals.CURRENT_LEVEL = int(pygame.key.name(event.key))
                 except ValueError:
                     # Value was not an int so just return and wait for a real int
                     return
-                
+
                 # add 10 if LSHIFT is pressed
                 keys = pygame.key.get_pressed()
                 if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
@@ -56,7 +59,7 @@ class Menu(States):
                 self.menu_state = PLAYER_NUMBER_MENU_STATE
 
                 self.done = True
-                
+
 
     def update(self, screen, dt):
         self.draw(screen)
