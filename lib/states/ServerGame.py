@@ -106,6 +106,7 @@ class ServerGame(States):
 					self.state.players[player_number].das_counter = 0
 				if event.key == KEYBINDINGS[player_number][KEYBINDING_DOWN]:
 					self.state.players[player_number].is_move_down_pressed = False
+					self.state.players[player_number].das_counter = 0
 
 	def lock_piece(self, player_number):
 
