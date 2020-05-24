@@ -14,9 +14,9 @@ pygame.init()
 program = Control()
 
 state_dict = {
-	'menu': Menu(),
-	'game': Game(),
-	'game over': Game_Over()
+    'menu': Menu(),
+    'game': Game(),
+    'game over': Game_Over()
 }
 
 # logo = pygame.image.load('iconsmall.bmp')
