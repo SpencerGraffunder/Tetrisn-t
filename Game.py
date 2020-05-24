@@ -12,6 +12,7 @@ from Constants import *
 from Text import *
 
 class Game(States):
+
 	def __init__(self):
 
 		States.__init__(self)
@@ -91,28 +92,32 @@ class Game(States):
 							self.players[player_number].active_piece.rotate(ROTATION_CW)
 							self.time_to_rotate = False
 
-					if event.key == KEYBINDINGS[player_number][KEYBINDING_LEFT]:
-						self.players[player_number].is_move_left_pressed = True
-						self.players[player_number].das_threshold = 0
-						self.players[player_number].das_counter = 0
-					if event.key == KEYBINDINGS[player_number][KEYBINDING_RIGHT]:
-						self.players[player_number].is_move_right_pressed = True
-						self.players[player_number].das_threshold = 0
-						self.das_counter = 0
-					if event.key == KEYBINDINGS[player_number][KEYBINDING_DOWN]:
-						self.players[player_number].is_move_down_pressed = True
-						self.players[player_number].down_counter = 0
+				if event.key == KEYBINDINGS[player_number][KEYBINDING_LEFT]:
+					self.players[player_number].is_move_left_pressed = True
+					self.players[player_number].das_threshold = 0
+					self.players[player_number].das_counter = 0
+				if event.key == KEYBINDINGS[player_number][KEYBINDING_RIGHT]:
+					self.players[player_number].is_move_right_pressed = True
+					self.players[player_number].das_threshold = 0
+					self.players[player_number].das_counter = 0
+				if event.key == KEYBINDINGS[player_number][KEYBINDING_DOWN]:
+					self.players[player_number].is_move_down_pressed = True
+					self.players[player_number].down_counter = 0
+					self.players[player_number].das_counter = 0
 
 			if event.type == pygame.KEYUP:
 				if event.key == KEYBINDINGS[player_number][KEYBINDING_LEFT]:
 					self.players[player_number].is_move_left_pressed = False
+					self.players[player_number].das_counter = 0
 				if event.key == KEYBINDINGS[player_number][KEYBINDING_RIGHT]:
 					self.players[player_number].is_move_right_pressed = False
+					self.players[player_number].das_counter = 0
 				if event.key == KEYBINDINGS[player_number][KEYBINDING_DOWN]:
 					self.players[player_number].is_move_down_pressed = False
 
 
 	def lock_piece(self, player_number):
+	
 		piece_locked_into_another_piece = False
 		max_row_index = 0
 		for location in self.players[player_number].active_piece.locations:
@@ -142,17 +147,6 @@ class Game(States):
 			Globals.GAME_JUST_STARTED = False
 
 		for player_number in range(Globals.PLAYER_COUNT):
-
-			keys = pygame.key.get_pressed()
-			if not self.players[player_number].is_move_left_pressed:
-				if keys[KEYBINDINGS[player_number][KEYBINDING_LEFT]]:
-					self.players[player_number].is_move_left_pressed = True
-					das_counter = 0
-
-			if not self.players[player_number].is_move_right_pressed:
-				if keys[KEYBINDINGS[player_number][KEYBINDING_RIGHT]]:
-					self.players[player_number].is_move_right_pressed = True
-					das_counter = 0
 
 			if self.players[player_number].player_state == TETRIS_STATE_SPAWN:
 
@@ -323,7 +317,7 @@ class Game(States):
 
 
 	def draw(self, screen):
-	
+
 		screen.fill((150, 150, 150))
 
 		centering_offset = (Globals.WINDOW_WIDTH - (Globals.TILE_SIZE * self.board_width)) // 2
@@ -364,26 +358,19 @@ class Game(States):
 
 
 	def draw_next_piece(self, screen, player_number):
-	
+
 		screen_center_x = Globals.WINDOW_WIDTH // 2
 		player = self.players[player_number]
-		
+
 		if player_number%2 == 0:
 			# should be drawn on the left
 			x_offset = screen_center_x-(((self.board_width//2)+(3))*Globals.TILE_SIZE)
 		else:
 			# draw on the right
 			x_offset = screen_center_x+(((self.board_width//2)+(3))*Globals.TILE_SIZE)
-			
+
 		y_offset = (player_number//2)*((7)*Globals.TILE_SIZE)
-		
+
 		for tile in player.next_piece.locations:
 			scaled_image = pygame.transform.scale(self.sprites[player.next_piece.tile_type], (Globals.TILE_SIZE, Globals.TILE_SIZE))
 			screen.blit(scaled_image, (x_offset+((tile[0]-player.spawn_column)*Globals.TILE_SIZE), (tile[1])*Globals.TILE_SIZE+y_offset))
-			
-			
-			
-			
-		
-		
-		
