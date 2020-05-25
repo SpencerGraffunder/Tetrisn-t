@@ -4,7 +4,9 @@ from lib.Constants import *
 from copy import copy
 from lib.states.States import *
 from threading import Thread
-from lib.states.Menu import *
+from lib.states.Main_Menu import *
+from lib.states.Level_Selection_Menu import *
+from lib.states.Pause_Menu import *
 from lib.states.ClientGame import ClientGame
 from lib.states.Game_Over import *
 import sys
@@ -17,9 +19,11 @@ class Client:
         self.program = Control()
 
         self.state_dict = {
-            'menu': Menu(),
-            'client game': ClientGame(),
-            'game over': Game_Over()
+            'main menu'            : Main_Menu(),
+            'level selection menu' : Level_Selection_Menu(),
+            'pause menu'           : Pause_Menu(),
+            'client game'          : ClientGame(),
+            'game over'            : Game_Over()
         }
 
     def start(self):
@@ -30,7 +34,7 @@ class Client:
     def client_loop(self):
         try:"""
             pygame.display.set_caption('Tetrisn\'t')
-            self.program.setup_states(self.state_dict, 'menu')
+            self.program.setup_states(self.state_dict, 'main menu')
             text.load_fonts()
             self.program.main_game_loop()
             pygame.quit()

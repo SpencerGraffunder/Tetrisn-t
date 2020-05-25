@@ -66,7 +66,6 @@ class Menu(States):
 
                     self.done = True
 
-        Globals.connection.add_input(player_input)
 
     def draw(self, screen):
         screen.fill((150, 150, 150))

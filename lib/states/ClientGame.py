@@ -19,7 +19,7 @@ class ClientGame(States):
 
         States.__init__(self)
 
-        self.next = 'menu'
+        self.next = 'main menu'
 
         self.das_threshold = 0
         self.spawn_delay_threshold = 10
@@ -50,7 +50,7 @@ class ClientGame(States):
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                self.next = 'menu'
+                self.next = 'main menu'
                 self.done = True
 
 
