@@ -25,9 +25,11 @@ class Level_Selection_Menu(States):
                     self.switch('main menu')
                     return
                 elif event.key == pygame.K_UP:
-                    self.level_selection += 1
+                    if self.level_selection < 29:
+                        self.level_selection += 1
                 elif event.key == pygame.K_DOWN:
-                    self.level_selection -= 1
+                    if self.level_selection > 0:
+                        self.level_selection -= 1
                 elif event.key == pygame.K_SPACE or event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                     Globals.GAME_JUST_STARTED = True
                     Globals.CURRENT_LEVEL = self.level_selection
