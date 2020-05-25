@@ -16,8 +16,7 @@ class Level_Selection_Menu(States):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 # ESC pressed
-                self.next = 'main menu'
-                self.done = True
+                self.switch('main menu')
                 return
 
             try:

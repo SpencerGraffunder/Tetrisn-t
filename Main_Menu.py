@@ -9,7 +9,6 @@ class Main_Menu(States):
 
     def __init__(self):
         States.__init__(self)
-        self.next = 'level selection menu'
 
 
     def do_event(self, event):
@@ -18,7 +17,6 @@ class Main_Menu(States):
                 # ESC pressed
                 self.quit = True
                 return
-
 
             try:
                 # Set the player count based on the key pressed
@@ -35,7 +33,7 @@ class Main_Menu(States):
             TILE_SIZE = min(Globals.WINDOW_WIDTH,Globals.WINDOW_HEIGHT) // max(Globals.BOARD_WIDTH,Globals.BOARD_HEIGHT)
 
             # Move to the player selection state
-            self.done = True
+            self.switch('level selection menu')
 
 
     def update(self, dt):
