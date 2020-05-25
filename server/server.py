@@ -3,7 +3,6 @@ import pdb
 from lib.Constants import *
 from copy import copy
 from lib.states.States import *
-from lib.states.Menu import *
 from lib.states.ServerGame import *
 from lib.states.Connecting import *
 import sys

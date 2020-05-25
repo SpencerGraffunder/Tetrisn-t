@@ -9,18 +9,17 @@ class Pause_Menu(States):
 
     def __init__(self):
         States.__init__(self)
-        self.next = 'client game'
 
     def update(self, dt):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     # Go to the main menu
-                    self.next = 'main menu'
+                    self.switch('main menu')
 
                 elif event.key == pygame.K_SPACE:
                     # Go back to the game
-                    self.next = 'client game'
+                    self.switch('client game')
 
                 self.done = True
 

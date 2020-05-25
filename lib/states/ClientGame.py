@@ -50,8 +50,7 @@ class ClientGame(States):
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                self.next = 'main menu'
-                self.done = True
+                self.switch('pause menu')
 
 
     def update(self, dt):
