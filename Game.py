@@ -17,7 +17,7 @@ class Game(States):
 
         States.__init__(self)
 
-        self.next = 'menu'
+        self.next = 'pause menu'
 
         self.das_threshold = 0
         self.spawn_delay_threshold = 10
@@ -77,7 +77,7 @@ class Game(States):
         for player_number in range(Globals.PLAYER_COUNT):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    self.next = 'menu'
+                    self.next = 'pause menu'
                     self.done = True
 
                 if self.players[player_number].active_piece != None:
@@ -309,9 +309,6 @@ class Game(States):
             if self.players[player_number].player_state == TETRIS_STATE_GAME_OVER:
                 self.next = 'game over'
                 self.done = True
-
-
-        self.draw(screen)
 
 
     def draw(self, screen):

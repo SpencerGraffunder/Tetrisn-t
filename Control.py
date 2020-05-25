@@ -21,6 +21,7 @@ class Control:
         elif self.state.done:
             self.flip_state()
         self.state.update(self.screen, dt)
+        self.state.draw(self.screen)
 
     def flip_state(self):
         self.state.done = False
