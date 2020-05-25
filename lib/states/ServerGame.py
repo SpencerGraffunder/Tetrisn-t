@@ -132,7 +132,7 @@ class ServerGame(States):
                 player.player_state = TETRIS_STATE_DIE
 
 
-    def update(self, screen, dt):
+    def update(self, dt):
 
         while Globals.connection.inputs:
             self.input = Globals.connection.get_input()

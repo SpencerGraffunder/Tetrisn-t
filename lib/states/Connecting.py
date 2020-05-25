@@ -23,7 +23,7 @@ class Connecting(States):
     def reset(self):
         self.done = False
 
-    def update(self, screen, dt):
+    def update(self, dt):
         while Globals.connection.inputs:
             player_input = Globals.connection.get_input()
             if player_input.new_game:

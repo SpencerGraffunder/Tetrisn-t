@@ -54,7 +54,7 @@ class ClientGame(States):
                 self.done = True
 
 
-    def update(self, screen, dt):
+    def update(self, dt):
         player_input = PlayerInput()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

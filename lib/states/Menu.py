@@ -13,7 +13,7 @@ class Menu(States):
         self.menu_state = PLAYER_NUMBER_MENU_STATE
         self.next = 'client game'
 
-    def update(self, screen, dt):
+    def update(self, dt):
         player_input = PlayerInput()
 
         for event in pygame.event.get():

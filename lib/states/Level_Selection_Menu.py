@@ -12,7 +12,7 @@ class Level_Selection_Menu(States):
         States.__init__(self)
         self.next = 'client game'
 
-    def update(self, screen, dt):
+    def update(self, dt):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
