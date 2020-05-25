@@ -9,14 +9,17 @@ class Game_Over(States):
     def __init__(self):
         States.__init__(self)
         self.next = 'main menu'
+        
 
     def do_event(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE or event.key == pygame.K_ESCAPE:
                 self.done = True
                 
-    def update(self, screen, dt):
+                
+    def update(self, dt):
         pass
+        
 
     def draw(self, screen):
         screen.fill((100,255,100))

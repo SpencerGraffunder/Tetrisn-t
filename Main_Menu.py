@@ -11,6 +11,7 @@ class Main_Menu(States):
         States.__init__(self)
         self.next = 'level selection menu'
 
+
     def do_event(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
@@ -37,8 +38,9 @@ class Main_Menu(States):
             self.done = True
 
 
-    def update(self, screen, dt):
+    def update(self, dt):
         pass
+        
 
     def draw(self, screen):
         screen.fill((150, 150, 150))

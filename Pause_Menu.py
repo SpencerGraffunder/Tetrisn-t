@@ -10,6 +10,7 @@ class Pause_Menu(States):
     def __init__(self):
         States.__init__(self)
         self.next = 'game'
+        
 
     def do_event(self, event):
 
@@ -25,7 +26,7 @@ class Pause_Menu(States):
             self.done = True
 
 
-    def update(self, screen, dt):
+    def update(self, dt):
         pass
 
 

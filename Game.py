@@ -138,7 +138,7 @@ class Game(States):
                 player.player_state = TETRIS_STATE_DIE
 
 
-    def update(self, screen, dt):
+    def update(self, dt):
 
         if Globals.GAME_JUST_STARTED:
             self.reset()
