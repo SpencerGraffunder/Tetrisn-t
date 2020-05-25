@@ -66,6 +66,8 @@ class ClientGame(States):
 
         Globals.connection.add_input(player_input)
         self.state = Globals.connection.get_state()
+        if self.state.game_over:
+            self.switch('game over')
 
     def draw(self, screen):
         screen.fill((150, 150, 150))

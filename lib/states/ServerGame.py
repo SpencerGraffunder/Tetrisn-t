@@ -318,7 +318,9 @@ class ServerGame(States):
                         player.player_state = TETRIS_STATE_GAME_OVER
 
             if self.state.players[player_number].player_state == TETRIS_STATE_GAME_OVER:
-                self.next = 'connecting'
+                self.state.game_over = True
+                Globals.connection.set_state(self.state)
+                self.switch('connecting')
                 self.done = True
 
         Globals.connection.set_state(self.state)

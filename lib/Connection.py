@@ -54,6 +54,7 @@ class GameState:
         self.players = []
         self.current_level = 0
         self.score = 0
+        self.game_over = False
 
 
 class Connection:
