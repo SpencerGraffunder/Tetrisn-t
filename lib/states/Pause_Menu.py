@@ -2,6 +2,7 @@ from lib.states.States import *
 import pygame
 from lib.Constants import *
 from lib.components.Text import *
+from lib.Connection import PlayerInput
 import pdb
 import lib.Globals
 
@@ -19,6 +20,9 @@ class Pause_Menu(States):
 
                 elif event.key == pygame.K_SPACE:
                     # Go back to the game
+                    player_input = PlayerInput()
+                    player_input.resume_game()
+                    Globals.connection.add_input(player_input)
                     self.switch('client game')
 
                 self.done = True

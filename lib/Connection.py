@@ -17,12 +17,14 @@ class PlayerInput:
         self.new_game = False
         self.starting_level = 0
         self.player_count = 1
+        self.pause = False
+        self.resume = False
 
     def __nonzero__(self):
         return self.__bool__()
 
     def __bool__(self):
-        return bool(self.events) or self.new_game
+        return bool(self.events) or self.new_game or self.pause or self.resume
 
     def add_event(self, event):
         if event.type in (pygame.KEYDOWN, pygame.KEYUP, pygame.QUIT):
@@ -36,6 +38,12 @@ class PlayerInput:
 
     def set_player_count(self, player_count):
         self.player_count = player_count
+
+    def pause_game(self):
+        self.pause = True
+
+    def resume_game(self):
+        self.resume = True
 
 
 class GameState:

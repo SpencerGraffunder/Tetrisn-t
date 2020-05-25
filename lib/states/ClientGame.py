@@ -50,6 +50,9 @@ class ClientGame(States):
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
+                pause_input = PlayerInput()
+                pause_input.pause_game()
+                Globals.connection.add_input(pause_input)
                 self.switch('pause menu')
 
 

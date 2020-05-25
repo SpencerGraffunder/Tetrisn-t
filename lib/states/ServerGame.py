@@ -23,6 +23,7 @@ class ServerGame(States):
 
         self.das_threshold = 0
         self.spawn_delay_threshold = 10
+        self.paused = False
 
 
         self.reset(0)
@@ -58,6 +59,7 @@ class ServerGame(States):
         self.time_next_rotate = 0
         self.das_counter = 0
         self.score = 0
+        self.paused = False
 
         self.state.players = [Player(x, self.state.board_width) for x in range(Globals.PLAYER_COUNT)]
 
@@ -72,9 +74,6 @@ class ServerGame(States):
 
         for player_number in range(Globals.PLAYER_COUNT):
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    self.next = 'connecting'
-                    self.done = True
 
                 if self.state.players[player_number].active_piece != None:
                     if event.key == KEYBINDINGS[player_number][KEYBINDING_CCW]:
@@ -138,6 +137,14 @@ class ServerGame(States):
         while Globals.connection.inputs:
             self.input = Globals.connection.get_input()
 
+            if self.input.pause:
+                self.paused = True
+            if self.input.resume:
+                self.paused = False
+
+            if self.paused:
+                return
+
             for event in self.input.events:
                 self.do_event(event)
 
@@ -145,6 +152,9 @@ class ServerGame(States):
                 self.reset(self.input.starting_level)
                 Globals.GAME_JUST_STARTED = False
 
+
+        if self.paused:
+            return
         for player_number in range(Globals.PLAYER_COUNT):
 
             if self.state.players[player_number].player_state == TETRIS_STATE_SPAWN:
@@ -308,7 +318,7 @@ class ServerGame(States):
                         player.player_state = TETRIS_STATE_GAME_OVER
 
             if self.state.players[player_number].player_state == TETRIS_STATE_GAME_OVER:
-                self.next = 'game over'
+                self.next = 'connecting'
                 self.done = True
 
         Globals.connection.set_state(self.state)
