@@ -25,9 +25,9 @@ class ServerGame(States):
         self.spawn_delay_threshold = 10
 
 
-        self.reset()
+        self.reset(0)
 
-    def reset(self):
+    def reset(self, starting_level):
         self.state = GameState()
 
         self.state.board_width = (4 * Globals.PLAYER_COUNT) + 6
@@ -37,6 +37,7 @@ class ServerGame(States):
 
         # find the greatest level less than CURRENT_LEVEL
         # in FALL_DELAY_VALUES and set the speed to that level's speed
+        self.state.current_level = starting_level
         x = self.state.current_level
         while x >= 0:
             if x in FALL_DELAY_VALUES.keys():
@@ -141,7 +142,7 @@ class ServerGame(States):
                 self.do_event(event)
 
             if self.input.new_game:
-                self.reset()
+                self.reset(self.input.starting_level)
                 Globals.GAME_JUST_STARTED = False
 
         for player_number in range(Globals.PLAYER_COUNT):
