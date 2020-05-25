@@ -14,6 +14,8 @@ class Level_Selection_Menu(States):
 
     def update(self, dt):
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.quit = True
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     # ESC pressed
