@@ -6,12 +6,8 @@ import pdb
 import lib.Globals
 
 class Main_Menu(States):
-
     def __init__(self):
         States.__init__(self)
-        self.next = 'level selection menu'
-
-
 
     def update(self, dt):
         for event in pygame.event.get():
@@ -39,9 +35,7 @@ class Main_Menu(States):
                 TILE_SIZE = min(Globals.WINDOW_WIDTH,Globals.WINDOW_HEIGHT) // max(Globals.BOARD_WIDTH,Globals.BOARD_HEIGHT)
 
                 # Move to the player selection state
-                self.done = True
-
-
+                self.switch('level selection menu')
 
     def draw(self, screen):
         screen.fill((150, 150, 150))

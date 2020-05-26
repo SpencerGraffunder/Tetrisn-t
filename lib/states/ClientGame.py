@@ -13,13 +13,11 @@ from lib.components.Text import *
 from lib.Connection import PlayerInput
 
 
-
 class ClientGame(States):
+
     def __init__(self):
 
         States.__init__(self)
-
-        self.next = 'main menu'
 
         self.das_threshold = 0
         self.spawn_delay_threshold = 10
@@ -42,6 +40,7 @@ class ClientGame(States):
         self.sprites[TILE_TYPE_LZ] = pygame.image.load(
             os.path.join(wd, 'resources', 'LZblock.bmp')).convert()
 
+
     def do_event(self, event):
 
         if event.type == pygame.KEYDOWN:
@@ -57,6 +56,7 @@ class ClientGame(States):
 
 
     def update(self, dt):
+
         player_input = PlayerInput()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -69,7 +69,9 @@ class ClientGame(States):
         if self.state.game_over:
             self.switch('game over')
 
+
     def draw(self, screen):
+
         screen.fill((150, 150, 150))
 
         centering_offset = (Constants.WINDOW_WIDTH - (
@@ -118,6 +120,7 @@ class ClientGame(States):
         (Globals.BOARD_HEIGHT - 4) * self.state.tile_size), (0, 128, 0))
 
         pygame.display.update()
+
 
     def draw_next_piece(self, screen, player_number):
 

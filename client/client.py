@@ -12,6 +12,8 @@ from lib.states.Game_Over import *
 import sys
 from lib.states.Control import *
 from lib.components.Text import *
+import os
+
 
 class Client:
     def __init__(self):
@@ -27,19 +29,9 @@ class Client:
         }
 
     def start(self):
-            """
-        client_thread = Thread(target=self.client_loop)
-        client_thread.start()
-
-    def client_loop(self):
-        try:"""
-            pygame.display.set_caption('Tetrisn\'t')
-            self.program.setup_states(self.state_dict, 'main menu')
-            text.load_fonts()
-            self.program.main_game_loop()
-            pygame.quit()
-            sys.exit()
-            """
-        except Exception as e:
-            print(e)
-           """
+        pygame.display.set_caption('Tetrisn\'t')
+        self.program.setup_states(self.state_dict, 'main menu')
+        text.load_fonts()
+        self.program.main_game_loop()
+        pygame.quit()
+        os._exit(0)

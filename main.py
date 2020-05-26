@@ -7,4 +7,3 @@ if __name__ == '__main__':
     server.start()
     client = Client()
     client.start()
-

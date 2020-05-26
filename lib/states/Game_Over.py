@@ -8,7 +8,6 @@ class Game_Over(States):
 
     def __init__(self):
         States.__init__(self)
-        self.next = 'main menu'
                 
     def update(self, dt):
         for event in pygame.event.get():
@@ -16,7 +15,7 @@ class Game_Over(States):
                 self.quit = True
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE or event.key == pygame.K_ESCAPE:
-                    self.done = True
+                    self.switch('main menu')
 
     def draw(self, screen):
         screen.fill((100,255,100))

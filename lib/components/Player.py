@@ -3,7 +3,6 @@ import lib.Globals as Globals
 import pygame
 
 class Player:
-
     def __init__(self, player_number, board_width):
     
         self.player_number = player_number
