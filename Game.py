@@ -17,8 +17,6 @@ class Game(States):
 
         States.__init__(self)
 
-        self.next = 'menu'
-
         self.das_threshold = 0
         self.spawn_delay_threshold = 10
 
@@ -40,10 +38,8 @@ class Game(States):
 
     def reset(self):
 
-        self.board_width = Globals.SINGLE_PLAYER_BOARD_WIDTH if Globals.PLAYER_COUNT == 1 else Globals.MULTI_PLAYER_BOARD_WIDTH
-        Globals.TILE_SIZE = min(Globals.WINDOW_WIDTH,Globals.WINDOW_HEIGHT) // max(self.board_width,Globals.BOARD_HEIGHT)
         # Fill board with empty tiles
-        self.board = [[Tile() for j in range(self.board_width)] for i in range(Globals.BOARD_HEIGHT+BOARD_HEIGHT_BUFFER)]
+        self.board = [[Tile() for j in range(Globals.BOARD_WIDTH)] for i in range(Globals.BOARD_HEIGHT+BOARD_HEIGHT_BUFFER)]
 
         # find the greatest level less than CURRENT_LEVEL in FALL_DELAY_VALUES and set the speed to that level's speed
         x = Globals.CURRENT_LEVEL
@@ -67,7 +63,7 @@ class Game(States):
         self.das_counter = 0
         self.score = 0
 
-        self.players = [Player(x, self.board_width) for x in range(Globals.PLAYER_COUNT)]
+        self.players = [Player(x, Globals.BOARD_WIDTH) for x in range(Globals.PLAYER_COUNT)]
 
 
     def do_event(self, event):
@@ -79,8 +75,7 @@ class Game(States):
         for player_number in range(Globals.PLAYER_COUNT):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    self.next = 'menu'
-                    self.done = True
+                    self.switch('pause menu')
 
                 if self.players[player_number].active_piece != None:
                     if event.key == KEYBINDINGS[player_number][KEYBINDING_CCW]:
@@ -117,7 +112,7 @@ class Game(States):
 
 
     def lock_piece(self, player_number):
-    
+
         piece_locked_into_another_piece = False
         max_row_index = 0
         for location in self.players[player_number].active_piece.locations:
@@ -140,7 +135,7 @@ class Game(States):
                 player.player_state = TETRIS_STATE_DIE
 
 
-    def update(self, screen, dt):
+    def update(self, dt):
 
         if Globals.GAME_JUST_STARTED:
             self.reset()
@@ -257,7 +252,7 @@ class Game(States):
                     for line in self.players[player_number].lines_to_clear:
                         self.board.pop(line)
                         self.board = deque(self.board)
-                        self.board.appendleft([Tile() for j in range(self.board_width)])
+                        self.board.appendleft([Tile() for j in range(Globals.BOARD_WIDTH)])
                         self.board = list(self.board)
 
                     num_lines = len(self.players[player_number].lines_to_clear)
@@ -309,18 +304,14 @@ class Game(States):
                         player.player_state = TETRIS_STATE_GAME_OVER
 
             if self.players[player_number].player_state == TETRIS_STATE_GAME_OVER:
-                self.next = 'game over'
-                self.done = True
-
-
-        self.draw(screen)
+                self.switch('game over')
 
 
     def draw(self, screen):
 
         screen.fill((150, 150, 150))
 
-        centering_offset = (Globals.WINDOW_WIDTH - (Globals.TILE_SIZE * self.board_width)) // 2
+        centering_offset = (Globals.WINDOW_WIDTH - (Globals.TILE_SIZE * Globals.BOARD_WIDTH)) // 2
 
         for row_index, tile_row in enumerate(self.board[2:]):
             for col_index, tile in enumerate(tile_row):
@@ -328,12 +319,6 @@ class Game(States):
                 screen.blit(scaled_image, (col_index * Globals.TILE_SIZE + centering_offset, row_index * Globals.TILE_SIZE))
 
         for player in self.players:
-
-            # to determine spawn positions
-            if self.board_width % 2 == 0: # even board width
-                center = self.board_width // 2
-            elif self.board_width % 2 == 1: # odd board width
-                center = (self.board_width+1) // 2
 
             # Draw active piece
             if player.active_piece != None:
@@ -364,10 +349,10 @@ class Game(States):
 
         if player_number%2 == 0:
             # should be drawn on the left
-            x_offset = screen_center_x-(((self.board_width//2)+(3))*Globals.TILE_SIZE)
+            x_offset = screen_center_x-(((Globals.BOARD_WIDTH//2)+(3))*Globals.TILE_SIZE)
         else:
             # draw on the right
-            x_offset = screen_center_x+(((self.board_width//2)+(3))*Globals.TILE_SIZE)
+            x_offset = screen_center_x+(((Globals.BOARD_WIDTH//2)+(3))*Globals.TILE_SIZE)
 
         y_offset = (player_number//2)*((7)*Globals.TILE_SIZE)
 
