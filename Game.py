@@ -320,12 +320,6 @@ class Game(States):
 
         for player in self.players:
 
-            # to determine spawn positions
-            if Globals.BOARD_WIDTH % 2 == 0: # even board width
-                center = Globals.BOARD_WIDTH // 2
-            elif Globals.BOARD_WIDTH % 2 == 1: # odd board width
-                center = (Globals.BOARD_WIDTH+1) // 2
-
             # Draw active piece
             if player.active_piece != None:
                 for location in player.active_piece.locations:

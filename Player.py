@@ -1,7 +1,6 @@
 from Constants import *
 import Globals
 import pygame
-import Globals
 
 class Player:
 
