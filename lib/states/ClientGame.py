@@ -86,12 +86,6 @@ class ClientGame(States):
 
         for player in self.state.players:
 
-            # to determine spawn positions
-            if self.state.board_width % 2 == 0:  # even board width
-                center = self.state.board_width // 2
-            elif self.state.board_width % 2 == 1:  # odd board width
-                center = (self.state.board_width + 1) // 2
-
             # Draw active piece
             if player.active_piece != None:
                 for location in player.active_piece.locations:
