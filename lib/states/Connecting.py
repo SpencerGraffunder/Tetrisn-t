@@ -24,7 +24,6 @@ class Connecting(States):
         while Globals.connection.inputs:
             player_input = Globals.connection.get_input()
             if player_input.new_game:
-                self.done = True
                 self.switch('server game')
                 Globals.connection.add_input(player_input)
                 break

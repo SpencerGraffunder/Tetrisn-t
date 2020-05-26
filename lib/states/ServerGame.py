@@ -17,8 +17,6 @@ class ServerGame(States):
 
         States.__init__(self)
 
-        self.next = 'connecting'
-
         self.state = GameState()
 
         self.das_threshold = 0
@@ -66,8 +64,8 @@ class ServerGame(States):
     def do_event(self, event):
 
         if event.type == pygame.QUIT:
-            self.done = True
-
+            self.switch('connecting')
+            
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_BACKQUOTE:
                 pdb.set_trace()
@@ -321,7 +319,6 @@ class ServerGame(States):
                 self.state.game_over = True
                 Globals.connection.set_state(self.state)
                 self.switch('connecting')
-                self.done = True
 
         Globals.connection.set_state(self.state)
 

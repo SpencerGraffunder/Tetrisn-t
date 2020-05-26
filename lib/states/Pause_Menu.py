@@ -27,8 +27,6 @@ class Pause_Menu(States):
                     Globals.connection.add_input(player_input)
                     self.switch('client game')
 
-                self.done = True
-
     def draw(self, screen):
         screen.fill((150, 150, 150))
         title_string = 'Pause'
