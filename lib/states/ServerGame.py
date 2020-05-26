@@ -137,6 +137,10 @@ class ServerGame(States):
         while Globals.connection.inputs:
             self.input = Globals.connection.get_input()
 
+            if self.input.new_game:
+                self.reset(self.input.starting_level)
+                Globals.GAME_JUST_STARTED = False
+
             if self.input.pause:
                 self.paused = True
             if self.input.resume:
@@ -147,10 +151,6 @@ class ServerGame(States):
 
             for event in self.input.events:
                 self.do_event(event)
-
-            if self.input.new_game:
-                self.reset(self.input.starting_level)
-                Globals.GAME_JUST_STARTED = False
 
 
         if self.paused:
