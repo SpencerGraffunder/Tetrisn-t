@@ -7,10 +7,12 @@ from lib.components.Piece import *
 from lib.components.Player import *
 import random
 from collections import deque
-import lib.Globals as Globals
+import server.globals as g
 from lib.Constants import *
 from lib.components.Text import *
 from lib.Connection import GameState
+from lib.Connection import connection
+from lib.Connection import PlayerInput
 
 class ServerGame(States):
     def __init__(self):
@@ -18,25 +20,26 @@ class ServerGame(States):
         States.__init__(self)
 
         self.state = GameState()
+        self.input = PlayerInput()
 
         self.das_threshold = 0
         self.spawn_delay_threshold = 10
         self.paused = False
 
 
-        self.reset(0)
+        self.reset(self.input)
 
-    def reset(self, starting_level):
+    def reset(self, player_input):
         self.state = GameState()
+        self.state.player_count = player_input.player_count
 
-        self.state.board_width = (4 * Globals.PLAYER_COUNT) + 6
-        self.state.tile_size = min(WINDOW_WIDTH,WINDOW_HEIGHT) // max(self.state.board_width,Globals.BOARD_HEIGHT)
+        self.state.board_width = (4 * self.state.player_count) + 6
         # Fill board with empty tiles
-        self.state.board = [[Tile() for j in range(self.state.board_width)] for i in range(Globals.BOARD_HEIGHT+BOARD_HEIGHT_BUFFER)]
+        self.state.board = [[Tile() for j in range(self.state.board_width)] for i in range(g.BOARD_HEIGHT+BOARD_HEIGHT_BUFFER)]
 
         # find the greatest level less than CURRENT_LEVEL
         # in FALL_DELAY_VALUES and set the speed to that level's speed
-        self.state.current_level = starting_level
+        self.state.current_level = player_input.starting_level
         x = self.state.current_level
         while x >= 0:
             if x in FALL_DELAY_VALUES.keys():
@@ -59,7 +62,9 @@ class ServerGame(States):
         self.score = 0
         self.paused = False
 
-        self.state.players = [Player(x, self.state.board_width) for x in range(Globals.PLAYER_COUNT)]
+        self.state.players = [Player(x, self.state.board_width) for x in range(self.state.player_count)]
+        for player in self.state.players:
+            player.spawn_column = int(((self.state.board_width / self.state.player_count) * player.player_number + (self.state.board_width / self.state.player_count) * (player.player_number + 1)) / 2)
 
     def do_event(self, event):
 
@@ -70,7 +75,7 @@ class ServerGame(States):
             if event.key == pygame.K_BACKQUOTE:
                 pdb.set_trace()
 
-        for player_number in range(Globals.PLAYER_COUNT):
+        for player_number in range(self.state.player_count):
             if event.type == pygame.KEYDOWN:
 
                 if self.state.players[player_number].active_piece != None:
@@ -132,12 +137,11 @@ class ServerGame(States):
 
     def update(self, dt):
 
-        while Globals.connection.inputs:
-            self.input = Globals.connection.get_input()
+        while connection.inputs:
+            self.input = connection.get_input()
 
             if self.input.new_game:
-                self.reset(self.input.starting_level)
-                Globals.GAME_JUST_STARTED = False
+                self.reset(self.input)
 
             if self.input.pause:
                 self.paused = True
@@ -153,7 +157,7 @@ class ServerGame(States):
 
         if self.paused:
             return
-        for player_number in range(Globals.PLAYER_COUNT):
+        for player_number in range(self.state.player_count):
 
             if self.state.players[player_number].player_state == TETRIS_STATE_SPAWN:
 
@@ -189,17 +193,17 @@ class ServerGame(States):
                                 self.state.players[player_number].active_piece.move(DIRECTION_LEFT)
                                 self.state.players[player_number].das_counter = 0
                                 if self.state.players[player_number].das_threshold == 0:
-                                    self.state.players[player_number].das_threshold = DAS_VALUES[Globals.PLAYER_COUNT][1]
+                                    self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][1]
                                 else:
-                                    self.state.players[player_number].das_threshold = DAS_VALUES[Globals.PLAYER_COUNT][0]
+                                    self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][0]
                         if self.state.players[player_number].is_move_right_pressed:
                             if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, DIRECTION_RIGHT) == CAN_MOVE:
                                 self.state.players[player_number].active_piece.move(DIRECTION_RIGHT)
                                 self.state.players[player_number].das_counter = 0
                                 if self.state.players[player_number].das_threshold == 0:
-                                    self.state.players[player_number].das_threshold = DAS_VALUES[Globals.PLAYER_COUNT][1]
+                                    self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][1]
                                 else:
-                                    self.state.players[player_number].das_threshold = DAS_VALUES[Globals.PLAYER_COUNT][0]
+                                    self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][0]
 
                 if self.state.players[player_number].is_move_down_pressed:
                     self.state.players[player_number].down_counter += 1
@@ -242,7 +246,7 @@ class ServerGame(States):
                             can_clear = False
                     if can_clear:
                         for player in self.state.players:
-                            if Globals.PLAYER_COUNT > 1:
+                            if self.state.player_count > 1:
                                 if player != self.state.players[player_number]:
                                     if row_index not in player.lines_to_clear:
                                         self.state.players[player_number].lines_to_clear.append(row_index)
@@ -270,7 +274,7 @@ class ServerGame(States):
                     num_lines = len(self.state.players[player_number].lines_to_clear)
                     new_lines_to_clear = []
 
-                    if Globals.PLAYER_COUNT > 1:
+                    if self.state.player_count > 1:
                         for player in self.state.players:
                             if player != self.state.players[player_number]:
                                 for line_index in player.lines_to_clear:
@@ -317,10 +321,10 @@ class ServerGame(States):
 
             if self.state.players[player_number].player_state == TETRIS_STATE_GAME_OVER:
                 self.state.game_over = True
-                Globals.connection.set_state(self.state)
+                connection.set_state(self.state)
                 self.switch('connecting')
 
-        Globals.connection.set_state(self.state)
+        connection.set_state(self.state)
 
     def draw(self, screen):
         pass

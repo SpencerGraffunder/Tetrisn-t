@@ -1,6 +1,5 @@
 import pygame
 from lib.Constants import *
-import lib.Globals as Globals
 import pdb
 
 class Control:

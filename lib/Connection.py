@@ -1,4 +1,3 @@
-import lib.Globals as Globals
 import lib.Constants as Constants
 import copy
 import pygame
@@ -48,13 +47,16 @@ class PlayerInput:
 
 class GameState:
     def __init__(self):
-        self.tile_size =  (4 * Globals.PLAYER_COUNT) + 6
-        self.board_width = Globals.BOARD_WIDTH
+        self.board_width = 0
         self.board = []
         self.players = []
         self.current_level = 0
         self.score = 0
         self.game_over = False
+        self.player_count = 0
+
+    def set_player_count(self, player_count):
+        self.player_count = player_count
 
 
 class Connection:
@@ -78,3 +80,6 @@ class Connection:
 
     def get_state(self):
         return self.state
+
+
+connection = Connection()

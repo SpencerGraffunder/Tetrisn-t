@@ -2,7 +2,6 @@ import pygame
 from lib.Constants import *
 import os
 import sys
-import lib.Globals as Globals
 
 # Example
 # text.draw(screen, score_str1, 'SMALL', ((WINDOW_WIDTH) - (4 * TILE_SIZE), (BOARD_HEIGHT - 3) * TILE_SIZE), (0, 128, 0))

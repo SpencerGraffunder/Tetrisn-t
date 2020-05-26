@@ -3,8 +3,9 @@ import pygame
 from lib.Constants import *
 from lib.components.Text import *
 from lib.Connection import PlayerInput
+from lib.Connection import connection
 import pdb
-import lib.Globals
+import client.globals as g
 
 class Pause_Menu(States):
 
@@ -24,7 +25,7 @@ class Pause_Menu(States):
                     # Go back to the game
                     player_input = PlayerInput()
                     player_input.resume_game()
-                    Globals.connection.add_input(player_input)
+                    connection.add_input(player_input)
                     self.switch('client game')
 
     def draw(self, screen):
@@ -33,7 +34,7 @@ class Pause_Menu(States):
         space_string = 'Press SPACE to continue'
         esc_string = 'Press ESC for main menu'
 
-        text.draw(screen, title_string, 'LARGE', (Globals.WINDOW_WIDTH//2, Globals.WINDOW_HEIGHT//4),   (0, 160, 0))
-        text.draw(screen, space_string, 'SMALL', (Globals.WINDOW_WIDTH//2, Globals.WINDOW_HEIGHT*2//4), (0, 120, 0))
-        text.draw(screen, esc_string  , 'SMALL', (Globals.WINDOW_WIDTH//2, Globals.WINDOW_HEIGHT*3//4), (0, 120, 0))
+        text.draw(screen, title_string, 'LARGE', (g.WINDOW_WIDTH//2, g.WINDOW_HEIGHT//4),   (0, 160, 0))
+        text.draw(screen, space_string, 'SMALL', (g.WINDOW_WIDTH//2, g.WINDOW_HEIGHT*2//4), (0, 120, 0))
+        text.draw(screen, esc_string  , 'SMALL', (g.WINDOW_WIDTH//2, g.WINDOW_HEIGHT*3//4), (0, 120, 0))
         pygame.display.update()

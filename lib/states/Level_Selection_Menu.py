@@ -4,7 +4,8 @@ from lib.Constants import *
 from lib.components.Text import *
 from lib.Connection import PlayerInput
 import pdb
-import lib.Globals
+import client.globals as g
+from lib.Connection import connection
 
 class Level_Selection_Menu(States):
 
@@ -33,16 +34,14 @@ class Level_Selection_Menu(States):
                     if self.level_selection > 0:
                         self.level_selection -= 1
                 elif event.key == pygame.K_SPACE or event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-                    Globals.GAME_JUST_STARTED = True
-                    Globals.CURRENT_LEVEL = self.level_selection
+                    starting_level = self.level_selection
 
                     # start the game
-                    Globals.GAME_JUST_STARTED = True
                     player_input = PlayerInput()
                     player_input.start_game()
-                    player_input.set_starting_level(Globals.CURRENT_LEVEL)
-                    player_input.set_player_count(Globals.PLAYER_COUNT)
-                    Globals.connection.add_input(player_input)
+                    player_input.set_starting_level(starting_level)
+                    player_input.set_player_count(g.local_player_count)
+                    connection.add_input(player_input)
                     self.switch('client game')
 
     def draw(self, screen):
@@ -54,9 +53,9 @@ class Level_Selection_Menu(States):
         instruction_line2 = 'press SPACE to start'
         selection_string = str(self.level_selection)
 
-        text.draw(screen, title_string,      'LARGE', (Globals.WINDOW_WIDTH//2, Globals.WINDOW_HEIGHT   //4),  (0, 160, 0))
-        text.draw(screen, subtitle_string,   'SMALL', (Globals.WINDOW_WIDTH//2, Globals.WINDOW_HEIGHT*2 //4),  (0, 120, 0))
-        text.draw(screen, instruction_line1, 'SMALL', (Globals.WINDOW_WIDTH//2, Globals.WINDOW_HEIGHT*5 //8),  (150, 0, 0))
-        text.draw(screen, instruction_line2, 'SMALL', (Globals.WINDOW_WIDTH//2, Globals.WINDOW_HEIGHT*11//16), (150, 0, 0))
-        text.draw(screen, selection_string,  'LARGE', (Globals.WINDOW_WIDTH//2, Globals.WINDOW_HEIGHT*13//16), (150, 0, 0))
+        text.draw(screen, title_string,      'LARGE', (g.WINDOW_WIDTH//2, g.WINDOW_HEIGHT   //4),  (0, 160, 0))
+        text.draw(screen, subtitle_string,   'SMALL', (g.WINDOW_WIDTH//2, g.WINDOW_HEIGHT*2 //4),  (0, 120, 0))
+        text.draw(screen, instruction_line1, 'SMALL', (g.WINDOW_WIDTH//2, g.WINDOW_HEIGHT*5 //8),  (150, 0, 0))
+        text.draw(screen, instruction_line2, 'SMALL', (g.WINDOW_WIDTH//2, g.WINDOW_HEIGHT*11//16), (150, 0, 0))
+        text.draw(screen, selection_string,  'LARGE', (g.WINDOW_WIDTH//2, g.WINDOW_HEIGHT*13//16), (150, 0, 0))
         pygame.display.update()

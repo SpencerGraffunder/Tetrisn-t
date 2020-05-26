@@ -1,6 +1,6 @@
 from lib.states.States import *
 import pygame
-import lib.Globals as Globals
+import client.globals as g
 from lib.Constants import *
 from lib.components.Text import *
 
