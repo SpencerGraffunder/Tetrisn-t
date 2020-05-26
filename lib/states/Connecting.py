@@ -15,9 +15,6 @@ from lib.Connection import GameState
 class Connecting(States):
     def __init__(self):
         States.__init__(self)
-
-        self.next = 'server game'
-
         self.reset()
 
     def reset(self):
@@ -28,6 +25,7 @@ class Connecting(States):
             player_input = Globals.connection.get_input()
             if player_input.new_game:
                 self.done = True
+                self.switch('server game')
                 Globals.connection.add_input(player_input)
                 break
 

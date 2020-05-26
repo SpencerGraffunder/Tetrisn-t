@@ -21,7 +21,6 @@ BOARD_WIDTH = 10
 BOARD_HEIGHT_BUFFER = 2
 FRAME_RATE = 60
 
-
 connection = Connection()
 # Window dimensions in pixels
 WINDOW_HEIGHT = 800
