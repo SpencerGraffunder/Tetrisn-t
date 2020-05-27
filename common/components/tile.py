@@ -1,4 +1,4 @@
-from common.constants import *
+from server.constants import *
 
 class Tile:
     

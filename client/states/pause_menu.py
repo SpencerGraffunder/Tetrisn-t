@@ -1,6 +1,5 @@
 from client.states.state import *
 import pygame
-from common.constants import *
 from common.components.text import *
 from common.connection import PlayerInput
 from common.connection import connection
@@ -13,7 +12,7 @@ class PauseMenu(State):
     def __init__(self):
         State.__init__(self)
 
-    def update(self, dt):
+    def update(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.quit = True

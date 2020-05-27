@@ -1,6 +1,5 @@
 from client.states.state import *
 import pygame
-from common.constants import *
 from common.components.text import *
 import pdb
 import client.globals as g
@@ -10,7 +9,7 @@ class MainMenu(State):
     def __init__(self):
         State.__init__(self)
 
-    def update(self, dt):
+    def update(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.quit = True
@@ -19,7 +18,6 @@ class MainMenu(State):
                     # ESC pressed
                     self.quit = True
                     return
-
 
                 try:
                     # Set the player count based on the key pressed

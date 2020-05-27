@@ -1,24 +1,27 @@
 import pygame
-from common.constants import *
-
+from client.constants import *
+import client.globals as g
 
 class Control:
     def __init__(self):
         self.done = False
-        self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+        self.screen = pygame.display.set_mode((g.window_width, g.window_height))
         self.clock = pygame.time.Clock()
+        self.state_dict = None
+        self.state_name = None
+        self.state = None
 
     def setup_states(self, state_dict, start_state):
         self.state_dict = state_dict
         self.state_name = start_state
         self.state = self.state_dict[self.state_name]
 
-    def update(self, dt):
+    def update(self):
         if self.state.quit:
             self.done = True
         elif self.state.done:
             self.flip_state()
-        self.state.update(dt)
+        self.state.update()
 
     def draw(self):
         self.state.draw(self.screen)
@@ -30,6 +33,5 @@ class Control:
 
     def main_game_loop(self):
         while not self.done:
-            delta_time = self.clock.tick(FRAME_RATE)/1000.0
-            self.update(delta_time)
+            self.update()
             self.draw()

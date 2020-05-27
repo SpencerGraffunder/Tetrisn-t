@@ -1,5 +1,5 @@
-from common.constants import *
-import pygame
+from server.constants import *
+
 
 class Player:
     def __init__(self, player_number, board_width):

@@ -1,6 +1,5 @@
 import pygame
 import pdb
-from common.constants import *
 from copy import copy
 from client.states.state import *
 from threading import Thread

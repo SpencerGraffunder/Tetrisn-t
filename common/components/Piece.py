@@ -1,6 +1,4 @@
-from common.constants import *
-import pdb
-import sys
+from server.constants import *
 from copy import copy
 
 class Piece:

@@ -1,7 +1,5 @@
 import pygame
 
-# FPS
-FRAME_RATE = 60
 
 # Buffer for allowing pieces to be above the board when they spawn
 BOARD_HEIGHT_BUFFER = 2
@@ -80,6 +78,3 @@ KEYBINDING_DOWN = 1
 KEYBINDING_RIGHT = 2
 KEYBINDING_CCW = 3
 KEYBINDING_CW = 4
-
-WINDOW_WIDTH = 1000
-WINDOW_HEIGHT = 800

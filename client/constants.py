@@ -1,0 +1,2 @@
+# FPS
+FRAME_RATE = 60

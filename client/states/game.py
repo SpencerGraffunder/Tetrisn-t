@@ -8,7 +8,6 @@ import client.globals as g
 from common.components.text import *
 from common.connection import PlayerInput
 from common.connection import connection
-from common.constants import *
 
 
 class Game(State):
@@ -16,8 +15,6 @@ class Game(State):
     def __init__(self):
         State.__init__(self)
 
-        self.das_threshold = 0
-        self.spawn_delay_threshold = 10
         self.state = connection.get_state()
 
         self.sprites = {}
@@ -50,7 +47,7 @@ class Game(State):
                 connection.add_input(pause_input)
                 self.switch('pause menu')
 
-    def update(self, dt):
+    def update(self):
 
         player_input = PlayerInput()
         for event in pygame.event.get():
@@ -64,7 +61,7 @@ class Game(State):
         g.player_count = self.state.player_count
         g.tile_size = (4 * self.state.player_count) + 6
 
-        g.tile_size = min(WINDOW_WIDTH, WINDOW_HEIGHT) // max(self.state.board_width, self.state.board_height)
+        g.tile_size = min(g.window_width, g.window_height) // max(self.state.board_width, self.state.board_height)
         if self.state.game_over:
             self.switch('game over menu')
 
@@ -72,7 +69,7 @@ class Game(State):
 
         screen.fill((150, 150, 150))
 
-        centering_offset = (WINDOW_WIDTH - (
+        centering_offset = (g.window_width - (
                     g.tile_size * self.state.board_width)) // 2
 
         for row_index, tile_row in enumerate(self.state.board[2:]):
@@ -90,9 +87,7 @@ class Game(State):
                     scaled_image = pygame.transform.scale(
                         self.sprites[player.active_piece.tile_type],
                         (g.tile_size, g.tile_size))
-                    screen.blit(scaled_image, (
-                    location[0] * g.tile_size + centering_offset,
-                    (location[1] - BOARD_HEIGHT_BUFFER) * g.tile_size))
+                    screen.blit(scaled_image, (location[0] * g.tile_size + centering_offset, (location[1] - BOARD_HEIGHT_BUFFER) * g.tile_size))
 
             # Draw next piece
             if player.player_number is not None and player.next_piece is not None:
@@ -107,13 +102,13 @@ class Game(State):
 
         # display level
         level_str = str(self.state.current_level)
-        text.draw(screen, level_str, 'SMALL', (WINDOW_WIDTH - (4 * g.tile_size), (self.state.board_height - 4) * g.tile_size), (0, 128, 0))
+        text.draw(screen, level_str, 'SMALL', (g.window_width - (4 * g.tile_size), (self.state.board_height - 4) * g.tile_size), (0, 128, 0))
 
         pygame.display.update()
 
     def draw_next_piece(self, screen, player_number):
 
-        screen_center_x = WINDOW_WIDTH // 2
+        screen_center_x = g.window_width // 2
         player = self.state.players[player_number]
 
         if player_number % 2 == 0:

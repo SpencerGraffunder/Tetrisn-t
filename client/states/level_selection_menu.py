@@ -1,6 +1,5 @@
 from client.states.state import *
 import pygame
-from common.constants import *
 from common.components.text import *
 from common.connection import PlayerInput
 import pdb
@@ -14,7 +13,7 @@ class LevelSelectionMenu(State):
         State.__init__(self)
         self.level_selection = 0
 
-    def update(self, dt):
+    def update(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.quit = True

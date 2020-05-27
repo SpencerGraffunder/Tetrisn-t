@@ -3,7 +3,7 @@ local_player_count = 1
 
 current_level = 0
 
-# Should be about twice BOARD_WIDTH
+# Should be about twice board_width
 board_height = 20
 board_width = 10
 
