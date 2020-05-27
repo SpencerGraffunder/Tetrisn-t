@@ -1,13 +1,14 @@
-from lib.states.States import *
+from client.states.state import *
 import pygame
-from lib.Constants import *
-from lib.components.Text import *
+from common.constants import *
+from common.components.text import *
 import pdb
 import client.globals as g
 
-class Main_Menu(States):
+
+class MainMenu(State):
     def __init__(self):
-        States.__init__(self)
+        State.__init__(self)
 
     def update(self, dt):
         for event in pygame.event.get():
@@ -22,17 +23,16 @@ class Main_Menu(States):
 
                 try:
                     # Set the player count based on the key pressed
-                    g.PLAYER_COUNT = int(pygame.key.name(event.key))
+                    g.local_player_count = int(pygame.key.name(event.key))
                 except ValueError:
                     # Value was not an int so just return and wait for a real int
                     return
 
                 # Bound the player count (can add more later)
-                if g.PLAYER_COUNT != 1:
-                    g.PLAYER_COUNT = 2
+                if g.local_player_count != 1:
+                    g.local_player_count = 2
 
-                g.BOARD_WIDTH = (4 * g.PLAYER_COUNT) + 6
-                TILE_SIZE = min(g.WINDOW_WIDTH,g.WINDOW_HEIGHT) // max(g.BOARD_WIDTH,g.BOARD_HEIGHT)
+                g.tile_size = min(g.window_width, g.window_height) // max(g.board_width, g.board_height)
 
                 # Move to the player selection state
                 self.switch('level selection menu')
@@ -42,11 +42,11 @@ class Main_Menu(States):
         title_string = 'TETRISN\'T'
         subtitle_string = 'not a tetris game'
 
-        text.draw(screen, title_string,    'LARGE', (g.WINDOW_WIDTH//2, g.WINDOW_HEIGHT//4),   (0, 160, 0))
-        text.draw(screen, subtitle_string, 'SMALL', (g.WINDOW_WIDTH//2, g.WINDOW_HEIGHT*2//4), (0, 120, 0))
+        text.draw(screen, title_string,    'LARGE', (g.window_width//2, g.window_height//4),   (0, 160, 0))
+        text.draw(screen, subtitle_string, 'SMALL', (g.window_width//2, g.window_height*2//4), (0, 120, 0))
 
         single_string = 'Press 1 for single player'
         multi_string  = 'Press 0 for multi player'
-        text.draw(screen, single_string, 'SMALL', (g.WINDOW_WIDTH*1//4, g.WINDOW_HEIGHT*3//4), (150, 0, 0))
-        text.draw(screen, multi_string,  'SMALL', (g.WINDOW_WIDTH*3//4, g.WINDOW_HEIGHT*3//4), (150, 0, 0))
+        text.draw(screen, single_string, 'SMALL', (g.window_width*1//4, g.window_height*3//4), (150, 0, 0))
+        text.draw(screen, multi_string,  'SMALL', (g.window_width*3//4, g.window_height*3//4), (150, 0, 0))
         pygame.display.update()

@@ -1,4 +1,4 @@
-from lib.Constants import *
+from common.constants import *
 import pygame
 
 class Player:

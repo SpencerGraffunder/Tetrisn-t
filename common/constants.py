@@ -1,7 +1,5 @@
 import pygame
 
-BOARD_HEIGHT_BUFFER = 2
-
 # FPS
 FRAME_RATE = 60
 
@@ -85,5 +83,3 @@ KEYBINDING_CW = 4
 
 WINDOW_WIDTH = 1000
 WINDOW_HEIGHT = 800
-
-

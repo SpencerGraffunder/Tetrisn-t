@@ -1,13 +1,14 @@
-from lib.states.States import *
+from client.states.state import *
 import pygame
 import client.globals as g
-from lib.Constants import *
-from lib.components.Text import *
+from common.constants import *
+from common.components.text import *
 
-class Game_Over(States):
+
+class GameOverMenu(State):
 
     def __init__(self):
-        States.__init__(self)
+        State.__init__(self)
                 
     def update(self, dt):
         for event in pygame.event.get():

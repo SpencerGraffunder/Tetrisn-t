@@ -1,4 +1,3 @@
-import lib.Constants as Constants
 import copy
 import pygame
 from threading import Lock
@@ -47,7 +46,8 @@ class PlayerInput:
 
 class GameState:
     def __init__(self):
-        self.board_width = 0
+        self.board_width = 10
+        self.board_height = 20
         self.board = []
         self.players = []
         self.current_level = 0

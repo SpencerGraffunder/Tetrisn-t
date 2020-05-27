@@ -1,23 +1,19 @@
-import pygame
-from lib.states.States import *
-import sys
-import os
-from lib.components.Tile import *  # Import like this to avoid having to do Tile. before everything
-from lib.components.Piece import *
-from lib.components.Player import *
+from server.states.state import *
+from common.components.tile import *  # Import like this to avoid having to do Tile. before everything
+from common.components.piece import *
+from common.components.player import *
 import random
 from collections import deque
 import server.globals as g
-from lib.Constants import *
-from lib.components.Text import *
-from lib.Connection import GameState
-from lib.Connection import connection
-from lib.Connection import PlayerInput
+from common.components.text import *
+from common.connection import GameState
+from common.connection import connection
+from common.connection import PlayerInput
 
-class ServerGame(States):
+class Game(State):
     def __init__(self):
 
-        States.__init__(self)
+        State.__init__(self)
 
         self.state = GameState()
         self.input = PlayerInput()
@@ -35,7 +31,7 @@ class ServerGame(States):
 
         self.state.board_width = (4 * self.state.player_count) + 6
         # Fill board with empty tiles
-        self.state.board = [[Tile() for j in range(self.state.board_width)] for i in range(g.BOARD_HEIGHT+BOARD_HEIGHT_BUFFER)]
+        self.state.board = [[Tile() for j in range(self.state.board_width)] for i in range(g.board_height+BOARD_HEIGHT_BUFFER)]
 
         # find the greatest level less than CURRENT_LEVEL
         # in FALL_DELAY_VALUES and set the speed to that level's speed
@@ -69,7 +65,7 @@ class ServerGame(States):
     def do_event(self, event):
 
         if event.type == pygame.QUIT:
-            self.switch('connecting')
+            self.switch('lobby')
             
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_BACKQUOTE:
@@ -322,11 +318,6 @@ class ServerGame(States):
             if self.state.players[player_number].player_state == TETRIS_STATE_GAME_OVER:
                 self.state.game_over = True
                 connection.set_state(self.state)
-                self.switch('connecting')
+                self.switch('lobby')
 
         connection.set_state(self.state)
-
-    def draw(self, screen):
-        pass
-
-

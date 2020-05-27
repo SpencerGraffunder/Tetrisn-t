@@ -1,17 +1,17 @@
 import pygame
 import pdb
-from lib.Constants import *
+from common.constants import *
 from copy import copy
-from lib.states.States import *
+from client.states.state import *
 from threading import Thread
-from lib.states.Main_Menu import *
-from lib.states.Level_Selection_Menu import *
-from lib.states.Pause_Menu import *
-from lib.states.ClientGame import ClientGame
-from lib.states.Game_Over import *
+from client.states.main_menu import *
+from client.states.level_selection_menu import *
+from client.states.pause_menu import *
+from client.states.game import Game
+from client.states.game_over_menu import *
 import sys
-from lib.states.Control import *
-from lib.components.Text import *
+from client.control import *
+from common.components.text import *
 import os
 
 
@@ -21,11 +21,11 @@ class Client:
         self.program = Control()
 
         self.state_dict = {
-            'main menu'            : Main_Menu(),
-            'level selection menu' : Level_Selection_Menu(),
-            'pause menu'           : Pause_Menu(),
-            'client game'          : ClientGame(),
-            'game over'            : Game_Over()
+            'main menu'            : MainMenu(),
+            'level selection menu' : LevelSelectionMenu(),
+            'pause menu'           : PauseMenu(),
+            'game'                 : Game(),
+            'game over menu'       : GameOverMenu()
         }
 
     def start(self):

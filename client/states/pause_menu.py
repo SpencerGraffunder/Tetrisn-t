@@ -1,16 +1,17 @@
-from lib.states.States import *
+from client.states.state import *
 import pygame
-from lib.Constants import *
-from lib.components.Text import *
-from lib.Connection import PlayerInput
-from lib.Connection import connection
+from common.constants import *
+from common.components.text import *
+from common.connection import PlayerInput
+from common.connection import connection
 import pdb
 import client.globals as g
 
-class Pause_Menu(States):
+
+class PauseMenu(State):
 
     def __init__(self):
-        States.__init__(self)
+        State.__init__(self)
 
     def update(self, dt):
         for event in pygame.event.get():
@@ -26,7 +27,7 @@ class Pause_Menu(States):
                     player_input = PlayerInput()
                     player_input.resume_game()
                     connection.add_input(player_input)
-                    self.switch('client game')
+                    self.switch('game')
 
     def draw(self, screen):
         screen.fill((150, 150, 150))
@@ -34,7 +35,7 @@ class Pause_Menu(States):
         space_string = 'Press SPACE to continue'
         esc_string = 'Press ESC for main menu'
 
-        text.draw(screen, title_string, 'LARGE', (g.WINDOW_WIDTH//2, g.WINDOW_HEIGHT//4),   (0, 160, 0))
-        text.draw(screen, space_string, 'SMALL', (g.WINDOW_WIDTH//2, g.WINDOW_HEIGHT*2//4), (0, 120, 0))
-        text.draw(screen, esc_string  , 'SMALL', (g.WINDOW_WIDTH//2, g.WINDOW_HEIGHT*3//4), (0, 120, 0))
+        text.draw(screen, title_string, 'LARGE', (g.window_width//2, g.window_height//4),   (0, 160, 0))
+        text.draw(screen, space_string, 'SMALL', (g.window_width//2, g.window_height*2//4), (0, 120, 0))
+        text.draw(screen, esc_string  , 'SMALL', (g.window_width//2, g.window_height*3//4), (0, 120, 0))
         pygame.display.update()

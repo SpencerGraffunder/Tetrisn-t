@@ -1,28 +1,9 @@
-import lib.Constants as Constants
+player_count = 1
 
-# Import with:
-# import Globals
-# Not:
-# from Globals import *
+current_level = 0
 
-# Number of players
-PLAYER_COUNT = 1
+# height should be about twice the width
+board_height = 20
+board_width = 10
 
-CURRENT_LEVEL = 0
-
-# Variable to tell Game to reset the board
-GAME_JUST_STARTED = False
-
-# Should be about twice BOARD_WIDTH
-BOARD_HEIGHT = 20
-BOARD_WIDTH = 10
-
-BOARD_HEIGHT_BUFFER = 2
-FRAME_RATE = 60
-
-# Window dimensions in pixels
-WINDOW_HEIGHT = 800
-WINDOW_WIDTH = 1000
-
-# Size of the board tiles on the screen in pixels
-TILE_SIZE = min(WINDOW_WIDTH,WINDOW_HEIGHT) // max(BOARD_WIDTH,BOARD_HEIGHT)
+tick_rate = 60

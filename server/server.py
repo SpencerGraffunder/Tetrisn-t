@@ -1,20 +1,16 @@
-import pdb
-from lib.Constants import *
-from copy import copy
-from lib.states.States import *
-from lib.states.ServerGame import *
-from lib.states.Connecting import *
+from server.states.game import *
+from server.states.lobby import *
 import sys
-from lib.states.Control import *
+from server.control import *
 from threading import Thread
+
 
 class Server:
     def __init__(self):
         self.program = Control()
-
         self.state_dict = {
-            'connecting': Connecting(),
-            'server game': ServerGame(),
+            'lobby': Lobby(),
+            'game': Game(),
         }
 
     def start(self):
@@ -23,7 +19,7 @@ class Server:
 
     def server_loop(self):
         try:
-            self.program.setup_states(self.state_dict, 'connecting')
+            self.program.setup_states(self.state_dict, 'lobby')
             self.program.main_game_loop()
             sys.exit()
         except Exception as e:

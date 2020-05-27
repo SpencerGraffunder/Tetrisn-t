@@ -1,4 +1,4 @@
-from lib.Constants import *
+from common.constants import *
 import pdb
 import sys
 from copy import copy

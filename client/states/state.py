@@ -1,4 +1,4 @@
-class States(object):
+class State(object):
     def __init__(self):
         self.just_started = True
         self.done = False
