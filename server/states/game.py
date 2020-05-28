@@ -36,7 +36,6 @@ class Game(State):
         self.time_next_rotate = 0
         self.das_counter = 0
         self.score = 0
-        self.time_to_rotate = False
 
         self.reset(self.input)
 
@@ -81,46 +80,64 @@ class Game(State):
 
         if event.type == pygame.QUIT:
             self.switch('lobby')
-            
+
+        # debug mode on '`' press; TODO: remove this for big releases
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_BACKQUOTE:
                 pdb.set_trace()
 
         for player_number in range(self.state.player_count):
+            # if a key goes from un-pressed to pressed
             if event.type == pygame.KEYDOWN:
-
+                # this if avoids a crash that happens during the lock delay and line clear animation
                 if self.state.players[player_number].active_piece is not None:
+                    # check ccw rotation button
                     if event.key == KEYBINDINGS[player_number][KEYBINDING_CCW]:
+                        # check if can rotate ccw
                         if self.state.players[player_number].active_piece.can_rotate(self.state.board, self.state.players, ROTATION_CCW):
+                            # rotate ccw
                             self.state.players[player_number].active_piece.rotate(ROTATION_CCW)
-                            self.state.time_to_rotate = False
+                    # check cw rotation button
                     if event.key == KEYBINDINGS[player_number][KEYBINDING_CW]:
+                        # check if can rotate cw
                         if self.state.players[player_number].active_piece.can_rotate(self.state.board, self.state.players, ROTATION_CW):
+                            # rotate cw
                             self.state.players[player_number].active_piece.rotate(ROTATION_CW)
-                            self.time_to_rotate = False
 
+                # check move left button
                 if event.key == KEYBINDINGS[player_number][KEYBINDING_LEFT]:
-                    self.state.players[player_number].is_move_left_pressed = True
+                    self.state.players[player_number].is_move_left_pressed  = True
+                    self.state.players[player_number].das_counter = 0 # das_counter (Delayed Auto Shift) goes up each game tick and once it gets past the DAS_VALUES constant (based on number of players), the piece starts auto shifting
                     self.state.players[player_number].das_threshold = 0
-                    self.state.players[player_number].das_counter = 0
+                # check move right button
                 if event.key == KEYBINDINGS[player_number][KEYBINDING_RIGHT]:
                     self.state.players[player_number].is_move_right_pressed = True
+                    self.state.players[player_number].das_counter = 0
                     self.state.players[player_number].das_threshold = 0
-                    self.state.das_counter = 0
+                # check move down button
                 if event.key == KEYBINDINGS[player_number][KEYBINDING_DOWN]:
-                    self.state.players[player_number].is_move_down_pressed = True
+                    self.state.players[player_number].is_move_down_pressed  = True
+                    self.state.players[player_number].das_counter = 0
+                    self.state.players[player_number].das_threshold = 0
                     self.state.players[player_number].down_counter = 0
 
+            # if a key goes from pressed to un-pressed. We don't care about rotation buttons because nothing different should happen if a rotation button is un-pressed
             if event.type == pygame.KEYUP:
+                # check move left button
                 if event.key == KEYBINDINGS[player_number][KEYBINDING_LEFT]:
-                    self.state.players[player_number].is_move_left_pressed = False
+                    self.state.players[player_number].is_move_left_pressed  = False
                     self.state.players[player_number].das_counter = 0
+                    self.state.players[player_number].das_threshold = 0
+                # check move right button
                 if event.key == KEYBINDINGS[player_number][KEYBINDING_RIGHT]:
                     self.state.players[player_number].is_move_right_pressed = False
                     self.state.players[player_number].das_counter = 0
+                    self.state.players[player_number].das_threshold = 0
+                # check move down button
                 if event.key == KEYBINDINGS[player_number][KEYBINDING_DOWN]:
-                    self.state.players[player_number].is_move_down_pressed = False
+                    self.state.players[player_number].is_move_down_pressed  = False
                     self.state.players[player_number].das_counter = 0
+                    self.state.players[player_number].das_threshold = 0
 
     def lock_piece(self, player_number):
 
@@ -196,23 +213,50 @@ class Game(State):
                 if self.state.players[player_number].is_move_left_pressed or self.state.players[player_number].is_move_right_pressed:
                     self.state.players[player_number].das_counter += 1
 
+                    # see if the das counter is above the das threshold, which is one of three values given the player count based on if the key was just pressed (das_threshold == 0), else
+                    # {if first das threshold was passed for that l/r keypress (das_threshold == DAS_VALUES[self.state.player_count][1]), else (das_threshold == DAS_VALUES[self.state.player_count][0])}
+                    # this way the first time the button is pressed, the piece moves (and if there's a piece in the way and then there isn't, it moves)
+                    # furthermore, once the initial nonzero das_threshold (DAS_VALUES[self.state.player_count][1]) is passed, then das_threshold becomes smaller (DAS_VALUES[self.state.player_count][0])
+                    # so that the piece moves faster after the player surely wants the game to start moving the piece for them
+
+                    # special case: if a direction is held for a long time and the active piece is against another piece (either placed or another player's piece), the das_counter shouldn't be reset
+                    # if the piece can move again because the input is being made for auto shift, so if das_counter == 0, we want to just subtract 1 off das_threshold unless it comes within
+                    # DAS_VALUES[self.state.player_count][0] of DAS_VALUES[self.state.player_count][1], in which case we want it to be DAS_VALUES[self.state.player_count][1] - DAS_VALUES[self.state.player_count][0]
                     if self.state.players[player_number].das_counter > self.state.players[player_number].das_threshold:
+                        # left
                         if self.state.players[player_number].is_move_left_pressed:
+                            # check if can move left
                             if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, DIRECTION_LEFT) == CAN_MOVE:
+                                # move left
                                 self.state.players[player_number].active_piece.move(DIRECTION_LEFT)
-                                self.state.players[player_number].das_counter = 0
+                                # make sure das_threshold is no longer zero for this move input
                                 if self.state.players[player_number].das_threshold == 0:
                                     self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][1]
+                                    # set das_counter as explained in the special case
+                                    if self.state.players[player_number].das_counter + DAS_VALUES[self.state.player_count][0] > DAS_VALUES[self.state.player_count][1]:
+                                        self.state.players[player_number].das_counter = DAS_VALUES[self.state.player_count][1] - DAS_VALUES[self.state.player_count][0]
+                                    else:
+                                        self.state.players[player_number].das_counter -= 1
                                 else:
                                     self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][0]
+                                    self.state.players[player_number].das_counter = 0
+                        # right
                         if self.state.players[player_number].is_move_right_pressed:
+                            # check if can move right
                             if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, DIRECTION_RIGHT) == CAN_MOVE:
+                                # move right
                                 self.state.players[player_number].active_piece.move(DIRECTION_RIGHT)
-                                self.state.players[player_number].das_counter = 0
+                                # make sure das_threshold is no longer zero for this move input
                                 if self.state.players[player_number].das_threshold == 0:
                                     self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][1]
+                                    # set das_counter as explained in the special case
+                                    if self.state.players[player_number].das_counter + DAS_VALUES[self.state.player_count][0] > DAS_VALUES[self.state.player_count][1]:
+                                        self.state.players[player_number].das_counter = DAS_VALUES[self.state.player_count][1] - DAS_VALUES[self.state.player_count][0]
+                                    else:
+                                        self.state.players[player_number].das_counter -= 1
                                 else:
                                     self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][0]
+                                    self.state.players[player_number].das_counter = 0
 
                 if self.state.players[player_number].is_move_down_pressed:
                     self.state.players[player_number].down_counter += 1
