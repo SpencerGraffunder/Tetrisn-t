@@ -3,7 +3,7 @@ from server.states.lobby import *
 import sys
 from server.control import *
 from threading import Thread
-
+import traceback
 
 class Server:
     def __init__(self):
@@ -23,4 +23,4 @@ class Server:
             self.program.main_game_loop()
             sys.exit()
         except Exception as e:
-            print(e)
+            traceback.print_exc()

@@ -6,12 +6,12 @@ from common.components.tile import *  # Import like this to avoid having to do T
 from common.components.piece import *
 import client.globals as g
 from common.components.text import *
-from common.connection import PlayerInput
 from common.connection import connection
+from common.player_input import *
+import pdb
 
 
 class Game(State):
-
     def __init__(self):
         State.__init__(self)
 
@@ -35,28 +35,59 @@ class Game(State):
             os.path.join(wd, 'resources', 'LZblock.bmp')).convert()
 
     def do_event(self, event):
-
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_BACKQUOTE:
-                pdb.set_trace()
-
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                pause_input = PlayerInput()
-                pause_input.pause_game()
-                connection.add_input(pause_input)
-                self.switch('pause menu')
+        if event.control == ControlType.PAUSE:
+            pause_input = PlayerInput(None)
+            pause_input.pause_game()
+            connection.add_input(pause_input)
+            self.switch('pause menu')
 
     def update(self):
+        player_inputs = []
+        for player in self.state.players:
+            player_inputs.append(PlayerInput(player.player_number))
 
-        player_input = PlayerInput()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+        # For each of the events in pygame
+        for pygame_event in pygame.event.get():
+
+            event_type = None
+            control_type = None
+
+            # Exit is pressed (?)
+            if pygame_event.type == pygame.QUIT:
                 self.quit = True
-            player_input.add_event(event)
-            self.do_event(event)
+                event_type = EventType.SPECIAL
+                control_type = ControlType.QUIT
+                new_event = Event(event_type, control_type)
+                player_inputs[0].add_event(new_event)
 
-        connection.add_input(player_input)
+            # Exit is not pressed
+            else:
+
+                # Get the event type
+                if pygame_event.type == pygame.KEYUP:
+                    event_type = EventType.KEY_UP
+                elif pygame_event.type == pygame.KEYDOWN:
+                    event_type = EventType.KEY_DOWN
+                else: return
+
+                # For each player
+                for player in self.state.players:
+
+                    # Get the binding dict for this player
+                    dict_control_type = g.keybindings[player.player_number]
+
+                    # If the key pressed is in the dict
+                    if pygame_event.key in dict_control_type:
+                        control_type = dict_control_type[pygame_event.key]
+
+                        # Make the event object and add it to the list
+                        new_event = Event(event_type, control_type)
+                        player_inputs[player.player_number].add_event(new_event)
+                        self.do_event(new_event)
+
+        for player_input in player_inputs:
+            connection.add_input(player_input)
+
         self.state = connection.get_state()
         g.player_count = self.state.player_count
         g.tile_size = (4 * self.state.player_count) + 6

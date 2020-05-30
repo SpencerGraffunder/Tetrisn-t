@@ -10,6 +10,7 @@ from common.connection import GameState
 from common.connection import connection
 from common.connection import PlayerInput
 import pdb
+from common.player_input import *
 
 
 class Game(State):
@@ -17,7 +18,7 @@ class Game(State):
         State.__init__(self)
 
         self.state = GameState()
-        self.input = PlayerInput()
+        self.input = PlayerInput(None)
         self.das_threshold = 0
         self.spawn_delay_threshold = 10
         self.paused = False
@@ -77,50 +78,47 @@ class Game(State):
         for player in self.state.players:
             player.spawn_column = int(((self.state.board_width / self.state.player_count) * player.player_number + (self.state.board_width / self.state.player_count) * (player.player_number + 1)) / 2)
 
-    def do_event(self, event):
+    def do_event(self, event, player_number):
 
-        if event.type == pygame.QUIT:
+        if event.control == ControlType.QUIT:
             self.switch('lobby')
-            
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_BACKQUOTE:
-                pdb.set_trace()
 
-        for player_number in range(self.state.player_count):
-            if event.type == pygame.KEYDOWN:
+        for player in self.state.players:
+            if player_number == player.player_number:
+                if event.type == EventType.KEY_DOWN:
 
-                if self.state.players[player_number].active_piece is not None:
-                    if event.key == KEYBINDINGS[player_number][KEYBINDING_CCW]:
-                        if self.state.players[player_number].active_piece.can_rotate(self.state.board, self.state.players, ROTATION_CCW):
-                            self.state.players[player_number].active_piece.rotate(ROTATION_CCW)
-                            self.state.time_to_rotate = False
-                    if event.key == KEYBINDINGS[player_number][KEYBINDING_CW]:
-                        if self.state.players[player_number].active_piece.can_rotate(self.state.board, self.state.players, ROTATION_CW):
-                            self.state.players[player_number].active_piece.rotate(ROTATION_CW)
-                            self.time_to_rotate = False
+                    if self.state.players[player_number].active_piece is not None:
+                        if event.control == ControlType.CCW:
+                            if self.state.players[player_number].active_piece.can_rotate(self.state.board, self.state.players, ROTATION_CCW):
+                                self.state.players[player_number].active_piece.rotate(ROTATION_CCW)
+                                self.state.time_to_rotate = False
+                        if event.control == ControlType.CW:
+                            if self.state.players[player_number].active_piece.can_rotate(self.state.board, self.state.players, ROTATION_CW):
+                                self.state.players[player_number].active_piece.rotate(ROTATION_CW)
+                                self.time_to_rotate = False
 
-                if event.key == KEYBINDINGS[player_number][KEYBINDING_LEFT]:
-                    self.state.players[player_number].is_move_left_pressed = True
-                    self.state.players[player_number].das_threshold = 0
-                    self.state.players[player_number].das_counter = 0
-                if event.key == KEYBINDINGS[player_number][KEYBINDING_RIGHT]:
-                    self.state.players[player_number].is_move_right_pressed = True
-                    self.state.players[player_number].das_threshold = 0
-                    self.state.das_counter = 0
-                if event.key == KEYBINDINGS[player_number][KEYBINDING_DOWN]:
-                    self.state.players[player_number].is_move_down_pressed = True
-                    self.state.players[player_number].down_counter = 0
+                    if event.control == ControlType.LEFT:
+                        self.state.players[player_number].is_move_left_pressed = True
+                        self.state.players[player_number].das_threshold = 0
+                        self.state.players[player_number].das_counter = 0
+                    if event.control == ControlType.RIGHT:
+                        self.state.players[player_number].is_move_right_pressed = True
+                        self.state.players[player_number].das_threshold = 0
+                        self.state.das_counter = 0
+                    if event.control == ControlType.DOWN:
+                        self.state.players[player_number].is_move_down_pressed = True
+                        self.state.players[player_number].down_counter = 0
 
-            if event.type == pygame.KEYUP:
-                if event.key == KEYBINDINGS[player_number][KEYBINDING_LEFT]:
-                    self.state.players[player_number].is_move_left_pressed = False
-                    self.state.players[player_number].das_counter = 0
-                if event.key == KEYBINDINGS[player_number][KEYBINDING_RIGHT]:
-                    self.state.players[player_number].is_move_right_pressed = False
-                    self.state.players[player_number].das_counter = 0
-                if event.key == KEYBINDINGS[player_number][KEYBINDING_DOWN]:
-                    self.state.players[player_number].is_move_down_pressed = False
-                    self.state.players[player_number].das_counter = 0
+                if event.type == EventType.KEY_UP:
+                    if event.control == ControlType.LEFT:
+                        self.state.players[player_number].is_move_left_pressed = False
+                        self.state.players[player_number].das_counter = 0
+                    if event.control == ControlType.RIGHT:
+                        self.state.players[player_number].is_move_right_pressed = False
+                        self.state.players[player_number].das_counter = 0
+                    if event.control == ControlType.DOWN:
+                        self.state.players[player_number].is_move_down_pressed = False
+                        self.state.players[player_number].das_counter = 0
 
     def lock_piece(self, player_number):
 
@@ -162,7 +160,7 @@ class Game(State):
                 return
 
             for event in self.input.events:
-                self.do_event(event)
+                self.do_event(event, self.input.player_number)
 
         if self.paused:
             return

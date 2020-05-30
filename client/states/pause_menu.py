@@ -23,7 +23,7 @@ class PauseMenu(State):
 
                 elif event.key == pygame.K_SPACE:
                     # Go back to the game
-                    player_input = PlayerInput()
+                    player_input = PlayerInput(None)
                     player_input.resume_game()
                     connection.add_input(player_input)
                     self.switch('game')

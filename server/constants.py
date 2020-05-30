@@ -67,14 +67,3 @@ DAS_VALUES = {
     1:     (6,              16),
     2:     (3,              8)
 }
-
-KEYBINDINGS = {
-# player,      left,       down,       right,      ccw,        cw
-    0 : (pygame.K_a, pygame.K_s, pygame.K_d, pygame.K_q, pygame.K_e),
-    1 : (pygame.K_j, pygame.K_k, pygame.K_l, pygame.K_u, pygame.K_o)
-}
-KEYBINDING_LEFT = 0
-KEYBINDING_DOWN = 1
-KEYBINDING_RIGHT = 2
-KEYBINDING_CCW = 3
-KEYBINDING_CW = 4
