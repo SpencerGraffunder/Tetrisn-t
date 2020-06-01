@@ -14,7 +14,9 @@ Either open the `.exe` file, or to run with Python...
 
 1. Download and install Python 3 (latest) via the official Python website https://www.python.org/downloads/windows/  
 2. Open a terminal (press the Windows key then type `terminal` and hit enter) and type `pip install pygame` (then hit enter)  
-3. All setup is done. To run the game, open a file manager and run `main.py` with Python (should automatically be set to the default program)
+3. To run the game, open a file manager and run `main.py` with Python (should automatically be set to the default program)
+
+After all three steps are completed successfully, running the game again requires only step 3.
 
 ## Linux
 
@@ -41,4 +43,4 @@ pyinstaller main.spec
 
 Currently we are not very open to allow new developers onto the Tetrisn-t team, but once we have a better functioning game we will consider allowing others to improve functionality or add quality of life improvements.
 
-See README.developer for the documentation.
+See README.dev for the documentation.
