@@ -13,8 +13,8 @@ Tetrisn-t is programmed in Python 3.
 Either open the `.exe` file, or to run with Python...
 
 1. Download and install Python 3 (latest) via the official Python website https://www.python.org/downloads/windows/  
-2. Open a terminal (press the Windows key then type `terminal` and hit enter) and type `pip install pygame`  
-3. To run the game, open a file manager and run `main.py` with Python (should automatically be set to the default program)
+2. Open a terminal (press the Windows key then type `terminal` and hit enter) and type `pip install pygame` (then hit enter)  
+3. All setup is done. To run the game, open a file manager and run `main.py` with Python (should automatically be set to the default program)
 
 ## Linux
 
