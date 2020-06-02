@@ -61,8 +61,8 @@ class Game(State):
         self.die_counter = 0
         self.down_counter = 0
         self.is_move_right_pressed = False
-        self.is_move_left_pressed = False
-        self.is_move_down_pressed = False
+        self.is_move_left_pressed  = False
+        self.is_move_down_pressed  = False
         self.fall_counter = 0
         self.time_to_move = False
         self.time_next_move = 0
@@ -81,7 +81,7 @@ class Game(State):
         if event.type == pygame.QUIT:
             self.switch('lobby')
 
-        # debug mode on CTRL+`
+        # debug mode on CTRL + `
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_BACKQUOTE and (pygame.key.get_mods() & pygame.KMOD_LCTRL or pygame.key.get_mods() & pygame.KMOD_RCTRL):
                 print("DEBUG MODE ACTIVE")
@@ -110,11 +110,15 @@ class Game(State):
                     self.state.players[player_number].is_move_left_pressed  = True
                     self.state.players[player_number].das_counter = 0 # das_counter (Delayed Auto Shift) goes up each game tick and once it gets past the DAS_VALUES constant (based on number of players), the piece starts auto shifting
                     self.state.players[player_number].das_threshold = 0
+                    # if the right button is pressed, set it to not be pressed so that this new directional input overrides the old one; if not, it's false anyways
+                    self.state.players[player_number].is_move_right_pressed = False
                 # check move right button
                 if event.key == KEYBINDINGS[player_number][KEYBINDING_RIGHT]:
                     self.state.players[player_number].is_move_right_pressed = True
                     self.state.players[player_number].das_counter = 0
                     self.state.players[player_number].das_threshold = 0
+                    # if the left button is pressed, set it to not be pressed so that this new directional input overrides the old one; if not, it's false anyways
+                    self.state.players[player_number].is_move_left_pressed = False
                 # check move down button
                 if event.key == KEYBINDINGS[player_number][KEYBINDING_DOWN]:
                     self.state.players[player_number].is_move_down_pressed  = True
