@@ -81,9 +81,10 @@ class Game(State):
         if event.type == pygame.QUIT:
             self.switch('lobby')
 
-        # debug mode on '`' press; TODO: remove this for big releases
+        # debug mode on CTRL+`
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_BACKQUOTE:
+            if event.key == pygame.K_BACKQUOTE and (pygame.key.get_mods() & pygame.KMOD_LCTRL or pygame.key.get_mods() & pygame.KMOD_RCTRL):
+                print("DEBUG MODE ACTIVE")
                 pdb.set_trace()
 
         for player_number in range(self.state.player_count):

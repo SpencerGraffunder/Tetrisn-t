@@ -8,6 +8,7 @@ import client.globals as g
 from common.components.text import *
 from common.connection import PlayerInput
 from common.connection import connection
+import pdb
 
 
 class Game(State):
@@ -35,10 +36,6 @@ class Game(State):
             os.path.join(wd, 'resources', 'LZblock.bmp')).convert()
 
     def do_event(self, event):
-
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_BACKQUOTE:
-                pdb.set_trace()
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
