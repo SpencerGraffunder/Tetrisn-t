@@ -51,18 +51,22 @@ Almost everything in Tetrisn-t regarding frame data works much the same way as t
 
 Same as "Frame Data"
 
+## RNG
+
+The only RNG aspect of the game is the piece type. It is the same as the 1989 NES Tetris, and in multiplayer it is still the same but with each person having their own independent RNG
+
 ## Multiplayer
 
 Inspired by Tetris Tengen, but with the idea that any number of players can play (and the pieces don't freeze in mid-air when each player holds towards one another)
 
 ## Special
 
-Currently, there is an easter egg where if one player tucks a piece under an overhang and another player clears a few lines immediately after, the board will move down and possibly cause a game over. This is because of the game over mechanics of the 1989 version of Tetris. Eventually, this is planned to be fixed by causing the tucked, active piece to be "forced down with" the board as the lines move down, but only when there are piece tiles above the active piece.
+Currently, there is an easter egg where if one player tucks a piece under an overhang and another player clears a few lines immediately after, the board will move down and possibly cause a game over. This is because of the game over mechanics of the 1989 version of Tetris. Eventually, this is planned to be fixed by causing the tucked, active piece to be "forced down with" the board as the lines move down, but only when there are piece tiles above the active piece
 
-DAS doesn't work when there is no active piece for a given player (to be fixed).
+DAS doesn't work when there is no active piece for a given player (to be fixed)
 
 # Develop
 
-Currently we are not very open to allow new developers onto the Tetrisn-t team, but once we have a better functioning game we will consider allowing others to improve functionality or add quality of life improvements.
+Currently we are not very open to allow new developers onto the Tetrisn-t team, but once we have a better functioning game we will consider allowing others to improve functionality or add quality of life improvements
 
-See README.dev for the documentation.
+See README.dev for the documentation
