@@ -9,7 +9,6 @@ from common.components.text import *
 from common.connection import GameState
 from common.connection import connection
 from common.connection import PlayerInput
-import pdb
 from common.player_input import *
 
 
@@ -101,10 +100,14 @@ class Game(State):
                         self.state.players[player_number].is_move_left_pressed = True
                         self.state.players[player_number].das_threshold = 0
                         self.state.players[player_number].das_counter = 0
+                        # if the other direction is being held, set this direction to override it; if not, it's already False anyways
+                        self.state.players[player_number].is_move_right_pressed = False
                     if event.control == ControlType.RIGHT:
                         self.state.players[player_number].is_move_right_pressed = True
                         self.state.players[player_number].das_threshold = 0
-                        self.state.das_counter = 0
+                        self.state.players[player_number].das_counter = 0
+                        # if the other direction is being held, set this direction to override it; if not, it's already False anyways
+                        self.state.players[player_number].is_move_left_pressed = False
                     if event.control == ControlType.DOWN:
                         self.state.players[player_number].is_move_down_pressed = True
                         self.state.players[player_number].down_counter = 0
@@ -112,13 +115,10 @@ class Game(State):
                 if event.type == EventType.KEY_UP:
                     if event.control == ControlType.LEFT:
                         self.state.players[player_number].is_move_left_pressed = False
-                        self.state.players[player_number].das_counter = 0
                     if event.control == ControlType.RIGHT:
                         self.state.players[player_number].is_move_right_pressed = False
-                        self.state.players[player_number].das_counter = 0
                     if event.control == ControlType.DOWN:
                         self.state.players[player_number].is_move_down_pressed = False
-                        self.state.players[player_number].das_counter = 0
 
     def lock_piece(self, player_number):
 

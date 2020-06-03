@@ -8,7 +8,6 @@ import client.globals as g
 from common.components.text import *
 from common.connection import connection
 from common.player_input import *
-import pdb
 
 
 class Game(State):
