@@ -9,7 +9,6 @@ from common.components.text import *
 from common.connection import GameState
 from common.connection import connection
 from common.connection import PlayerInput
-import pdb
 from common.player_input import *
 
 
@@ -83,6 +82,7 @@ class Game(State):
         if event.control == ControlType.QUIT:
             self.switch('lobby')
 
+        # player controls: move and rotate
         for player in self.state.players:
             if player_number == player.player_number:
                 if event.type == EventType.KEY_DOWN:
@@ -101,10 +101,14 @@ class Game(State):
                         self.state.players[player_number].is_move_left_pressed = True
                         self.state.players[player_number].das_threshold = 0
                         self.state.players[player_number].das_counter = 0
+                        # if the other direction is being held, set this direction to override it; if not, it's already False anyways
+                        self.state.players[player_number].is_move_right_pressed = False
                     if event.control == ControlType.RIGHT:
                         self.state.players[player_number].is_move_right_pressed = True
                         self.state.players[player_number].das_threshold = 0
-                        self.state.das_counter = 0
+                        self.state.players[player_number].das_counter = 0
+                        # if the other direction is being held, set this direction to override it; if not, it's already False anyways
+                        self.state.players[player_number].is_move_left_pressed = False
                     if event.control == ControlType.DOWN:
                         self.state.players[player_number].is_move_down_pressed = True
                         self.state.players[player_number].down_counter = 0
@@ -112,13 +116,10 @@ class Game(State):
                 if event.type == EventType.KEY_UP:
                     if event.control == ControlType.LEFT:
                         self.state.players[player_number].is_move_left_pressed = False
-                        self.state.players[player_number].das_counter = 0
                     if event.control == ControlType.RIGHT:
                         self.state.players[player_number].is_move_right_pressed = False
-                        self.state.players[player_number].das_counter = 0
                     if event.control == ControlType.DOWN:
                         self.state.players[player_number].is_move_down_pressed = False
-                        self.state.players[player_number].das_counter = 0
 
     def lock_piece(self, player_number):
 
@@ -131,6 +132,7 @@ class Game(State):
             if location[1] > max_row_index:
                 max_row_index = location[1]
 
+        # this was some weird frame data stuff determined based on emulating the 1989 NES version of Tetris (the wiki didn't go quite in-depth enough)
         if self.state.players[player_number].active_piece.piece_type == PIECE_TYPE_I:
             self.state.players[player_number].spawn_delay_threshold = ((max_row_index+2)//4)*2+10
         else:
@@ -164,10 +166,18 @@ class Game(State):
 
         if self.paused:
             return
+
+        # increment das_counter if a move key is pressed (it's reset to zero each time a key is pressed down)
+        for player_number in range(self.state.player_count):
+            if self.state.players[player_number].is_move_left_pressed or self.state.players[player_number].is_move_right_pressed:
+                self.state.players[player_number].das_counter += 1
+
+        # STATES SECTION START
         for player_number in range(self.state.player_count):
 
             if self.state.players[player_number].player_state == TETRIS_STATE_SPAWN:
 
+                # if the game just started or the next piece can spawn into the board (only checking other players' pieces, not the piece tiles on the board)
                 if self.state.players[player_number].next_piece is None or self.state.players[player_number].next_piece.can_move(self.state.board, self.state.players, None) == CAN_MOVE:
 
                     self.state.players[player_number].spawn_delay_counter += 1
@@ -192,25 +202,47 @@ class Game(State):
             if self.state.players[player_number].player_state == TETRIS_STATE_PLAY:
                 # Move piece logic
                 if self.state.players[player_number].is_move_left_pressed or self.state.players[player_number].is_move_right_pressed:
-                    self.state.players[player_number].das_counter += 1
 
+                    # see if the das counter is above the das threshold, which is one of three values given the player count based on if the key was just pressed (das_threshold == 0), else
+                    # {if first das threshold was passed for that l/r keypress (das_threshold == DAS_VALUES[self.state.player_count][1]), else (das_threshold == DAS_VALUES[self.state.player_count][0])}
+                    # this way the first time the button is pressed, the piece moves (and if there's a piece in the way and then there isn't, it moves)
+                    # furthermore, once the initial nonzero das_threshold (DAS_VALUES[self.state.player_count][1]) is passed, then das_threshold becomes smaller (DAS_VALUES[self.state.player_count][0])
+                    # so that the piece moves faster after the player surely wants the game to start moving the piece for them
+
+                    # special case: if a direction is held for a long time and the active piece is against another piece (either placed or another player's piece), the das_counter shouldn't be reset
+                    # if the piece can move again because the input is being made for auto shift, so if das_counter == 0, we want to just subtract 1 off das_threshold unless it comes within
+                    # DAS_VALUES[self.state.player_count][0] of DAS_VALUES[self.state.player_count][1], in which case we want it to be DAS_VALUES[self.state.player_count][1] - DAS_VALUES[self.state.player_count][0]
+
+                    # the special case's code also makes it work to buffer auto shift during a piece's spawn delay time or a line clear animation
                     if self.state.players[player_number].das_counter > self.state.players[player_number].das_threshold:
                         if self.state.players[player_number].is_move_left_pressed:
                             if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, DIRECTION_LEFT) == CAN_MOVE:
                                 self.state.players[player_number].active_piece.move(DIRECTION_LEFT)
-                                self.state.players[player_number].das_counter = 0
+                                # make sure das_threshold is no longer zero for this move input and set das_counter back accordingly
                                 if self.state.players[player_number].das_threshold == 0:
                                     self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][1]
+                                    # set das_counter as explained in the special case
+                                    if self.state.players[player_number].das_counter + DAS_VALUES[self.state.player_count][0] > DAS_VALUES[self.state.player_count][1]:
+                                        self.state.players[player_number].das_counter = DAS_VALUES[self.state.player_count][1] - DAS_VALUES[self.state.player_count][0]
+                                    else:
+                                        self.state.players[player_number].das_counter -= 1
                                 else:
                                     self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][0]
+                                    self.state.players[player_number].das_counter = 0
                         if self.state.players[player_number].is_move_right_pressed:
                             if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, DIRECTION_RIGHT) == CAN_MOVE:
                                 self.state.players[player_number].active_piece.move(DIRECTION_RIGHT)
-                                self.state.players[player_number].das_counter = 0
+                                # make sure das_threshold is no longer zero for this move input
                                 if self.state.players[player_number].das_threshold == 0:
                                     self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][1]
+                                    # set das_counter as explained in the special case and set das_counter back accordingly
+                                    if self.state.players[player_number].das_counter + DAS_VALUES[self.state.player_count][0] > DAS_VALUES[self.state.player_count][1]:
+                                        self.state.players[player_number].das_counter = DAS_VALUES[self.state.player_count][1] - DAS_VALUES[self.state.player_count][0]
+                                    else:
+                                        self.state.players[player_number].das_counter -= 1
                                 else:
                                     self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][0]
+                                    self.state.players[player_number].das_counter = 0
 
                 if self.state.players[player_number].is_move_down_pressed:
                     self.state.players[player_number].down_counter += 1
@@ -238,6 +270,7 @@ class Game(State):
                         pass
                     self.state.players[player_number].fall_counter = 0
 
+            # A 0 game-tick state
             elif self.state.players[player_number].player_state == TETRIS_STATE_CHECK_CLEAR:
                 # Store all lines that can be cleared
                 self.state.players[player_number].lines_to_clear = []
@@ -259,6 +292,7 @@ class Game(State):
                             else:
                                 self.state.players[player_number].lines_to_clear.append(row_index)
 
+                # If there are lines to clear, go to TETRIS_STATE_CLEAR and zero clear_animation_counter. If not, go to TETRIS_STATE_SPAWN_DELAY
                 if len(self.state.players[player_number].lines_to_clear) > 0:
                     self.state.players[player_number].player_state = TETRIS_STATE_CLEAR
                     self.state.players[player_number].clear_animation_counter = 0
