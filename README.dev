@@ -1,0 +1,7 @@
+This is for anyone wanting to develop/modify the game files of Tetrisn-t.
+If you want to know how to install/run the game, look at "README.md"
+
+----------
+
+Program flow:
+main.py is run first, and starts two threads: first, a server thread, server/control.py; second, a client thread, client/client.py. The point of always running a server and a client is that both local play and network play are available via the same program. All server files (game logic and networking) are in server/ and all client files (drawing the board and sending the keypresses/keyreleases to the server) are in client/, with only a small overlap in common/.
