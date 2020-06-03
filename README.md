@@ -38,6 +38,10 @@ python3 main.py
 ## Create .exe
 
 ```
+pip install pyinstaller
+```
+
+```
 pyinstaller main.spec
 ```
 
