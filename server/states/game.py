@@ -74,6 +74,8 @@ class Game(State):
         self.paused = False
 
         self.state.players = [Player(x, self.state.board_width) for x in range(self.state.player_count)]
+
+        # split the board into PLAYER_COUNT equal sections (using floats), find the middle of the section we care about using the average, and favor right via the columns being index by 0
         for player in self.state.players:
             player.spawn_column = int(((self.state.board_width / self.state.player_count) * player.player_number + (self.state.board_width / self.state.player_count) * (player.player_number + 1)) / 2)
 

@@ -31,5 +31,5 @@ class Player:
         self.player_state   = TETRIS_STATE_SPAWN
         self.lines_to_clear = []
 
-        # split the board into PLAYER_COUNT equal sections (using floats), find the middle of the section we care about using the average, and favor right via the columns being index by 0
-        self.spawn_column = 0
+        # spawn column; set in server/states/game.py
+        self.spawn_column = None
