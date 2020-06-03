@@ -33,6 +33,13 @@ class Game(State):
         self.sprites[TILE_TYPE_LZ] = pygame.image.load(
             os.path.join(wd, 'resources', 'LZblock.bmp')).convert()
 
+        self.sounds = {0: pygame.mixer.Sound('resources/lock1.ogg'),
+                       1: pygame.mixer.Sound('resources/lock2.ogg'),
+                       2: pygame.mixer.Sound('resources/lock3.ogg'),
+                       3: pygame.mixer.Sound('resources/lock4.ogg'),
+                       4: pygame.mixer.Sound('resources/clear1.ogg'),
+                       5: pygame.mixer.Sound('resources/clear2.ogg')}
+
         joysticks = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())]
         for joy in joysticks:
             joy.init()
@@ -130,6 +137,9 @@ class Game(State):
             self.switch('game over menu')
 
     def draw(self, screen):
+        for sound in self.state.play_sounds:
+            self.sounds[sound].play()
+        self.state.play_sounds = []
 
         screen.fill((150, 150, 150))
         centering_offset = (g.window_width - (g.tile_size * self.state.board_width)) // 2

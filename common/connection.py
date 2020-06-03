@@ -14,6 +14,7 @@ class GameState:
         self.score = 0
         self.game_over = False
         self.player_count = 0
+        self.play_sounds = []
 
     def set_player_count(self, player_count):
         self.player_count = player_count

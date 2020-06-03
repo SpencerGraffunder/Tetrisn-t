@@ -28,7 +28,7 @@ class MainMenu(State):
 
                 # Bound the player count (can add more later)
                 if g.local_player_count != 1:
-                    g.local_player_count = 4
+                    g.local_player_count = 2
 
                 # Move to the player selection state
                 self.switch('level selection menu')
