@@ -119,24 +119,20 @@ class Game(State):
                 else:
                     return
 
-
         for player_input in player_inputs:
             connection.add_input(player_input)
 
         self.state = connection.get_state()
         g.player_count = self.state.player_count
-        g.tile_size = (4 * self.state.player_count) + 6
 
-        g.tile_size = min(g.window_width, g.window_height) // max(self.state.board_width, self.state.board_height)
+        g.tile_size = g.window_height // self.state.board_height
         if self.state.game_over:
             self.switch('game over menu')
 
     def draw(self, screen):
 
         screen.fill((150, 150, 150))
-
-        centering_offset = (g.window_width - (
-                    g.tile_size * self.state.board_width)) // 2
+        centering_offset = (g.window_width - (g.tile_size * self.state.board_width)) // 2
 
         for row_index, tile_row in enumerate(self.state.board[2:]):
             for col_index, tile in enumerate(tile_row):

@@ -46,7 +46,7 @@ class Game(State):
 
         self.state.board_width = (4 * self.state.player_count) + 6
         # Fill board with empty tiles
-        self.state.board = [[Tile() for _ in range(self.state.board_width)] for _ in range(g.board_height+BOARD_HEIGHT_BUFFER)]
+        self.state.board = [[Tile() for _ in range(self.state.board_width)] for _ in range(self.state.board_height+BOARD_HEIGHT_BUFFER)]
 
         # find the greatest level less than CURRENT_LEVEL
         # in FALL_DELAY_VALUES and set the speed to that level's speed
@@ -73,7 +73,7 @@ class Game(State):
         self.score = 0
         self.paused = False
 
-        self.state.players = [Player(x, self.state.board_width) for x in range(self.state.player_count)]
+        self.state.players = [Player(x) for x in range(self.state.player_count)]
         for player in self.state.players:
             player.spawn_column = int(((self.state.board_width / self.state.player_count) * player.player_number + (self.state.board_width / self.state.player_count) * (player.player_number + 1)) / 2)
 
