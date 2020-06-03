@@ -1,5 +1,5 @@
 import pygame
-
+from collections import defaultdict
 
 # Buffer for allowing pieces to be above the board when they spawn
 BOARD_HEIGHT_BUFFER = 2
@@ -62,8 +62,5 @@ FALL_DELAY_VALUES = {
     29: 1
 }
 
-DAS_VALUES = {
-  # mode   repeated delay   first delay
-    1:     (6,              16),
-    2:     (3,              8)
-}
+DAS_VALUES = defaultdict(lambda: (3, 8))
+DAS_VALUES[0] = (6, 16)

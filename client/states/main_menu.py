@@ -28,7 +28,7 @@ class MainMenu(State):
 
                 # Bound the player count (can add more later)
                 if g.local_player_count != 1:
-                    g.local_player_count = 2
+                    g.local_player_count = 4
 
                 g.tile_size = min(g.window_width, g.window_height) // max(g.board_width, g.board_height)
 

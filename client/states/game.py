@@ -8,7 +8,6 @@ import client.globals as g
 from common.components.text import *
 from common.connection import connection
 from common.player_input import *
-import pdb
 
 
 class Game(State):
@@ -34,6 +33,10 @@ class Game(State):
         self.sprites[TILE_TYPE_LZ] = pygame.image.load(
             os.path.join(wd, 'resources', 'LZblock.bmp')).convert()
 
+        joysticks = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())]
+        for joy in joysticks:
+            joy.init()
+
     def do_event(self, event):
         if event.control == ControlType.PAUSE:
             pause_input = PlayerInput(None)
@@ -45,13 +48,8 @@ class Game(State):
         player_inputs = []
         for player in self.state.players:
             player_inputs.append(PlayerInput(player.player_number))
-
         # For each of the events in pygame
         for pygame_event in pygame.event.get():
-
-            event_type = None
-            control_type = None
-
             # Exit is pressed (?)
             if pygame_event.type == pygame.QUIT:
                 self.quit = True
@@ -59,31 +57,68 @@ class Game(State):
                 control_type = ControlType.QUIT
                 new_event = Event(event_type, control_type)
                 player_inputs[0].add_event(new_event)
-
             # Exit is not pressed
             else:
+                if pygame_event.type == pygame.KEYDOWN or pygame_event.type == pygame.KEYUP:
+                    # For each player
+                    for player in self.state.players:
+                        event_type = None
+                        control_type = None
+                        if pygame_event.type == pygame.KEYUP:
+                            event_type = EventType.KEY_UP
+                        elif pygame_event.type == pygame.KEYDOWN:
+                            event_type = EventType.KEY_DOWN
+                        # Get the binding dict for this player
+                        dict_control_type = g.keybindings[player.player_number]
+                        # If the key pressed is in the dict
+                        if pygame_event.key in dict_control_type:
+                            control_type = dict_control_type[pygame_event.key]
+                        if event_type is not None and control_type is not None:
+                            new_event = Event(event_type, control_type)
+                            player_inputs[player.player_number].add_event(new_event)
+                            self.do_event(new_event)
+                elif pygame_event.type == pygame.JOYBUTTONDOWN or pygame_event.type == pygame.JOYBUTTONUP:
+                    for player in self.state.players:
+                        event_type = None
+                        control_type = None
+                        if player.player_number == pygame_event.joy:
+                            if pygame_event.type == pygame.JOYBUTTONUP:
+                                event_type = EventType.KEY_UP
+                            elif pygame_event.type == pygame.JOYBUTTONDOWN:
+                                event_type = EventType.KEY_DOWN
+                            if pygame_event.button == 0:
+                                control_type = ControlType.CCW
+                            elif pygame_event.button == 1:
+                                control_type = ControlType.CW
+                            if event_type is not None and control_type is not None:
+                                new_event = Event(event_type, control_type)
+                                player_inputs[player.player_number].add_event(new_event)
+                elif pygame_event.type == pygame.JOYHATMOTION:
+                    for player in self.state.players:
+                        event_type = None
+                        control_type = None
+                        if player.player_number == pygame_event.joy:
+                            x, y = pygame_event.value
+                            if x == 0 and y == 0:
+                                event_type = EventType.KEY_UP
+                                for ct in [ControlType.RIGHT, ControlType.LEFT, ControlType.DOWN]:
+                                    new_event = Event(event_type, ct)
+                                    player_inputs[player.player_number].add_event(new_event)
+                                break
+                            else:
+                                event_type = EventType.KEY_DOWN
+                            if x == 1:
+                                control_type = ControlType.RIGHT
+                            elif x == -1:
+                                control_type = ControlType.LEFT
+                            elif y == -1:
+                                control_type = ControlType.DOWN
+                            if event_type is not None and control_type is not None:
+                                new_event = Event(event_type, control_type)
+                                player_inputs[player.player_number].add_event(new_event)
+                else:
+                    return
 
-                # Get the event type
-                if pygame_event.type == pygame.KEYUP:
-                    event_type = EventType.KEY_UP
-                elif pygame_event.type == pygame.KEYDOWN:
-                    event_type = EventType.KEY_DOWN
-                else: return
-
-                # For each player
-                for player in self.state.players:
-
-                    # Get the binding dict for this player
-                    dict_control_type = g.keybindings[player.player_number]
-
-                    # If the key pressed is in the dict
-                    if pygame_event.key in dict_control_type:
-                        control_type = dict_control_type[pygame_event.key]
-
-                        # Make the event object and add it to the list
-                        new_event = Event(event_type, control_type)
-                        player_inputs[player.player_number].add_event(new_event)
-                        self.do_event(new_event)
 
         for player_input in player_inputs:
             connection.add_input(player_input)
