@@ -63,4 +63,4 @@ FALL_DELAY_VALUES = {
 }
 
 DAS_VALUES = defaultdict(lambda: (3, 8))
-DAS_VALUES[0] = (6, 16)
+DAS_VALUES[1] = (6, 16)
