@@ -1,9 +1,11 @@
-from PIL import Image
+import globals as g
 
-# a nice green color
-BASE_COLOR_0 = 80
-BASE_COLOR_1 = 240
-BASE_COLOR_2 = 60
+PLAYER_COLORS = {0: (80, 240, 60),
+                 1: None,
+                 2: None,
+                 3: None,
+                 4: None,
+                 5: None}
 
 # darken edges by
 EDGE_DARKEN_0 = 0.95
@@ -15,53 +17,56 @@ MIDDLE_BRIGHTEN_0 = 0.40
 MIDDLE_BRIGHTEN_1 = 0.25
 MIDDLE_BRIGHTEN_2 = 0.10
 
-# do stuff
-img = Image.new('RGB', (8,8), (BASE_COLOR_0, BASE_COLOR_1, BASE_COLOR_2)) # Create a new 8x8 image with the base color
-pixels = img.load() # Create the pixel map
+def get_tile_surface(color):
 
-# darken corners
-for i in [0,7]: # For every corner pixel:
-    for j in [0,7]:
-        pixels[i,j] = ((int)(BASE_COLOR_0 * (1 - EDGE_DARKEN_0)), (int)(BASE_COLOR_1 * (1 - EDGE_DARKEN_0)), (int)(BASE_COLOR_2 * (1 - EDGE_DARKEN_0)))
+      # do stuff
+      pixels = pygame.Surface((8, 8))
+      pixels.fill((color[0], color[1], color[2]))
 
-# darken around corners on the edges
-for i in [1,2,5,6]:
-    for j in [0,7]:
-        pixels[i,j] = ((int)(BASE_COLOR_0 * (1 - EDGE_DARKEN_1)), (int)(BASE_COLOR_1 * (1 - EDGE_DARKEN_1)), (int)(BASE_COLOR_2 * (1 - EDGE_DARKEN_1)))
-for i in [0,7]:
-    for j in [1,2,5,6]:
-        pixels[i,j] = ((int)(BASE_COLOR_0 * (1 - EDGE_DARKEN_1)), (int)(BASE_COLOR_1 * (1 - EDGE_DARKEN_1)), (int)(BASE_COLOR_2 * (1 - EDGE_DARKEN_1)))
+      # darken corners
+      for i in [0,7]: # For every corner pixel:
+          for j in [0,7]:
+              pixels.set_at((i,j), (int)(color[0] * (1 - EDGE_DARKEN_0)), (int)(color[1] * (1 - EDGE_DARKEN_0)), (int)(color[2] * (1 - EDGE_DARKEN_0)))
 
-# darken the middle of the edges
-for i in [3,4]:
-    for j in [0,7]:
-        pixels[i,j] = ((int)(BASE_COLOR_0 * (1 - EDGE_DARKEN_2)), (int)(BASE_COLOR_1 * (1 - EDGE_DARKEN_2)), (int)(BASE_COLOR_2 * (1 - EDGE_DARKEN_2)))
-for i in [0,7]:
-    for j in [3,4]:
-        pixels[i,j] = ((int)(BASE_COLOR_0 * (1 - EDGE_DARKEN_2)), (int)(BASE_COLOR_1 * (1 - EDGE_DARKEN_2)), (int)(BASE_COLOR_2 * (1 - EDGE_DARKEN_2)))
+      # darken around corners on the edges
+      for i in [1,2,5,6]:
+          for j in [0,7]:
+              pixels.set_at((i,j), (int)(color[0] * (1 - EDGE_DARKEN_1)), (int)(color[1] * (1 - EDGE_DARKEN_1)), (int)(color[2] * (1 - EDGE_DARKEN_1)))
+      for i in [0,7]:
+          for j in [1,2,5,6]:
+              pixels.set_at((i,j), (int)(color[0] * (1 - EDGE_DARKEN_1)), (int)(color[1] * (1 - EDGE_DARKEN_1)), (int)(color[2] * (1 - EDGE_DARKEN_1)))
 
-# brigthen the center 2x2
-for i in [3,4]:
-    for j in [3,4]:
-        pixels[i,j] = ((int)(BASE_COLOR_0 * (1 - MIDDLE_BRIGHTEN_0) + 255 * MIDDLE_BRIGHTEN_0), (int)(BASE_COLOR_1 * (1 - MIDDLE_BRIGHTEN_0) + 255 * MIDDLE_BRIGHTEN_0), (int)(BASE_COLOR_2 * (1 - MIDDLE_BRIGHTEN_0) + 255 * MIDDLE_BRIGHTEN_0))
+      # darken the middle of the edges
+      for i in [3,4]:
+          for j in [0,7]:
+              pixels.set_at((i,j), (int)(color[0] * (1 - EDGE_DARKEN_2)), (int)(color[1] * (1 - EDGE_DARKEN_2)), (int)(color[2] * (1 - EDGE_DARKEN_2)))
+      for i in [0,7]:
+          for j in [3,4]:
+              pixels.set_at((i,j), (int)(color[0] * (1 - EDGE_DARKEN_2)), (int)(color[1] * (1 - EDGE_DARKEN_2)), (int)(color[2] * (1 - EDGE_DARKEN_2)))
 
-# brigthen around the center 2x2
-for i in [2,5]:
-    for j in [3,4]:
-        pixels[i,j] = ((int)(BASE_COLOR_0 * (1 - MIDDLE_BRIGHTEN_1) + 255 * MIDDLE_BRIGHTEN_1), (int)(BASE_COLOR_1 * (1 - MIDDLE_BRIGHTEN_1) + 255 * MIDDLE_BRIGHTEN_1), (int)(BASE_COLOR_2 * (1 - MIDDLE_BRIGHTEN_1) + 255 * MIDDLE_BRIGHTEN_1))
-for i in [3,4]:
-    for j in [2,5]:
-        pixels[i,j] = ((int)(BASE_COLOR_0 * (1 - MIDDLE_BRIGHTEN_1) + 255 * MIDDLE_BRIGHTEN_1), (int)(BASE_COLOR_1 * (1 - MIDDLE_BRIGHTEN_1) + 255 * MIDDLE_BRIGHTEN_1), (int)(BASE_COLOR_2 * (1 - MIDDLE_BRIGHTEN_1) + 255 * MIDDLE_BRIGHTEN_1))
+      # brigthen the center 2x2
+      for i in [3,4]:
+          for j in [3,4]:
+              pixels.set_at((i,j), (int)(color[0] * (1 - MIDDLE_BRIGHTEN_0) + 255 * MIDDLE_BRIGHTEN_0), (int)(color[1] * (1 - MIDDLE_BRIGHTEN_0) + 255 * MIDDLE_BRIGHTEN_0), (int)(color[2] * (1 - MIDDLE_BRIGHTEN_0) + 255 * MIDDLE_BRIGHTEN_0))
 
-# brigthen near the middle of the edge
-for i in [2,5]:
-    for j in [2,5]:
-        pixels[i,j] = ((int)(BASE_COLOR_0 * (1 - MIDDLE_BRIGHTEN_2) + 255 * MIDDLE_BRIGHTEN_2), (int)(BASE_COLOR_1 * (1 - MIDDLE_BRIGHTEN_2) + 255 * MIDDLE_BRIGHTEN_2), (int)(BASE_COLOR_2 * (1 - MIDDLE_BRIGHTEN_2) + 255 * MIDDLE_BRIGHTEN_2))
-for i in [1,6]:
-    for j in [3,4]:
-        pixels[i,j] = ((int)(BASE_COLOR_0 * (1 - MIDDLE_BRIGHTEN_2) + 255 * MIDDLE_BRIGHTEN_2), (int)(BASE_COLOR_1 * (1 - MIDDLE_BRIGHTEN_2) + 255 * MIDDLE_BRIGHTEN_2), (int)(BASE_COLOR_2 * (1 - MIDDLE_BRIGHTEN_2) + 255 * MIDDLE_BRIGHTEN_2))
-for i in [3,4]:
-    for j in [1,6]:
-        pixels[i,j] = ((int)(BASE_COLOR_0 * (1 - MIDDLE_BRIGHTEN_2) + 255 * MIDDLE_BRIGHTEN_2), (int)(BASE_COLOR_1 * (1 - MIDDLE_BRIGHTEN_2) + 255 * MIDDLE_BRIGHTEN_2), (int)(BASE_COLOR_2 * (1 - MIDDLE_BRIGHTEN_2) + 255 * MIDDLE_BRIGHTEN_2))
+      # brigthen around the center 2x2
+      for i in [2,5]:
+          for j in [3,4]:
+              pixels.set_at((i,j), (int)(color[0] * (1 - MIDDLE_BRIGHTEN_1) + 255 * MIDDLE_BRIGHTEN_1), (int)(color[1] * (1 - MIDDLE_BRIGHTEN_1) + 255 * MIDDLE_BRIGHTEN_1), (int)(color[2] * (1 - MIDDLE_BRIGHTEN_1) + 255 * MIDDLE_BRIGHTEN_1))
+      for i in [3,4]:
+          for j in [2,5]:
+              pixels.set_at((i,j), (int)(color[0] * (1 - MIDDLE_BRIGHTEN_1) + 255 * MIDDLE_BRIGHTEN_1), (int)(color[1] * (1 - MIDDLE_BRIGHTEN_1) + 255 * MIDDLE_BRIGHTEN_1), (int)(color[2] * (1 - MIDDLE_BRIGHTEN_1) + 255 * MIDDLE_BRIGHTEN_1))
 
-img.save('test.bmp')
+      # brigthen near the middle of the edge
+      for i in [2,5]:
+          for j in [2,5]:
+              pixels.set_at((i,j), (int)(color[0] * (1 - MIDDLE_BRIGHTEN_2) + 255 * MIDDLE_BRIGHTEN_2), (int)(color[1] * (1 - MIDDLE_BRIGHTEN_2) + 255 * MIDDLE_BRIGHTEN_2), (int)(color[2] * (1 - MIDDLE_BRIGHTEN_2) + 255 * MIDDLE_BRIGHTEN_2))
+      for i in [1,6]:
+          for j in [3,4]:
+              pixels.set_at((i,j), (int)(color[0] * (1 - MIDDLE_BRIGHTEN_2) + 255 * MIDDLE_BRIGHTEN_2), (int)(color[1] * (1 - MIDDLE_BRIGHTEN_2) + 255 * MIDDLE_BRIGHTEN_2), (int)(color[2] * (1 - MIDDLE_BRIGHTEN_2) + 255 * MIDDLE_BRIGHTEN_2))
+      for i in [3,4]:
+          for j in [1,6]:
+              pixels.set_at((i,j), (int)(color[0] * (1 - MIDDLE_BRIGHTEN_2) + 255 * MIDDLE_BRIGHTEN_2), (int)(color[1] * (1 - MIDDLE_BRIGHTEN_2) + 255 * MIDDLE_BRIGHTEN_2), (int)(color[2] * (1 - MIDDLE_BRIGHTEN_2) + 255 * MIDDLE_BRIGHTEN_2))
+
+for i in range(g.player_count):
+      g.tile_surfaces[i] = get_tile_surface(PLAYER_COLORS[i])
