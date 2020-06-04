@@ -8,7 +8,7 @@ tick_rate = 60
 
 # Window dimensions in pixels
 window_height = 900
-window_width = (34*900)//20
+window_width = (34*window_height)//20
 
 # Size of the board tiles on the screen in pixels
 tile_size = None

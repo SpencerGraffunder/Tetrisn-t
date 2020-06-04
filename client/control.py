@@ -5,7 +5,7 @@ import client.globals as g
 class Control:
     def __init__(self):
         self.done = False
-        self.screen = pygame.display.set_mode((g.window_width, g.window_height))
+        self.screen = pygame.display.set_mode((g.window_width, g.window_height), pygame.RESIZABLE)
         self.clock = pygame.time.Clock()
         self.state_dict = None
         self.state_name = None
@@ -21,6 +21,10 @@ class Control:
             self.done = True
         elif self.state.done:
             self.flip_state()
+        for event in pygame.event.get(pygame.VIDEORESIZE):
+            g.window_height = event.h
+            g.window_width = (34*g.window_height)//20
+            self.screen = pygame.display.set_mode((g.window_width, g.window_height), pygame.RESIZABLE)
         self.state.update()
 
     def draw(self):

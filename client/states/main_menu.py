@@ -11,6 +11,10 @@ class MainMenu(State):
 
     def update(self):
         for event in pygame.event.get():
+            if event.type == pygame.VIDEORESIZE:
+                g.window_height = event.h
+                g.window_width = (34*g.window_height)//20
+
             if event.type == pygame.QUIT:
                 self.quit = True
             if event.type == pygame.KEYDOWN:
