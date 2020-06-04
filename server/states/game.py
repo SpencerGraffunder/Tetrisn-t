@@ -333,6 +333,12 @@ class Game(State):
 
                     # Score the points
                     if num_lines != 0:
+
+                        if num_lines == 4:
+                            self.state.play_sounds.append(5)
+                        else:
+                            self.state.play_sounds.append(4)
+
                         if num_lines == 1:
                             self.state.score += 40 * (self.state.current_level + 1)
                         elif num_lines == 2:
