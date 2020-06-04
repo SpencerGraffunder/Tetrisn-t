@@ -8,6 +8,7 @@ import client.globals as g
 from common.components.text import *
 from common.connection import connection
 from common.player_input import *
+import resources.piece_tile_maker_bmp
 
 
 class Game(State):
@@ -26,12 +27,12 @@ class Game(State):
         # Load sprites from image files and convert for performance
         self.sprites[TILE_TYPE_BLANK] = pygame.image.load(
             os.path.join(wd, 'resources', 'backgroundblock.bmp')).convert()
-        self.sprites[TILE_TYPE_IOT] = pygame.image.load(
-            os.path.join(wd, 'resources', 'IOTblock.bmp')).convert()
-        self.sprites[TILE_TYPE_JS] = pygame.image.load(
-            os.path.join(wd, 'resources', 'JSblock.bmp')).convert()
-        self.sprites[TILE_TYPE_LZ] = pygame.image.load(
-            os.path.join(wd, 'resources', 'LZblock.bmp')).convert()
+        # self.sprites[TILE_TYPE_IOT] = pygame.image.load(
+        #     os.path.join(wd, 'resources', 'IOTblock.bmp')).convert()
+        # self.sprites[TILE_TYPE_JS] = pygame.image.load(
+        #     os.path.join(wd, 'resources', 'JSblock.bmp')).convert()
+        # self.sprites[TILE_TYPE_LZ] = pygame.image.load(
+        #     os.path.join(wd, 'resources', 'LZblock.bmp')).convert()
 
         joysticks = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())]
         for joy in joysticks:
@@ -131,24 +132,29 @@ class Game(State):
 
     def draw(self, screen):
 
+        # background
         screen.fill((150, 150, 150))
         centering_offset = (g.window_width - (g.tile_size * self.state.board_width)) // 2
 
+        # board
         for row_index, tile_row in enumerate(self.state.board[2:]):
             for col_index, tile in enumerate(tile_row):
-                scaled_image = pygame.transform.scale(
-                    self.sprites[tile.tile_type],
-                    (g.tile_size, g.tile_size))
+                # empty tiles
+                if tile.tile_type == TILE_TYPE_BLANK:
+                    scaled_image = pygame.transform.scale(self.sprites[tile.tile_type], (g.tile_size, g.tile_size))
+                # piece tiles
+                else:
+                    scaled_image = pygame.transform.scale(g.tile_surfaces[0], (g.tile_size, g.tile_size))
+                # draw
                 screen.blit(scaled_image, (col_index*g.tile_size+centering_offset, row_index*g.tile_size))
-
+        
+        # active pieces and next pieces
         for player in self.state.players:
 
             # Draw active piece
             if player.active_piece is not None:
                 for location in player.active_piece.locations:
-                    scaled_image = pygame.transform.scale(
-                        self.sprites[player.active_piece.tile_type],
-                        (g.tile_size, g.tile_size))
+                    scaled_image = pygame.transform.scale(g.tile_surfaces[0], (g.tile_size, g.tile_size))
                     screen.blit(scaled_image, (location[0] * g.tile_size + centering_offset, (location[1] - BOARD_HEIGHT_BUFFER) * g.tile_size))
 
             # Draw next piece
@@ -185,5 +191,5 @@ class Game(State):
         y_offset = (player_number // 2) * ((7) * g.tile_size)
 
         for tile in player.next_piece.locations:
-            scaled_image = pygame.transform.scale(self.sprites[player.next_piece.tile_type], (g.tile_size, g.tile_size))
+            scaled_image = pygame.transform.scale(g.tile_surfaces[0], (g.tile_size, g.tile_size))
             screen.blit(scaled_image, (x_offset+((tile[0]-player.spawn_column)*g.tile_size), (tile[1])*g.tile_size+y_offset))

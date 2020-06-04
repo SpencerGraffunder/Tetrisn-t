@@ -39,3 +39,6 @@ keybindings = {
         pygame.K_o: ControlType.CW,
         pygame.K_ESCAPE: ControlType.PAUSE}
 }
+
+#
+tile_surfaces = [0]
