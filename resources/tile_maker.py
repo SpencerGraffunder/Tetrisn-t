@@ -1,7 +1,7 @@
 import client.globals as g
 import pygame
 
-tile_colors = {0: (255, 255, 0),
+tile_colors = {0: (0, 0, 255),
                1: (255, 0, 0),
                2: (80, 240, 60),
                3: (0, 255, 255),

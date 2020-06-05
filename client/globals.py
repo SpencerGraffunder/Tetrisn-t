@@ -29,6 +29,12 @@ keybindings[1] = {pygame.K_j: ControlType.LEFT,
                   pygame.K_u: ControlType.CCW,
                   pygame.K_o: ControlType.CW,
                   pygame.K_ESCAPE: ControlType.PAUSE}
+keybindings[2] = {pygame.K_j: ControlType.LEFT,
+                  pygame.K_l: ControlType.RIGHT,
+                  pygame.K_k: ControlType.DOWN,
+                  pygame.K_u: ControlType.CCW,
+                  pygame.K_o: ControlType.CW,
+                  pygame.K_ESCAPE: ControlType.PAUSE}
 
 # The graphics surfaces that will be drawn for each of the different tile types
 tile_surfaces = {}
