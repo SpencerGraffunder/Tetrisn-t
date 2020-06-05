@@ -3,6 +3,7 @@ import pygame
 from common.components.text import *
 import pdb
 import client.globals as g
+from client.constants import *
 
 
 class MainMenu(State):
@@ -13,7 +14,7 @@ class MainMenu(State):
         for event in pygame.event.get():
             if event.type == pygame.VIDEORESIZE:
                 g.window_height = event.h
-                g.window_width = (34*g.window_height)//20
+                g.window_width = (((4*MAX_PLAYER_COUNT)+18)*g.window_height)//20
 
             if event.type == pygame.QUIT:
                 self.quit = True
@@ -31,8 +32,8 @@ class MainMenu(State):
                     return
 
                 # Bound the player count (can add more later)
-                if g.local_player_count != 1:
-                    g.local_player_count = 4
+                if g.local_player_count not in [1, 2, 3, 4, 5, 6]:
+                    return
 
                 # Move to the player selection state
                 self.switch('level selection menu')
@@ -45,8 +46,6 @@ class MainMenu(State):
         text.draw(screen, title_string,    'LARGE', (g.window_width//2, g.window_height//4),   (0, 160, 0))
         text.draw(screen, subtitle_string, 'SMALL', (g.window_width//2, g.window_height*2//4), (0, 120, 0))
 
-        single_string = 'Press 1 for single player'
-        multi_string  = 'Press 0 for multi player'
-        text.draw(screen, single_string, 'SMALL', (g.window_width*1//4, g.window_height*3//4), (150, 0, 0))
-        text.draw(screen, multi_string,  'SMALL', (g.window_width*3//4, g.window_height*3//4), (150, 0, 0))
+        player_count_string = 'Select number of players'
+        text.draw(screen, player_count_string, 'SMALL', (g.window_width//2, g.window_height*3//4), (150, 0, 0))
         pygame.display.update()

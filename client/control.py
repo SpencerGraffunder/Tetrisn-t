@@ -23,7 +23,7 @@ class Control:
             self.flip_state()
         for event in pygame.event.get(pygame.VIDEORESIZE):
             g.window_height = event.h
-            g.window_width = (34*g.window_height)//20
+            g.window_width = (((4*MAX_PLAYER_COUNT)+18)*g.window_height)//20
             self.screen = pygame.display.set_mode((g.window_width, g.window_height), pygame.RESIZABLE)
         self.state.update()
 

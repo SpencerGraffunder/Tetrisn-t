@@ -1,12 +1,45 @@
 import pygame
 from collections import defaultdict
+from enum import Enum
+
+
+class TileType(Enum):
+    IOT   = 0
+    JS    = 1
+    LZ    = 2
+    GRAY  = 3
+    BLANK = 4
+    X     = 5
+
+
+class Direction(Enum):
+    DOWN  = 0
+    LEFT  = 1
+    RIGHT = 2
+
+
+class PieceType(Enum):
+    I = 0
+    O = 1
+    T = 2
+    L = 3
+    J = 4
+    S = 5
+    Z = 6
+
+
+class TetrisState(Enum):
+    SPAWN_DELAY = 0
+    SPAWN = 1
+    PLAY = 2
+    CHECK_CLEAR = 3
+    CLEAR = 4
+    DIE = 5
+    GAME_OVER = 6
+
 
 # Buffer for allowing pieces to be above the board when they spawn
 BOARD_HEIGHT_BUFFER = 2
-
-DIRECTION_DOWN  = 0
-DIRECTION_LEFT  = 1
-DIRECTION_RIGHT = 2
 
 CANT_MOVE_PIECE = 0
 CANT_MOVE_BOARD = 1
@@ -16,32 +49,6 @@ ROTATION_CW  = 0
 ROTATION_CCW = 1
 TURN_CW      = 0
 TURN_CCW     = 1
-
-PIECE_TYPE_I = 0
-PIECE_TYPE_O = 1
-PIECE_TYPE_T = 2
-PIECE_TYPE_L = 3
-PIECE_TYPE_J = 4
-PIECE_TYPE_S = 5
-PIECE_TYPE_Z = 6
-
-TILE_TYPE_BLANK        = 0
-TILE_TYPE_IOT          = 1
-TILE_TYPE_JS           = 2
-TILE_TYPE_LZ           = 3
-TILE_TYPE_GRAY         = 4
-TILE_TYPE_GRAY_HLLEFT  = 5
-TILE_TYPE_GRAY_HLRIGHT = 6
-TILE_TYPE_GRAY_HLUP    = 7
-TILE_TYPE_GRAY_HLDOWN  = 8
-
-TETRIS_STATE_SPAWN_DELAY = 0
-TETRIS_STATE_SPAWN       = 1
-TETRIS_STATE_PLAY        = 2
-TETRIS_STATE_CHECK_CLEAR = 3
-TETRIS_STATE_CLEAR       = 4
-TETRIS_STATE_DIE         = 5
-TETRIS_STATE_GAME_OVER   = 6
 
 FALL_DELAY_VALUES = {
   # level: frames till fall

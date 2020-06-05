@@ -128,24 +128,28 @@ class Game(State):
         piece_locked_into_another_piece = False
         max_row_index = 0
         for location in self.state.players[player_number].active_piece.locations:
-            if self.state.board[location[1]][location[0]].tile_type != TILE_TYPE_BLANK:
+            if self.state.board[location[1]][location[0]].tile_type != TileType.BLANK:
                 piece_locked_into_another_piece = True
-            self.state.board[location[1]][location[0]] = Tile(self.state.players[player_number].active_piece.tile_type)
+            if self.state.player_count == 1:
+                tile_type = self.state.players[player_number].active_piece.tile_type
+            else:
+                tile_type = player_number
+            self.state.board[location[1]][location[0]] = Tile(tile_type)
             if location[1] > max_row_index:
                 max_row_index = location[1]
 
         # this was some weird frame data stuff determined based on emulating the 1989 NES version of Tetris (the wiki didn't go quite in-depth enough)
-        if self.state.players[player_number].active_piece.piece_type == PIECE_TYPE_I:
+        if self.state.players[player_number].active_piece.piece_type == PieceType.I:
             self.state.players[player_number].spawn_delay_threshold = ((max_row_index+2)//4)*2+10
         else:
             self.state.players[player_number].spawn_delay_threshold = ((max_row_index+1+2)//4)*2+10
 
         self.state.players[player_number].active_piece = None
         if not piece_locked_into_another_piece:
-            self.state.players[player_number].player_state = TETRIS_STATE_CHECK_CLEAR
+            self.state.players[player_number].player_state = TetrisState.CHECK_CLEAR
         else:
             for player in self.state.players:
-                player.player_state = TETRIS_STATE_DIE
+                player.player_state = TetrisState.DIE
 
     def update(self):
 
@@ -177,7 +181,7 @@ class Game(State):
         # STATES SECTION START
         for player_number in range(self.state.player_count):
 
-            if self.state.players[player_number].player_state == TETRIS_STATE_SPAWN:
+            if self.state.players[player_number].player_state == TetrisState.SPAWN:
 
                 # if the game just started or the next piece can spawn into the board (only checking other players' pieces, not the piece tiles on the board)
                 if self.state.players[player_number].next_piece is None or self.state.players[player_number].next_piece.can_move(self.state.board, self.state.players, None) == CAN_MOVE:
@@ -189,19 +193,19 @@ class Game(State):
                         # Spawn piece
                         # RNG piece choice decision
                         if self.state.players[player_number].next_piece_type is None:
-                            active_piece_type = random.choice([PIECE_TYPE_I, PIECE_TYPE_O, PIECE_TYPE_T, PIECE_TYPE_L, PIECE_TYPE_J, PIECE_TYPE_Z, PIECE_TYPE_S])
+                            active_piece_type = random.choice([PieceType.I, PieceType.O, PieceType.T, PieceType.L, PieceType.J, PieceType.Z, PieceType.S])
                         else:
                             active_piece_type = self.state.players[player_number].next_piece.piece_type
-                        self.state.players[player_number].next_piece_type = random.choice([PIECE_TYPE_I, PIECE_TYPE_O, PIECE_TYPE_T, PIECE_TYPE_L, PIECE_TYPE_J, PIECE_TYPE_Z, PIECE_TYPE_S])
+                        self.state.players[player_number].next_piece_type = random.choice([PieceType.I, PieceType.O, PieceType.T, PieceType.L, PieceType.J, PieceType.Z, PieceType.S])
                         if self.state.players[player_number].next_piece_type == active_piece_type:
-                            self.state.players[player_number].next_piece_type = random.choice([PIECE_TYPE_I, PIECE_TYPE_O, PIECE_TYPE_T, PIECE_TYPE_L, PIECE_TYPE_J, PIECE_TYPE_Z, PIECE_TYPE_S])
+                            self.state.players[player_number].next_piece_type = random.choice([PieceType.I, PieceType.O, PieceType.T, PieceType.L, PieceType.J, PieceType.Z, PieceType.S])
                         self.state.players[player_number].active_piece = Piece(active_piece_type, player_number, self.state.players[player_number].spawn_column)  # this puts the active piece in the board
                         self.state.players[player_number].next_piece = Piece(self.state.players[player_number].next_piece_type, player_number, self.state.players[player_number].spawn_column)  # this puts the next piece in the next piece box
-                        self.state.players[player_number].player_state = TETRIS_STATE_PLAY
+                        self.state.players[player_number].player_state = TetrisState.PLAY
                         self.state.players[player_number].fall_counter = 0
                         self.state.players[player_number].spawn_delay_counter = 0
 
-            if self.state.players[player_number].player_state == TETRIS_STATE_PLAY:
+            if self.state.players[player_number].player_state == TetrisState.PLAY:
                 # Move piece logic
                 if self.state.players[player_number].is_move_left_pressed or self.state.players[player_number].is_move_right_pressed:
 
@@ -218,8 +222,8 @@ class Game(State):
                     # the special case's code also makes it work to buffer auto shift during a piece's spawn delay time or a line clear animation
                     if self.state.players[player_number].das_counter > self.state.players[player_number].das_threshold:
                         if self.state.players[player_number].is_move_left_pressed:
-                            if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, DIRECTION_LEFT) == CAN_MOVE:
-                                self.state.players[player_number].active_piece.move(DIRECTION_LEFT)
+                            if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.LEFT) == CAN_MOVE:
+                                self.state.players[player_number].active_piece.move(Direction.LEFT)
                                 # make sure das_threshold is no longer zero for this move input and set das_counter back accordingly
                                 if self.state.players[player_number].das_threshold == 0:
                                     self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][1]
@@ -232,8 +236,8 @@ class Game(State):
                                     self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][0]
                                     self.state.players[player_number].das_counter = 0
                         if self.state.players[player_number].is_move_right_pressed:
-                            if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, DIRECTION_RIGHT) == CAN_MOVE:
-                                self.state.players[player_number].active_piece.move(DIRECTION_RIGHT)
+                            if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.RIGHT) == CAN_MOVE:
+                                self.state.players[player_number].active_piece.move(Direction.RIGHT)
                                 # make sure das_threshold is no longer zero for this move input
                                 if self.state.players[player_number].das_threshold == 0:
                                     self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][1]
@@ -251,12 +255,12 @@ class Game(State):
 
                     if self.state.players[player_number].down_counter > 2:
                         if self.state.players[player_number].is_move_down_pressed:
-                            if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, DIRECTION_DOWN) == CAN_MOVE:
-                                self.state.players[player_number].active_piece.move(DIRECTION_DOWN)
+                            if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.DOWN) == CAN_MOVE:
+                                self.state.players[player_number].active_piece.move(Direction.DOWN)
                                 self.state.players[player_number].fall_counter = 0
-                            elif self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, DIRECTION_DOWN) == CANT_MOVE_BOARD:
+                            elif self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.DOWN) == CANT_MOVE_BOARD:
                                 self.lock_piece(player_number)
-                            elif self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, DIRECTION_DOWN) == CANT_MOVE_PIECE:
+                            elif self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.DOWN) == CANT_MOVE_PIECE:
                                 pass
 
                             self.state.players[player_number].down_counter = 0
@@ -264,16 +268,16 @@ class Game(State):
                 self.state.players[player_number].fall_counter += 1
 
                 if self.state.players[player_number].fall_counter >= self.fall_threshold and self.state.players[player_number].active_piece is not None:
-                    if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, DIRECTION_DOWN) == CANT_MOVE_BOARD:
+                    if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.DOWN) == CANT_MOVE_BOARD:
                         self.lock_piece(player_number)
-                    elif self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, DIRECTION_DOWN) == CAN_MOVE:
-                        self.state.players[player_number].active_piece.move(DIRECTION_DOWN)
-                    elif self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, DIRECTION_DOWN) == CANT_MOVE_PIECE:
+                    elif self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.DOWN) == CAN_MOVE:
+                        self.state.players[player_number].active_piece.move(Direction.DOWN)
+                    elif self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.DOWN) == CANT_MOVE_PIECE:
                         pass
                     self.state.players[player_number].fall_counter = 0
 
             # A 0 game-tick state
-            elif self.state.players[player_number].player_state == TETRIS_STATE_CHECK_CLEAR:
+            elif self.state.players[player_number].player_state == TetrisState.CHECK_CLEAR:
                 # Store all lines that can be cleared
                 self.state.players[player_number].lines_to_clear = []
 
@@ -283,7 +287,7 @@ class Game(State):
                 for row_index, row in enumerate(self.state.board):
                     can_clear = True
                     for tile in row:
-                        if tile.tile_type == TILE_TYPE_BLANK:
+                        if tile.tile_type == TileType.BLANK:
                             can_clear = False
                     if can_clear:
                         for player in self.state.players:
@@ -294,14 +298,14 @@ class Game(State):
                             else:
                                 self.state.players[player_number].lines_to_clear.append(row_index)
 
-                # If there are lines to clear, go to TETRIS_STATE_CLEAR and zero clear_animation_counter. If not, go to TETRIS_STATE_SPAWN_DELAY
+                # If there are lines to clear, go to TetrisState.CLEAR and zero clear_animation_counter. If not, go to TetrisState.SPAWN_DELAY
                 if len(self.state.players[player_number].lines_to_clear) > 0:
-                    self.state.players[player_number].player_state = TETRIS_STATE_CLEAR
+                    self.state.players[player_number].player_state = TetrisState.CLEAR
                     self.state.players[player_number].clear_animation_counter = 0
                 elif len(self.state.players[player_number].lines_to_clear) == 0:
-                    self.state.players[player_number].player_state = TETRIS_STATE_SPAWN_DELAY
+                    self.state.players[player_number].player_state = TetrisState.SPAWN_DELAY
 
-            if self.state.players[player_number].player_state == TETRIS_STATE_CLEAR:
+            if self.state.players[player_number].player_state == TetrisState.CLEAR:
                 animation_length = self.spawn_delay_threshold + 20
                 self.state.players[player_number].clear_animation_counter += 1
 
@@ -346,22 +350,22 @@ class Game(State):
                         if self.state.current_level in FALL_DELAY_VALUES.keys():
                             self.fall_threshold = FALL_DELAY_VALUES[self.state.current_level]
 
-                    self.state.players[player_number].player_state = TETRIS_STATE_SPAWN
+                    self.state.players[player_number].player_state = TetrisState.SPAWN
                     self.state.players[player_number].lines_to_clear = []
 
-            elif self.state.players[player_number].player_state == TETRIS_STATE_SPAWN_DELAY:
+            elif self.state.players[player_number].player_state == TetrisState.SPAWN_DELAY:
                 self.state.players[player_number].spawn_delay_counter += 1
 
                 if self.state.players[player_number].spawn_delay_counter > self.spawn_delay_threshold:
-                    self.state.players[player_number].player_state = TETRIS_STATE_SPAWN
+                    self.state.players[player_number].player_state = TetrisState.SPAWN
 
-            if self.state.players[player_number].player_state == TETRIS_STATE_DIE:
+            if self.state.players[player_number].player_state == TetrisState.DIE:
                 self.die_counter += 1
                 if self.die_counter >= 120:  # wait 2 seconds
                     for player in self.state.players:
-                        player.player_state = TETRIS_STATE_GAME_OVER
+                        player.player_state = TetrisState.GAME_OVER
 
-            if self.state.players[player_number].player_state == TETRIS_STATE_GAME_OVER:
+            if self.state.players[player_number].player_state == TetrisState.GAME_OVER:
                 self.state.game_over = True
                 connection.set_state(self.state)
                 self.switch('lobby')

@@ -28,7 +28,7 @@ class Player:
         self.is_move_down_pressed  = False
 
         # state
-        self.player_state   = TETRIS_STATE_SPAWN
+        self.player_state   = TetrisState.SPAWN
         self.lines_to_clear = []
 
         # spawn column; set in server/states/game.py
