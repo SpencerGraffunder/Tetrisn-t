@@ -10,6 +10,7 @@ from common.connection import GameState
 from common.connection import connection
 from common.connection import PlayerInput
 from common.player_input import *
+from server.constants import *
 
 
 class Game(State):
@@ -91,12 +92,12 @@ class Game(State):
 
                     if self.state.players[player_number].active_piece is not None:
                         if event.control == ControlType.CCW:
-                            if self.state.players[player_number].active_piece.can_rotate(self.state.board, self.state.players, ROTATION_CCW):
-                                self.state.players[player_number].active_piece.rotate(ROTATION_CCW)
+                            if self.state.players[player_number].active_piece.can_rotate(self.state.board, self.state.players, Rotation.CCW):
+                                self.state.players[player_number].active_piece.rotate(Rotation.CCW)
                                 self.state.time_to_rotate = False
                         if event.control == ControlType.CW:
-                            if self.state.players[player_number].active_piece.can_rotate(self.state.board, self.state.players, ROTATION_CW):
-                                self.state.players[player_number].active_piece.rotate(ROTATION_CW)
+                            if self.state.players[player_number].active_piece.can_rotate(self.state.board, self.state.players, Rotation.CW):
+                                self.state.players[player_number].active_piece.rotate(Rotation.CW)
                                 self.time_to_rotate = False
 
                     if event.control == ControlType.LEFT:
@@ -184,7 +185,7 @@ class Game(State):
             if self.state.players[player_number].player_state == TetrisState.SPAWN:
 
                 # if the game just started or the next piece can spawn into the board (only checking other players' pieces, not the piece tiles on the board)
-                if self.state.players[player_number].next_piece is None or self.state.players[player_number].next_piece.can_move(self.state.board, self.state.players, None) == CAN_MOVE:
+                if self.state.players[player_number].next_piece is None or self.state.players[player_number].next_piece.can_move(self.state.board, self.state.players, None) == MoveAllowance.CAN:
 
                     self.state.players[player_number].spawn_delay_counter += 1
 
@@ -222,7 +223,7 @@ class Game(State):
                     # the special case's code also makes it work to buffer auto shift during a piece's spawn delay time or a line clear animation
                     if self.state.players[player_number].das_counter > self.state.players[player_number].das_threshold:
                         if self.state.players[player_number].is_move_left_pressed:
-                            if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.LEFT) == CAN_MOVE:
+                            if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.LEFT) == MoveAllowance.CAN:
                                 self.state.players[player_number].active_piece.move(Direction.LEFT)
                                 # make sure das_threshold is no longer zero for this move input and set das_counter back accordingly
                                 if self.state.players[player_number].das_threshold == 0:
@@ -236,7 +237,7 @@ class Game(State):
                                     self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][0]
                                     self.state.players[player_number].das_counter = 0
                         if self.state.players[player_number].is_move_right_pressed:
-                            if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.RIGHT) == CAN_MOVE:
+                            if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.RIGHT) == MoveAllowance.CAN:
                                 self.state.players[player_number].active_piece.move(Direction.RIGHT)
                                 # make sure das_threshold is no longer zero for this move input
                                 if self.state.players[player_number].das_threshold == 0:
@@ -255,12 +256,12 @@ class Game(State):
 
                     if self.state.players[player_number].down_counter > 2:
                         if self.state.players[player_number].is_move_down_pressed:
-                            if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.DOWN) == CAN_MOVE:
+                            if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.DOWN) == MoveAllowance.CAN:
                                 self.state.players[player_number].active_piece.move(Direction.DOWN)
                                 self.state.players[player_number].fall_counter = 0
-                            elif self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.DOWN) == CANT_MOVE_BOARD:
+                            elif self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.DOWN) == MoveAllowance.CANT_BOARD:
                                 self.lock_piece(player_number)
-                            elif self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.DOWN) == CANT_MOVE_PIECE:
+                            elif self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.DOWN) == MoveAllowance.CANT_PIECE:
                                 pass
 
                             self.state.players[player_number].down_counter = 0
@@ -268,11 +269,11 @@ class Game(State):
                 self.state.players[player_number].fall_counter += 1
 
                 if self.state.players[player_number].fall_counter >= self.fall_threshold and self.state.players[player_number].active_piece is not None:
-                    if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.DOWN) == CANT_MOVE_BOARD:
+                    if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.DOWN) == MoveAllowance.CANT_BOARD:
                         self.lock_piece(player_number)
-                    elif self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.DOWN) == CAN_MOVE:
+                    elif self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.DOWN) == MoveAllowance.CAN:
                         self.state.players[player_number].active_piece.move(Direction.DOWN)
-                    elif self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.DOWN) == CANT_MOVE_PIECE:
+                    elif self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.DOWN) == MoveAllowance.CANT_PIECE:
                         pass
                     self.state.players[player_number].fall_counter = 0
 

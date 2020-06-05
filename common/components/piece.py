@@ -1,6 +1,6 @@
-from server.constants import *
 from copy import copy
 import client.globals as g
+from common.enums import *
 
 
 class Piece:
@@ -88,20 +88,20 @@ class Piece:
             if location[1] >= len(board) \
                     or location[0] < 0 \
                     or location[0] >= len(board[0]):
-                return CANT_MOVE_BOARD
+                return MoveAllowance.CANT_BOARD
 
             if direction is not None:
                 if board[location[1]][location[0]].tile_type != TileType.BLANK:
-                    return CANT_MOVE_BOARD
+                    return MoveAllowance.CANT_BOARD
 
             for player in players:
                 if player.active_piece is not None:
                     if player.active_piece.player_number != self.player_number:
                         for other_location in player.active_piece.locations:
                             if other_location == location:
-                                return CANT_MOVE_PIECE
+                                return MoveAllowance.CANT_PIECE
 
-        return CAN_MOVE
+        return MoveAllowance.CAN
 
     def rotate(self, rotation_direction, locations=None, rotation=None):
 
@@ -122,39 +122,39 @@ class Piece:
             if self.piece_type == PieceType.I:
                 pivot = locations[2]
                 if rotation in [0, 180]:
-                    turn = TURN_CW  # turn to vertical
+                    turn = Turn.CW  # turn to vertical
                 else:
-                    turn = TURN_CCW  # turn to horizontal
+                    turn = Turn.CCW  # turn to horizontal
             elif self.piece_type == PieceType.S:
                 pivot = copy(locations[0])
                 if rotation in [0, 180]:
-                    turn = TURN_CCW  # turn to vertical
+                    turn = Turn.CCW  # turn to vertical
                 else:
-                    turn = TURN_CW  # turn to horizontal
+                    turn = Turn.CW  # turn to horizontal
             elif self.piece_type == PieceType.Z:
                 pivot = copy(locations[1])
                 if rotation in [0, 180]:
-                    turn = TURN_CCW  # turn to vertical
+                    turn = Turn.CCW  # turn to vertical
                 else:
-                    turn = TURN_CW  # turn to horizontal
-            if turn == TURN_CW:
+                    turn = Turn.CW  # turn to horizontal
+            if turn == Turn.CW:
                 # General rotate CW:
                 for i, location in enumerate(locations):
                     locations[i] = ((pivot[1] - location[1]) + pivot[0], (location[0] - pivot[0]) + pivot[1])
                 new_rotation = (rotation + 90) % 360
-            elif turn == TURN_CCW:
+            elif turn == Turn.CCW:
                 # General rotate CCW:
                 for i, location in enumerate(locations):
                     locations[i] = ((location[1] - pivot[1]) + pivot[0], (pivot[0] - location[0]) + pivot[1])
                 new_rotation = (rotation - 90) % 360
         elif self.piece_type == PieceType.T or self.piece_type == PieceType.L or self.piece_type == PieceType.J:  # the four-rotation-position pieces
             pivot = copy(locations[1])
-            if rotation_direction == ROTATION_CW:
+            if rotation_direction == Rotation.CW:
                 # General rotate CW:
                 for i, location in enumerate(locations):
                     locations[i] = ((pivot[1] - location[1]) + pivot[0], (location[0] - pivot[0]) + pivot[1])
                 new_rotation = (rotation + 90) % 360
-            elif rotation_direction == ROTATION_CCW:
+            elif rotation_direction == Rotation.CCW:
                 # General rotate CCW:
                 for i, location in enumerate(locations):
                     locations[i] = ((location[1] - pivot[1]) + pivot[0], (pivot[0] - location[0]) + pivot[1])

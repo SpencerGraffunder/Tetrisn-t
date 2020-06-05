@@ -25,5 +25,5 @@ class Control:
 
     def main_game_loop(self):
         while not self.done:
-            delta_time = self.clock.tick(g.tick_rate)/1000.0
+            self.clock.tick(g.tick_rate)/1000.0
             self.update()

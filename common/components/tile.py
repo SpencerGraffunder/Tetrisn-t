@@ -1,4 +1,4 @@
-from server.constants import *
+from common.enums import *
 
 
 class Tile:
