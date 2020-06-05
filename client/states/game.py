@@ -142,7 +142,7 @@ class Game(State):
                     scaled_image = pygame.transform.scale(g.tile_surfaces[tile.tile_type], (g.tile_size, g.tile_size))
                 # draw
                 screen.blit(scaled_image, (col_index*g.tile_size+centering_offset, row_index*g.tile_size))
-        
+
         # active pieces and next pieces
         for player in self.state.players:
 
