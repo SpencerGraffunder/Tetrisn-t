@@ -224,7 +224,7 @@ class Game(State):
                     if self.state.players[player_number].das_counter > self.state.players[player_number].das_threshold:
                         if self.state.players[player_number].is_move_left_pressed:
                             if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.LEFT) == MoveAllowance.CAN:
-                                self.state.players[player_number].active_piece.move(Direction.LEFT)
+                                self.state.players[player_number].active_piece.move(Direction.LEFT) # TODO: see if this and the Direction.RIGHT section following can be put together
                                 # make sure das_threshold is no longer zero for this move input and set das_counter back accordingly
                                 if self.state.players[player_number].das_threshold == 0:
                                     self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][1]
