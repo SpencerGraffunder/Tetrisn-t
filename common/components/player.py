@@ -14,7 +14,8 @@ class Player:
         # clear/spawn
         self.clear_animation_counter = 0
         self.spawn_delay_counter     = 0
-        self.spawn_delay_threshold   = 10
+        self.spawn_delay_threshold   = 100
+        self.done_clearing = True
 
         # piece movement
         self.fall_counter  = 0
