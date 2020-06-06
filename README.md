@@ -1,6 +1,6 @@
 # Description
 
-Tetrisn-t is a Tetris-like game (that is not Tetris) where any number of players can play (eventually that update will come).  
+Tetrisn-t is a Tetris-like game (that is not Tetris) where any number of players can play (currently 6 players are supported locally assuming you have 4 controllers that can act like Xbox controllers).  
 Network is setup by the user via port forwarding (think Minecraft servers), but local play is supported.  
 Currently only keyboard controls; controller support planned for future update.
 
@@ -27,8 +27,6 @@ Install Python 3, then
 pip3 install pygame
 ```
 
-(currently not necessary, but maybe someday: `sudo apt-get install python-pil`)
-
 To run the game:
 
 ```
@@ -40,6 +38,8 @@ python3 main.py
 ```
 pip install pyinstaller
 ```
+
+For the next command, in Linux, you may need to find the location of pyinstaller and use that instead of just typing `pyinstaller`. Check `~/.local/bin/`.
 
 ```
 pyinstaller main.spec
@@ -57,11 +57,11 @@ Same as "Frame Data"
 
 ## RNG
 
-The only RNG aspect of the game is the piece type. It is the same as the 1989 NES Tetris, and in multiplayer it is still the same but with each person having their own independent RNG
+The only RNG aspect of the game is the piece type. It is the same as the 1989 NES Tetris, and in multiplayer it is still the same, with each person having their own independent RNG
 
 ## Multiplayer
 
-Inspired by Tetris Tengen, but with the idea that any number of players can play (and the pieces don't freeze in mid-air when each player holds towards one another)
+Inspired by Tetris Tengen, but with the idea that any number of players can play (and the pieces don't freeze in mid-air when each player holds towards one another, you can still do stuff when someone else is clearing a line, and the score makes sense)
 
 ## Special
 

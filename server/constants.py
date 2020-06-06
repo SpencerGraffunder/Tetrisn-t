@@ -6,7 +6,7 @@ from collections import defaultdict
 BOARD_HEIGHT_BUFFER = 2
 
 FALL_DELAY_VALUES = {
-  # level: frames till fall
+    # level: frames till fall
     0:  48,
     1:  43,
     2:  38,
