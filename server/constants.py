@@ -24,13 +24,12 @@ FALL_DELAY_VALUES = {
     29: 1
 }
 
-SCORING_VALUES = {
-    0: 0,
-    1: 40,
-    2: 100,
-    3: 300,
-    4: 1200
-}
+SCORING_VALUES = defaultdict(lambda: SCORING_VALUES[max(SCORING_VALUES.keys())])
+SCORING_VALUES[0] = 0
+SCORING_VALUES[1] = 40
+SCORING_VALUES[2] = 100
+SCORING_VALUES[3] = 300
+SCORING_VALUES[4] = 1200
 
 DAS_VALUES = defaultdict(lambda: (3, 8))
 DAS_VALUES[1] = (6, 16)

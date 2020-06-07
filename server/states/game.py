@@ -49,7 +49,12 @@ class Game(State):
 
         self.state.board_width = (4 * self.state.player_count) + 6
         # Fill board with empty tiles
+        # self.state.board = [[Tile() for _ in range(self.state.board_width)] for _ in range(self.state.board_height+BOARD_HEIGHT_BUFFER)]
         self.state.board = [[Tile() for _ in range(self.state.board_width)] for _ in range(self.state.board_height+BOARD_HEIGHT_BUFFER)]
+        for row in self.state.board[10:]:
+            for tile_index, tile in enumerate(row):
+                if tile_index < 12:
+                    row[tile_index] = Tile(PieceType.I.value)
 
         # find the greatest level less than CURRENT_LEVEL
         # in FALL_DELAY_VALUES and set the speed to that level's speed
@@ -175,7 +180,7 @@ class Game(State):
         lines_to_remove = []
 
         # Loop through lines in lines to clear
-        for i, line in enumerate(self.clearing_lines):
+        for line in self.clearing_lines:
 
             # Decrement the animation counter on the line
             line.decrement_counter()
@@ -184,6 +189,7 @@ class Game(State):
             if line.counter <= 0:
                 # Add the line to the remove list
                 lines_to_remove.append(line.board_index)
+                line.cleared = True
                 # Set the player's state to spawn
                 self.state.players[line.player_number].player_state = TetrisState.SPAWN
 
@@ -194,10 +200,17 @@ class Game(State):
             temp_board.appendleft(new_line)
             self.state.board = list(temp_board)
 
-        for line in lines_to_remove:
-            for i, clearing_line in enumerate(self.clearing_lines):
-                if clearing_line.board_index == line:
-                    self.clearing_lines.pop(i)
+        for line_index in lines_to_remove:
+            for shifting_line in self.clearing_lines:
+                if shifting_line.board_index < line_index and shifting_line.counter != 0:
+                    shifting_line.board_index += 1
+
+        for line_index, line in enumerate(self.clearing_lines):
+            if line.counter == 0:
+                self.clearing_lines.pop(line_index)
+
+        n_lines_cleared = len(lines_to_remove)
+        self.state.score += SCORING_VALUES[n_lines_cleared]
 
     def update(self):
 
@@ -326,7 +339,7 @@ class Game(State):
                         pass
                     self.state.players[player_number].fall_counter = 0
 
-            if self.state.players[player_number].player_state == TetrisState.CLEAR:
+            elif self.state.players[player_number].player_state == TetrisState.CLEAR:
                 pass
 
             elif self.state.players[player_number].player_state == TetrisState.SPAWN_DELAY:
@@ -335,13 +348,13 @@ class Game(State):
                 if self.state.players[player_number].spawn_delay_counter > self.state.players[player_number].spawn_delay_threshold:
                     self.state.players[player_number].player_state = TetrisState.SPAWN
 
-            if self.state.players[player_number].player_state == TetrisState.DIE:
+            elif self.state.players[player_number].player_state == TetrisState.DIE:
                 self.die_counter += 1
                 if self.die_counter >= 120:  # wait 2 seconds
                     for player in self.state.players:
                         player.player_state = TetrisState.GAME_OVER
 
-            if self.state.players[player_number].player_state == TetrisState.GAME_OVER:
+            elif self.state.players[player_number].player_state == TetrisState.GAME_OVER:
                 self.state.game_over = True
                 connection.set_state(self.state)
                 self.switch('lobby')
