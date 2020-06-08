@@ -49,12 +49,13 @@ class Game(State):
 
         self.state.board_width = (4 * self.state.player_count) + 6
         # Fill board with empty tiles
-        # self.state.board = [[Tile() for _ in range(self.state.board_width)] for _ in range(self.state.board_height+BOARD_HEIGHT_BUFFER)]
         self.state.board = [[Tile() for _ in range(self.state.board_width)] for _ in range(self.state.board_height+BOARD_HEIGHT_BUFFER)]
-        for row in self.state.board[10:]:
-            for tile_index, tile in enumerate(row):
-                if tile_index < 12:
-                    row[tile_index] = Tile(PieceType.I.value)
+
+        # For testing multiplayer line clear
+        # for row in self.state.board[10:]:
+        #     for tile_index, tile in enumerate(row):
+        #         if tile_index < 12:
+        #             row[tile_index] = Tile(PieceType.I.value)
 
         # find the greatest level less than CURRENT_LEVEL
         # in FALL_DELAY_VALUES and set the speed to that level's speed
@@ -94,6 +95,7 @@ class Game(State):
 
         # player controls: move and rotate
         for player in self.state.players:
+            print(str(player.player_number) + ' ' + str(player.player_state))
             if player_number == player.player_number:
                 if event.type == EventType.KEY_DOWN:
 
@@ -179,7 +181,6 @@ class Game(State):
         # Keep track of lines that need to be cleared this tick
         lines_to_remove = []
 
-        # Loop through lines in lines to clear
         for line in self.clearing_lines:
 
             # Decrement the animation counter on the line
@@ -189,7 +190,6 @@ class Game(State):
             if line.counter <= 0:
                 # Add the line to the remove list
                 lines_to_remove.append(line.board_index)
-                line.cleared = True
                 # Set the player's state to spawn
                 self.state.players[line.player_number].player_state = TetrisState.SPAWN
 
@@ -206,7 +206,7 @@ class Game(State):
                     shifting_line.board_index += 1
 
         for line_index, line in enumerate(self.clearing_lines):
-            if line.counter == 0:
+            if line.counter <= 0:
                 self.clearing_lines.pop(line_index)
 
         n_lines_cleared = len(lines_to_remove)
@@ -251,22 +251,20 @@ class Game(State):
 
                     self.state.players[player_number].spawn_delay_counter += 1
 
-                    if self.state.players[player_number].spawn_delay_counter > self.state.players[player_number].spawn_delay_threshold:
-
-                        # Spawn piece
-                        # RNG piece choice decision
-                        if self.state.players[player_number].next_piece_type is None:
-                            active_piece_type = random.choice([PieceType.I, PieceType.O, PieceType.T, PieceType.L, PieceType.J, PieceType.Z, PieceType.S])
-                        else:
-                            active_piece_type = self.state.players[player_number].next_piece.piece_type
+                    # Spawn piece
+                    # RNG piece choice decision
+                    if self.state.players[player_number].next_piece_type is None:
+                        active_piece_type = random.choice([PieceType.I, PieceType.O, PieceType.T, PieceType.L, PieceType.J, PieceType.Z, PieceType.S])
+                    else:
+                        active_piece_type = self.state.players[player_number].next_piece.piece_type
+                    self.state.players[player_number].next_piece_type = random.choice([PieceType.I, PieceType.O, PieceType.T, PieceType.L, PieceType.J, PieceType.Z, PieceType.S])
+                    if self.state.players[player_number].next_piece_type == active_piece_type:
                         self.state.players[player_number].next_piece_type = random.choice([PieceType.I, PieceType.O, PieceType.T, PieceType.L, PieceType.J, PieceType.Z, PieceType.S])
-                        if self.state.players[player_number].next_piece_type == active_piece_type:
-                            self.state.players[player_number].next_piece_type = random.choice([PieceType.I, PieceType.O, PieceType.T, PieceType.L, PieceType.J, PieceType.Z, PieceType.S])
-                        self.state.players[player_number].active_piece = Piece(active_piece_type, player_number, self.state.players[player_number].spawn_column)  # this puts the active piece in the board
-                        self.state.players[player_number].next_piece = Piece(self.state.players[player_number].next_piece_type, player_number, self.state.players[player_number].spawn_column)  # this puts the next piece in the next piece box
-                        self.state.players[player_number].player_state = TetrisState.PLAY
-                        self.state.players[player_number].fall_counter = 0
-                        self.state.players[player_number].spawn_delay_counter = 0
+                    self.state.players[player_number].active_piece = Piece(active_piece_type, player_number, self.state.players[player_number].spawn_column)  # this puts the active piece in the board
+                    self.state.players[player_number].next_piece = Piece(self.state.players[player_number].next_piece_type, player_number, self.state.players[player_number].spawn_column)  # this puts the next piece in the next piece box
+                    self.state.players[player_number].player_state = TetrisState.PLAY
+                    self.state.players[player_number].fall_counter = 0
+                    self.state.players[player_number].spawn_delay_counter = 0
 
             if self.state.players[player_number].player_state == TetrisState.PLAY:
                 # Move piece logic
@@ -339,7 +337,7 @@ class Game(State):
                         pass
                     self.state.players[player_number].fall_counter = 0
 
-            elif self.state.players[player_number].player_state == TetrisState.CLEAR:
+            if self.state.players[player_number].player_state == TetrisState.CLEAR:
                 pass
 
             elif self.state.players[player_number].player_state == TetrisState.SPAWN_DELAY:
@@ -348,13 +346,13 @@ class Game(State):
                 if self.state.players[player_number].spawn_delay_counter > self.state.players[player_number].spawn_delay_threshold:
                     self.state.players[player_number].player_state = TetrisState.SPAWN
 
-            elif self.state.players[player_number].player_state == TetrisState.DIE:
+            if self.state.players[player_number].player_state == TetrisState.DIE:
                 self.die_counter += 1
                 if self.die_counter >= 120:  # wait 2 seconds
                     for player in self.state.players:
                         player.player_state = TetrisState.GAME_OVER
 
-            elif self.state.players[player_number].player_state == TetrisState.GAME_OVER:
+            if self.state.players[player_number].player_state == TetrisState.GAME_OVER:
                 self.state.game_over = True
                 connection.set_state(self.state)
                 self.switch('lobby')

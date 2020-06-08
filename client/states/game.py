@@ -29,9 +29,16 @@ class Game(State):
         self.sprites[TileType.BLANK] = pygame.image.load(
             os.path.join(wd, 'resources', 'backgroundblock.bmp')).convert()
 
-        joysticks = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())]
+        n_joysticks = pygame.joystick.get_count()
+        joysticks = [pygame.joystick.Joystick(i) for i in range(n_joysticks)]
         for joy in joysticks:
             joy.init()
+
+        # Shift keyboard controls to assign controllers to players first
+        for i in range(n_joysticks):
+            g.keybindings[i+n_joysticks] = g.keybindings[i]
+            del g.keybindings[i]
+
 
     def do_event(self, event):
         if event.control == ControlType.PAUSE:
@@ -58,21 +65,22 @@ class Game(State):
                 if pygame_event.type == pygame.KEYDOWN or pygame_event.type == pygame.KEYUP:
                     # For each player
                     for player in self.state.players:
-                        event_type = None
-                        control_type = None
-                        if pygame_event.type == pygame.KEYUP:
-                            event_type = EventType.KEY_UP
-                        elif pygame_event.type == pygame.KEYDOWN:
-                            event_type = EventType.KEY_DOWN
-                        # Get the binding dict for this player
-                        dict_control_type = g.keybindings[player.player_number]
-                        # If the key pressed is in the dict
-                        if pygame_event.key in dict_control_type:
-                            control_type = dict_control_type[pygame_event.key]
-                        if event_type is not None and control_type is not None:
-                            new_event = Event(event_type, control_type)
-                            player_inputs[player.player_number].add_event(new_event)
-                            self.do_event(new_event)
+                        if player.player_number in g.keybindings.keys():
+                            event_type = None
+                            control_type = None
+                            if pygame_event.type == pygame.KEYUP:
+                                event_type = EventType.KEY_UP
+                            elif pygame_event.type == pygame.KEYDOWN:
+                                event_type = EventType.KEY_DOWN
+                            # Get the binding dict for this player
+                            dict_control_type = g.keybindings[player.player_number]
+                            # If the key pressed is in the dict
+                            if pygame_event.key in dict_control_type:
+                                control_type = dict_control_type[pygame_event.key]
+                            if event_type is not None and control_type is not None:
+                                new_event = Event(event_type, control_type)
+                                player_inputs[player.player_number].add_event(new_event)
+                                self.do_event(new_event)
                 elif pygame_event.type == pygame.JOYBUTTONDOWN or pygame_event.type == pygame.JOYBUTTONUP:
                     for player in self.state.players:
                         event_type = None
