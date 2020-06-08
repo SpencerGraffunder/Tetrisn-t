@@ -95,7 +95,6 @@ class Game(State):
 
         # player controls: move and rotate
         for player in self.state.players:
-            print(str(player.player_number) + ' ' + str(player.player_state))
             if player_number == player.player_number:
                 if event.type == EventType.KEY_DOWN:
 
