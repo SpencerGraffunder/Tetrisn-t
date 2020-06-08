@@ -281,34 +281,25 @@ class Game(State):
 
                     # the special case's code also makes it work to buffer auto shift during a piece's spawn delay time or a line clear animation
                     if self.state.players[player_number].das_counter > self.state.players[player_number].das_threshold:
+                        move_direction = None
                         if self.state.players[player_number].is_move_left_pressed:
-                            if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.LEFT) == MoveAllowance.CAN:
-                                self.state.players[player_number].active_piece.move(Direction.LEFT) # TODO: see if this and the Direction.RIGHT section following can be put together
-                                # make sure das_threshold is no longer zero for this move input and set das_counter back accordingly
-                                if self.state.players[player_number].das_threshold == 0:
-                                    self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][1]
-                                    # set das_counter as explained in the special case
-                                    if self.state.players[player_number].das_counter + DAS_VALUES[self.state.player_count][0] > DAS_VALUES[self.state.player_count][1]:
-                                        self.state.players[player_number].das_counter = DAS_VALUES[self.state.player_count][1] - DAS_VALUES[self.state.player_count][0]
-                                    else:
-                                        self.state.players[player_number].das_counter -= 1
+                            move_direction = Direction.LEFT
+                        elif self.state.players[player_number].is_move_right_pressed:
+                            move_direction = Direction.RIGHT
+                        # if the piece can move, move it and do DAS stuff
+                        if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, move_direction) == MoveAllowance.CAN:
+                            self.state.players[player_number].active_piece.move(move_direction)
+                            # make sure das_threshold is no longer zero for this move input and set das_counter back accordingly
+                            if self.state.players[player_number].das_threshold == 0:
+                                self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][1]
+                                # set das_counter as explained in the special case
+                                if self.state.players[player_number].das_counter + DAS_VALUES[self.state.player_count][0] > DAS_VALUES[self.state.player_count][1]:
+                                    self.state.players[player_number].das_counter = DAS_VALUES[self.state.player_count][1] - DAS_VALUES[self.state.player_count][0]
                                 else:
-                                    self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][0]
-                                    self.state.players[player_number].das_counter = 0
-                        if self.state.players[player_number].is_move_right_pressed:
-                            if self.state.players[player_number].active_piece.can_move(self.state.board, self.state.players, Direction.RIGHT) == MoveAllowance.CAN:
-                                self.state.players[player_number].active_piece.move(Direction.RIGHT)
-                                # make sure das_threshold is no longer zero for this move input
-                                if self.state.players[player_number].das_threshold == 0:
-                                    self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][1]
-                                    # set das_counter as explained in the special case and set das_counter back accordingly
-                                    if self.state.players[player_number].das_counter + DAS_VALUES[self.state.player_count][0] > DAS_VALUES[self.state.player_count][1]:
-                                        self.state.players[player_number].das_counter = DAS_VALUES[self.state.player_count][1] - DAS_VALUES[self.state.player_count][0]
-                                    else:
-                                        self.state.players[player_number].das_counter -= 1
-                                else:
-                                    self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][0]
-                                    self.state.players[player_number].das_counter = 0
+                                    self.state.players[player_number].das_counter -= 1
+                            else:
+                                self.state.players[player_number].das_threshold = DAS_VALUES[self.state.player_count][0]
+                                self.state.players[player_number].das_counter = 0
 
                 if self.state.players[player_number].is_move_down_pressed:
                     self.state.players[player_number].down_counter += 1
