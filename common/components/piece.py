@@ -24,7 +24,7 @@ class Piece:
             self.locations[0] = (spawn_column - 1, 2)  #
             self.locations[1] = (spawn_column, 2)      # [0][1]
             self.locations[2] = (spawn_column - 1, 3)  # [2][3]
-            self.locations[3] = (spawn_column, 3)  #
+            self.locations[3] = (spawn_column, 3)      #
             self.tile_type = TileType.IOT.value
         elif self.piece_type == PieceType.T:
             self.locations[0] = (spawn_column - 1, 2)  # [-][-][-] | [-][0][-] | [-][3][-] | [-][2][-]
