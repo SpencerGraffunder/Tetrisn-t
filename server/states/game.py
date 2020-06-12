@@ -24,7 +24,6 @@ class Game(State):
         self.spawn_delay_threshold = 10
         self.paused = False
         self.fall_threshold = FALL_DELAY_VALUES[0]
-        self.last_lock_position = 0
         self.lines_cleared = 0
         self.die_counter = 0
         self.down_counter = 0
@@ -66,7 +65,6 @@ class Game(State):
                 self.fall_threshold = FALL_DELAY_VALUES[x]
                 break
             x -= 1
-        self.last_lock_position = 0
         self.lines_cleared = 10 * self.state.current_level
         self.die_counter = 0
         self.down_counter = 0
@@ -112,13 +110,13 @@ class Game(State):
                         self.state.players[player_number].is_move_left_pressed = True
                         self.state.players[player_number].das_threshold = 0
                         self.state.players[player_number].das_counter = 0
-                        # if the other direction is being held, set this direction to override it; if not, it's already False anyways
+                        # if the other direction is being held, set this direction to override it; if not, it's False anyways
                         self.state.players[player_number].is_move_right_pressed = False
                     if event.control == ControlType.RIGHT:
                         self.state.players[player_number].is_move_right_pressed = True
                         self.state.players[player_number].das_threshold = 0
                         self.state.players[player_number].das_counter = 0
-                        # if the other direction is being held, set this direction to override it; if not, it's already False anyways
+                        # if the other direction is being held, set this direction to override it; if not, it's False anyways
                         self.state.players[player_number].is_move_left_pressed = False
                     if event.control == ControlType.DOWN:
                         self.state.players[player_number].is_move_down_pressed = True
@@ -147,7 +145,7 @@ class Game(State):
             if location[1] > max_row_index:
                 max_row_index = location[1]
 
-        # this was some weird frame data stuff determined based on emulating the 1989 NES version of Tetris (the wiki didn't go quite in-depth enough)
+        # this was some weird frame data stuff based on emulating the 1989 NES version of Tetris (the wiki didn't go quite in-depth enough)
         if self.state.players[player_number].active_piece.piece_type == PieceType.I:
             self.state.players[player_number].spawn_delay_threshold = ((max_row_index+2)//4)*2+10
         else:
@@ -159,6 +157,7 @@ class Game(State):
             for tile in row:
                 if tile.tile_type == TileType.BLANK:
                     can_clear = False
+                    print("1; row ", row_index, " False")
             if can_clear:
                 line_in_clearing_lines = False
                 for line in self.clearing_lines:
@@ -210,6 +209,21 @@ class Game(State):
 
         n_lines_cleared = len(lines_to_remove)
         self.state.score += SCORING_VALUES[n_lines_cleared]
+
+        # recalculate clearing_lines
+        for row_index, row in enumerate(self.state.board):
+            can_clear = True
+            for tile in row:
+                if tile.tile_type == TileType.BLANK:
+                    can_clear = False
+                    print("2; row ", row_index, " False")
+            if can_clear:
+                line_in_clearing_lines = False
+                for line in self.clearing_lines:
+                    if line.board_index == row_index:
+                        line_in_clearing_lines = True
+                if not line_in_clearing_lines:
+                    self.clearing_lines.append(ClearingLine(player_number, row_index, 20))
 
     def update(self):
 
@@ -338,7 +352,7 @@ class Game(State):
 
             if self.state.players[player_number].player_state == TetrisState.DIE:
                 self.die_counter += 1
-                if self.die_counter >= 120:  # wait 2 seconds
+                if self.die_counter >= 120: # wait 2 seconds
                     for player in self.state.players:
                         player.player_state = TetrisState.GAME_OVER
 
