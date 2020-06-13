@@ -31,5 +31,7 @@ SCORING_VALUES[2] = 100
 SCORING_VALUES[3] = 300
 SCORING_VALUES[4] = 1200
 
-DAS_VALUES = defaultdict(lambda: (3, 8))
-DAS_VALUES[1] = (6, 16)
+# the DAS_VALUES constants are for das_threshold in server/states/game.py and it's 0-indexed so that we can use
+# das_threshold = 0 to have the piece move immediately after a direction press
+DAS_VALUES = defaultdict(lambda: (3 - 1, 8 - 1))
+DAS_VALUES[1] = (6 - 1, 16 - 1)

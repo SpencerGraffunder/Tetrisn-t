@@ -61,6 +61,7 @@ class Game(State):
                 player_inputs[0].add_event(new_event)
             # Exit is not pressed
             else:
+                # keyboard
                 if pygame_event.type == pygame.KEYDOWN or pygame_event.type == pygame.KEYUP:
                     # For each player
                     for player in self.state.players:
@@ -80,6 +81,7 @@ class Game(State):
                                 new_event = Event(event_type, control_type)
                                 player_inputs[player.player_number].add_event(new_event)
                                 self.do_event(new_event)
+                # controller dpad
                 elif pygame_event.type == pygame.JOYBUTTONDOWN or pygame_event.type == pygame.JOYBUTTONUP:
                     for player in self.state.players:
                         event_type = None
@@ -96,6 +98,7 @@ class Game(State):
                             if event_type is not None and control_type is not None:
                                 new_event = Event(event_type, control_type)
                                 player_inputs[player.player_number].add_event(new_event)
+                # controller joystick
                 elif pygame_event.type == pygame.JOYHATMOTION:
                     for player in self.state.players:
                         event_type = None
