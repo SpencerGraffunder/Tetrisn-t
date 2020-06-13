@@ -165,9 +165,9 @@ class Game(State):
                 for line in self.clearing_lines:
                     if line.board_index == row_index:
                         line_in_clearing_lines = True
-                if not line_in_clearing_lines:
-                    self.clearing_lines.append(ClearingLine(player_number, row_index, 20))
-                    self.state.players[player_number].player_state = TetrisState.CLEAR
+                # if not line_in_clearing_lines:
+                self.clearing_lines.append(ClearingLine(player_number, row_index, 20))
+                self.state.players[player_number].player_state = TetrisState.CLEAR
             else:
                 self.state.players[player_number].player_state = TetrisState.SPAWN
 
@@ -198,10 +198,6 @@ class Game(State):
 
         print("lines to remove is...")
         print(*lines_to_remove, sep = ", ")
-        print("self: clearing lines: player_number, board_index, counter is...")
-        print(eval(clear_line.player_number) for clear_line in self.clearing_lines)
-        # print(self.clearing_lines.board_index)
-        # print(self.clearing_lines.counter)
 
         # pop the line from the board for each line in lines_to_remove and fill the top row with a new row of blank tiles
         for line_index in lines_to_remove:
@@ -211,14 +207,15 @@ class Game(State):
             temp_board.appendleft(new_line)
             self.state.board = list(temp_board)
 
-        # take every pair of elements in (lines_to_remove, self.clearing_lines) and increase the board index by one of shifting line if the shifting line is above the clearing line and is not ready to
+        # take every pair of elements in (lines_to_remove, self.clearing_lines) and increase the board index by one of shifting line if the shifting line is above the clearing line and is not ready to clear
         for line_index in lines_to_remove:
             for shifting_line in self.clearing_lines:
                 if shifting_line.board_index < line_index and shifting_line.counter != 0:
                     shifting_line.board_index += 1
 
-
+        # pop the lines in lines_to_remove from clearing_lines
         for line_index, line in enumerate(self.clearing_lines):
+            print("line.counter is", line.counter, "line index is", line_index)
             if line.counter <= 0:
                 self.clearing_lines.pop(line_index)
 
