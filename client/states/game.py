@@ -39,7 +39,6 @@ class Game(State):
             g.keybindings[i+n_joysticks] = g.keybindings[i]
             del g.keybindings[i]
 
-
     def do_event(self, event):
         if event.control == ControlType.PAUSE:
             pause_input = PlayerInput(None)

@@ -137,13 +137,19 @@ class Game(State):
 
         piece_locked_into_another_piece = False
         max_row_index = 0
+
         for location in self.state.players[player_number].active_piece.locations:
+
+            # Check if locked into another piece, which means game over
             if self.state.board[location[1]][location[0]].tile_type != TileType.BLANK:
                 piece_locked_into_another_piece = True
+
+            # Set tile type to the piece's tile type if single player, else set it to the player number
             if self.state.player_count == 1:
                 tile_type = self.state.players[player_number].active_piece.tile_type
             else:
                 tile_type = player_number
+
             self.state.board[location[1]][location[0]] = Tile(tile_type)
             if location[1] > max_row_index:
                 max_row_index = location[1]
