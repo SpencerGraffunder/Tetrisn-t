@@ -39,6 +39,7 @@ class Game(State):
         self.score = 0
         self.time_to_rotate = False
         self.clearing_lines = []
+        self.clear_flag = False
 
         self.reset(self.input)
 
@@ -79,6 +80,8 @@ class Game(State):
         self.das_counter = 0
         self.score = 0
         self.paused = False
+        self.clearing_lines = []
+        self.clear_flag = False
 
         self.state.players = [Player(x) for x in range(self.state.player_count)]
 
@@ -157,7 +160,6 @@ class Game(State):
             for tile in row:
                 if tile.tile_type == TileType.BLANK:
                     can_clear = False
-                    print("1; row ", row_index, " False")
             if can_clear:
                 line_in_clearing_lines = False
                 for line in self.clearing_lines:
@@ -191,6 +193,17 @@ class Game(State):
                 # Set the player's state to spawn
                 self.state.players[line.player_number].player_state = TetrisState.SPAWN
 
+        if lines_to_remove == []:
+            return
+
+        print("lines to remove is...")
+        print(*lines_to_remove, sep = ", ")
+        print("self: clearing lines: player_number, board_index, counter is...")
+        print(eval(clear_line.player_number) for clear_line in self.clearing_lines)
+        # print(self.clearing_lines.board_index)
+        # print(self.clearing_lines.counter)
+
+        # pop the line from the board for each line in lines_to_remove and fill the top row with a new row of blank tiles
         for line_index in lines_to_remove:
             self.state.board.pop(line_index)
             temp_board = deque(self.state.board)
@@ -198,10 +211,12 @@ class Game(State):
             temp_board.appendleft(new_line)
             self.state.board = list(temp_board)
 
+        # take every pair of elements in (lines_to_remove, self.clearing_lines) and increase the board index by one of shifting line if the shifting line is above the clearing line and is not ready to
         for line_index in lines_to_remove:
             for shifting_line in self.clearing_lines:
                 if shifting_line.board_index < line_index and shifting_line.counter != 0:
                     shifting_line.board_index += 1
+
 
         for line_index, line in enumerate(self.clearing_lines):
             if line.counter <= 0:
@@ -209,21 +224,6 @@ class Game(State):
 
         n_lines_cleared = len(lines_to_remove)
         self.state.score += SCORING_VALUES[n_lines_cleared]
-
-        # recalculate clearing_lines
-        for row_index, row in enumerate(self.state.board):
-            can_clear = True
-            for tile in row:
-                if tile.tile_type == TileType.BLANK:
-                    can_clear = False
-                    print("2; row ", row_index, " False")
-            if can_clear:
-                line_in_clearing_lines = False
-                for line in self.clearing_lines:
-                    if line.board_index == row_index:
-                        line_in_clearing_lines = True
-                if not line_in_clearing_lines:
-                    self.clearing_lines.append(ClearingLine(player_number, row_index, 20))
 
     def update(self):
 
@@ -251,6 +251,10 @@ class Game(State):
         for player_number in range(self.state.player_count):
             if self.state.players[player_number].is_move_left_pressed or self.state.players[player_number].is_move_right_pressed:
                 self.state.players[player_number].das_counter += 1
+
+        # if self.clear_flag:
+        #     self.clear_lines()
+        #     # self.clear_flag = False
 
         self.clear_lines()
 
