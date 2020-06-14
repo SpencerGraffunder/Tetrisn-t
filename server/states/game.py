@@ -276,8 +276,8 @@ class Game(State):
                     # Reroll the piece type if there are two in a row
                     if player.next_piece_type == active_piece_type:
                         player.next_piece_type = random.choice([PieceType.I, PieceType.O, PieceType.T, PieceType.L, PieceType.J, PieceType.Z, PieceType.S])
-                    player.active_piece = Piece(active_piece_type, player_number, player.spawn_column)  # this puts the active piece in the board
-                    player.next_piece = Piece(player.next_piece_type, player_number, player.spawn_column)  # this puts the next piece in the next piece box
+                    player.active_piece = Piece(active_piece_type, player_number, player.spawn_column, self.state.player_count)  # this puts the active piece in the board
+                    player.next_piece = Piece(player.next_piece_type, player_number, player.spawn_column, self.state.player_count)  # this puts the next piece in the next piece box
                     player.state = TetrisState.PLAY
                     player.fall_counter = 0
                     player.spawn_delay_counter = 0

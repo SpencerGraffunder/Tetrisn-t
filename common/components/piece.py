@@ -5,7 +5,7 @@ from common.enums import *
 
 class Piece:
 
-    def __init__(self, piece_type, player_number, spawn_column):
+    def __init__(self, piece_type, player_number, spawn_column, player_count):
 
         self.piece_type = 0
         self.tile_type = 0
@@ -57,7 +57,7 @@ class Piece:
             self.locations[3] = (spawn_column, 3)      # |
             self.tile_type = TileType.JS.value
 
-        if g.player_count != 1:
+        if player_count != 1:
             self.tile_type = player_number
 
     def move(self, direction=Direction.DOWN, locations=None):

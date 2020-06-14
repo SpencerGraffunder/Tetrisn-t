@@ -130,7 +130,6 @@ class Game(State):
             connection.add_input(player_input)
 
         self.state = connection.get_state()
-        g.player_count = self.state.player_count
 
         g.tile_size = g.window_height // self.state.board_height
         if self.state.game_over:
@@ -186,13 +185,14 @@ class Game(State):
         player = self.state.players[player_number]
 
         # for the first half of the players (including the center one for an odd number) draw the next piece on the left column
-        if player_number <= (g.player_count - 1) // 2:
+        if player_number <= (self.state.player_count - 1) // 2:
             x_offset = screen_center_x - (((self.state.board_width // 2) + 3) * g.tile_size) # draw on the left
             y_offset = player_number * 4 * g.tile_size
         # draw the rest down the right column, backways for symmetry
         else:
             x_offset = screen_center_x + (((self.state.board_width // 2) + 3) * g.tile_size) # draw on the right
-            y_offset = ((g.player_count - (g.player_count - 1) // 2) - (player_number - (g.player_count - 1) // 2 + 1)) * 4 * g.tile_size # (num players on right side) minus (right side player index add 1) for reverse order
+            # (num players on right side) minus (right side player index add 1) for reverse order
+            y_offset = ((self.state.player_count - (self.state.player_count - 1) // 2) - (player_number - (self.state.player_count - 1) // 2 + 1)) * 4 * g.tile_size
 
         for i, tile in enumerate(player.next_piece.locations):
             scaled_image = pygame.transform.scale(g.tile_surfaces[player.next_piece.tile_type], (g.tile_size, g.tile_size))
