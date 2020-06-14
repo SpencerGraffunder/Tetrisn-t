@@ -41,8 +41,6 @@ class Game(State):
         self.clearing_lines = []
         self.clear_flag = False
 
-        self.reset(self.input)
-
     def reset(self, player_input):
         self.state = GameState()
         self.state.player_count = player_input.player_count
@@ -161,6 +159,9 @@ class Game(State):
         else:
             self.state.players[player_number].spawn_delay_threshold = ((max_row_index+3)//4)*2+10
 
+        # Keep track of if a line can be cleared to set the player's state
+        was_line_added_to_list = False
+
         # Add all clearable lines to list
         for row_index, row in enumerate(self.state.board):
             can_clear = True
@@ -168,15 +169,19 @@ class Game(State):
                 if tile.tile_type == TileType.BLANK:
                     can_clear = False
             if can_clear:
+                was_line_added_to_list = True
                 line_in_clearing_lines = False
                 for line in self.clearing_lines:
                     if line.board_index == row_index:
                         line_in_clearing_lines = True
                 if not line_in_clearing_lines:
                     self.clearing_lines.append(ClearingLine(player_number, row_index, 20))
-                self.state.players[player_number].state = TetrisState.CLEAR
-            else:
-                self.state.players[player_number].state = TetrisState.SPAWN_DELAY
+
+        # If a piece was added to clearing_lines
+        if was_line_added_to_list:
+            self.state.players[player_number].state = TetrisState.CLEAR
+        else:
+            self.state.players[player_number].state = TetrisState.SPAWN_DELAY
 
         self.state.players[player_number].active_piece = None
         if piece_locked_into_another_piece:
