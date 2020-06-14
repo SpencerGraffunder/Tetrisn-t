@@ -65,6 +65,7 @@ class Game(State):
                 if pygame_event.type == pygame.KEYDOWN or pygame_event.type == pygame.KEYUP:
                     # For each player
                     for player in self.state.players:
+                        # Make sure controls are assigned for this player
                         if player.player_number in g.keybindings.keys():
                             event_type = None
                             control_type = None
