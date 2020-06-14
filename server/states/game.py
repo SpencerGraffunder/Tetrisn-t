@@ -200,22 +200,14 @@ class Game(State):
                 if clearing_line.board_index > shifting_line.board_index:
                     shifting_line.board_index += 1
 
-        if len(present_clearing_lines) > 0:
-            for line in present_clearing_lines:
-                print(line.board_index, end='')
-            print()
         # Clear the lines from the board
         for line in present_clearing_lines:
             # Pop the cleared line from the board
             self.state.board.pop(line.board_index)
-            # Cast the board to a deque
-            temp_board = deque(self.state.board)
             # Create a new line of blank tiles
             new_line = [Tile() for j in range(self.state.board_width)]
-            # Put the new line at the beginning of the board list
-            temp_board.appendleft(new_line)
-            # Cast the board back into a list
-            self.state.board = list(temp_board)
+            # Append the new line to the beginning of the board
+            self.state.board = [new_line] + self.state.board
 
         # Set clearing_lines to the list that doesn't contain cleared lines
         self.clearing_lines = future_clearing_lines
