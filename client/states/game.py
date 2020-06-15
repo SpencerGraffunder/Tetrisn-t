@@ -133,6 +133,7 @@ class Game(State):
 
         g.tile_size = g.window_height // self.state.board_height
         if self.state.game_over:
+            self.state.game_over = False
             self.switch('game over menu')
 
     def draw(self, screen):

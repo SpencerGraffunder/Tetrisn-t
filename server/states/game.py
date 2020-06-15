@@ -44,7 +44,6 @@ class Game(State):
     def reset(self, player_input):
         self.state = GameState()
         self.state.player_count = player_input.player_count
-        print("resetting Game", player_input.player_count)
 
         self.state.board_width = (4 * self.state.player_count) + 6
         # Fill board with empty tiles
@@ -357,7 +356,8 @@ class Game(State):
 
             if player.state == TetrisState.DIE:
                 self.die_counter += 1
-                if self.die_counter >= 120: # wait 2 seconds
+                # wait 2 seconds
+                if self.die_counter >= 120:
                     for player in self.state.players:
                         player.state = TetrisState.GAME_OVER
 
