@@ -1,0 +1,17 @@
+To get networking going quickly, we'll have two high level phases.
+1. All game logic runs on the server
+    a. This will cause a lag between when the player takes and action and their screen updpate
+    b. It should be simpler because the game state is only on the server
+2. Client contains some game logic for prediction
+    a. Players will see their actions instantly
+    b. Client will need to handle corrections if the players actions conflicted on teh server
+
+
+We can plan phase 2 later, but for now, phase 1 will require two steps. First,
+we will need to completely modulate the client and server. The client will send
+all actions taken by the player to the server process, which will update the
+game state every tick and send the complete game state back to the client to
+draw.
+
+Second, we will need to make this sending of actions over a network connection.
+This second step should be a bit easier than the first step.
