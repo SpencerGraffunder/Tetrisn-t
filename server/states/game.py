@@ -50,10 +50,10 @@ class Game(State):
         self.state.board = [[Tile() for _ in range(self.state.board_width)] for _ in range(self.state.board_height+BOARD_HEIGHT_BUFFER)]
 
         # For testing multiplayer line clear
-        for row in self.state.board[10:]:
-            for tile_index, tile in enumerate(row):
-                if tile_index < 12:
-                    row[tile_index] = Tile(PieceType.I.value)
+        # for row in self.state.board[10:]:
+        #     for tile_index, tile in enumerate(row):
+        #         if tile_index < 12:
+        #             row[tile_index] = Tile(PieceType.I.value)
 
         # find the greatest level less than CURRENT_LEVEL
         # in FALL_DELAY_VALUES and set the speed to that level's speed
