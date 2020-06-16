@@ -9,7 +9,7 @@ from common.components.text import *
 from common.connection import connection
 from common.player_input import *
 import resources.tile_maker
-from client.globals import *
+from client.constants import *
 
 
 class Game(State):
