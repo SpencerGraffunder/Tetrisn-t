@@ -2,7 +2,19 @@
 
 block_cipher = None
 
-a = Analysis(['main.py', 'Game.py', 'Control.py', 'Game_Over.py', 'Main_Menu.py', 'Level_Selection_Menu.py', 'Pause_Menu.py', 'Piece.py', 'Player.py', 'States.py', 'Globals.py', 'Text.py', 'Tile.py'],
+a = Analysis(['main.py',
+              'Game.py',
+              'Control.py',
+              'Game_Over.py',
+              'Main_Menu.py',
+              'Level_Selection_Menu.py',
+              'Pause_Menu.py',
+              'Piece.py',
+              'Player.py',
+              'States.py',
+              'Globals.py',
+              'Text.py',
+              'Tile.py'],
 #a = Analysis(['main.py'],
              pathex=['C:\\Users\\Spencer\\Documents\\Tetrisn-t'],
              binaries=[],

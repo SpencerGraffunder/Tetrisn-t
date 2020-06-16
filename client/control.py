@@ -1,6 +1,7 @@
 import pygame
-from client.constants import *
-import client.globals as g
+from client.globals import *
+from common.components.text import *
+
 
 class Control:
     def __init__(self):
@@ -24,6 +25,7 @@ class Control:
         for event in pygame.event.get(pygame.VIDEORESIZE):
             g.window_height = event.h
             g.window_width = (((4*MAX_PLAYER_COUNT)+18)*g.window_height)//20
+            text.load_fonts()
             self.screen = pygame.display.set_mode((g.window_width, g.window_height), pygame.RESIZABLE)
         self.state.update()
 

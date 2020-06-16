@@ -4,7 +4,7 @@ import sys
 import os
 from common.components.tile import *  # Import like this to avoid having to do Tile. before everything
 from common.components.piece import *
-import client.globals as g
+from client.globals import *
 from common.components.text import *
 from common.connection import connection
 from common.player_input import *

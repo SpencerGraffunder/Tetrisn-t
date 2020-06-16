@@ -1,5 +1,5 @@
 from copy import copy
-import client.globals as g
+from client.globals import *
 from common.enums import *
 
 

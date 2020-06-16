@@ -4,7 +4,7 @@ from common.components.text import *
 from common.connection import PlayerInput
 from common.connection import connection
 import pdb
-import client.globals as g
+from client.globals import *
 
 
 class PauseMenu(State):
