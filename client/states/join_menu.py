@@ -7,11 +7,12 @@ from client.globals import *
 from common.connection import connection
 
 
-class LevelSelectionMenu(State):
+class JoinMenu(State):
 
     def __init__(self):
         State.__init__(self)
         self.level_selection = 0
+        g.local_player_count = 1
 
     def update(self):
         for event in pygame.event.get():
@@ -28,11 +29,11 @@ class LevelSelectionMenu(State):
                     self.switch('main menu')
                     return
                 elif event.key == pygame.K_UP:
-                    if self.level_selection < 29:
-                        self.level_selection += 1
+                    if g.local_player_count < 4:
+                        g.local_player_count += 1
                 elif event.key == pygame.K_DOWN:
-                    if self.level_selection > 0:
-                        self.level_selection -= 1
+                    if g.local_player_count > 1:
+                        g.local_player_count -= 1
                 elif event.key == pygame.K_SPACE or event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                     starting_level = self.level_selection
 
@@ -49,9 +50,9 @@ class LevelSelectionMenu(State):
 
         title_string = 'TETRISN\'T'
         subtitle_string = 'not a tetris game'
-        instruction_line1 = 'press UP or DOWN to change starting level'
+        instruction_line1 = 'press UP or DOWN to change the number of local players'
         instruction_line2 = 'press SPACE to start'
-        selection_string = str(self.level_selection)
+        selection_string = str(g.local_player_count)
 
         text.draw(screen, title_string,      'LARGE', (g.window_width//2, g.window_height   //4),  (0, 160, 0))
         text.draw(screen, subtitle_string,   'SMALL', (g.window_width//2, g.window_height*2 //4),  (0, 120, 0))

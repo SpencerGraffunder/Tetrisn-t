@@ -1,6 +1,8 @@
 import pygame
 from client.states.main_menu import *
-from client.states.level_selection_menu import *
+from client.states.create_menu import *
+from client.states.join_menu import *
+from client.states.lobby_menu import *
 from client.states.pause_menu import *
 from client.states.game import Game
 from client.states.game_over_menu import *
@@ -17,7 +19,9 @@ class Client:
 
         self.state_dict = {
             'main menu'            : MainMenu(),
-            'level selection menu' : LevelSelectionMenu(),
+            'create menu'          : CreateMenu(),
+            'join menu'            : JoinMenu(),
+            'lobby menu'            : LobbyMenu(),
             'pause menu'           : PauseMenu(),
             'game'                 : Game(),
             'game over menu'       : GameOverMenu()
