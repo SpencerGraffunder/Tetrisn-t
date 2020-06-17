@@ -221,10 +221,6 @@ class Game(State):
         n_lines_cleared = len(present_clearing_lines)
         self.state.score += SCORING_VALUES[n_lines_cleared]
 
-        # Set the player's state to spawn if their piece has finished clearing
-        for line in present_clearing_lines:
-            self.state.players[line.player_number].state = TetrisState.SPAWN_DELAY
-
     def update(self):
 
         while connection.inputs:
@@ -344,7 +340,12 @@ class Game(State):
                     player.fall_counter = 0
 
             if player.state == TetrisState.CLEAR:
-                pass
+                is_being_cleared = False
+                for line in self.clearing_lines:
+                    if line.player_number == player.player_number:
+                        is_being_cleared = True
+                if not is_being_cleared:
+                    player.state = TetrisState.SPAWN_DELAY
 
             elif player.state == TetrisState.SPAWN_DELAY:
                 player.spawn_delay_counter += 1
