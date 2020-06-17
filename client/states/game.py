@@ -82,7 +82,7 @@ class Game(State):
                                 new_event = Event(event_type, control_type)
                                 player_inputs[player.player_number].add_event(new_event)
                                 self.do_event(new_event)
-                # controller dpad
+                # controller buttons
                 elif pygame_event.type == pygame.JOYBUTTONDOWN or pygame_event.type == pygame.JOYBUTTONUP:
                     for player in self.state.players:
                         event_type = None
@@ -96,6 +96,12 @@ class Game(State):
                                 control_type = ControlType.CCW
                             elif pygame_event.button == 1:
                                 control_type = ControlType.CW
+                            elif pygame_event.button == 11:
+                                control_type = ControlType.RIGHT
+                            elif pygame_event.button == 10:
+                                control_type = ControlType.LEFT
+                            elif pygame_event.button == 9:
+                                control_type = ControlType.DOWN
                             if event_type is not None and control_type is not None:
                                 new_event = Event(event_type, control_type)
                                 player_inputs[player.player_number].add_event(new_event)
