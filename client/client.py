@@ -1,8 +1,4 @@
 import pygame
-import pdb
-from copy import copy
-from client.states.state import *
-from threading import Thread
 from client.states.main_menu import *
 from client.states.level_selection_menu import *
 from client.states.pause_menu import *
