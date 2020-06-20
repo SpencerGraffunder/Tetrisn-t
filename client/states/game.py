@@ -129,8 +129,6 @@ class Game(State):
                             if event_type is not None and control_type is not None:
                                 new_event = Event(event_type, control_type)
                                 player_inputs[player.player_number].add_event(new_event)
-                else:
-                    return
 
         for player_input in player_inputs:
             connection.add_input(player_input)
