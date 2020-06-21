@@ -219,8 +219,8 @@ class Game(State):
 
     def update(self):
 
-        while g.connection.inputs:
-            self.input = g.connection.get_input()
+        while g.connection.player_inputs:
+            self.input = g.connection.get_player_input()
 
             if self.input.pause:
                 self.paused = True
@@ -357,7 +357,7 @@ class Game(State):
 
             if player.state == TetrisState.GAME_OVER:
                 g.state.game_over = True
-                g.connection.set_state(g.state)
+                g.connection.add_game_state(g.state)
                 self.switch('lobby')
 
-        g.connection.set_state(g.state)
+        g.connection.add_game_state(g.state)

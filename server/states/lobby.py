@@ -14,13 +14,13 @@ class Lobby(State):
     def update(self):
         # Check for new connections?
         #g.connection.check_for_new_players()
-        while g.connection.inputs:
-            player_input = g.connection.get_input()
+        while g.connection.player_inputs:
+            player_input = g.connection.get_player_input()
 
             if player_input.is_ready:
                 g.state.players[player_input.player_number].is_ready = True
 
         if all([p.is_ready for p in g.state.players]):
             g.state.game_started = True
-            g.connection.set_state(g.state)
+            g.connection.add_game_state(g.state)
             self.switch('game')

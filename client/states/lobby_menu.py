@@ -48,7 +48,7 @@ class LobbyMenu(State):
                     player_input.start_game()
                     player_input.set_starting_level(starting_level)
                     player_input.set_player_count(g.local_player_count)
-                    connection.add_input(player_input)
+                    connection.add_player_input(player_input)
                     self.switch('game')
 
     def draw(self, screen):

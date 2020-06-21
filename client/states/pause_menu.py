@@ -25,7 +25,7 @@ class PauseMenu(State):
                     # Go back to the game
                     player_input = PlayerInput(None)
                     player_input.resume_game()
-                    connection.add_input(player_input)
+                    connection.add_player_input(player_input)
                     self.switch('game')
 
     def draw(self, screen):

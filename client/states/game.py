@@ -16,7 +16,7 @@ class Game(State):
     def __init__(self):
         State.__init__(self)
 
-        self.state = connection.get_state()
+        self.state = connection.get_game_state()
 
         self.sprites = {}
         # load sprites
@@ -43,7 +43,7 @@ class Game(State):
         if event.control == ControlType.PAUSE:
             pause_input = PlayerInput(None)
             pause_input.pause_game()
-            connection.add_input(pause_input)
+            connection.add_player_input(pause_input)
             self.switch('pause menu')
 
     def update(self):
@@ -133,13 +133,12 @@ class Game(State):
                     return
 
         for player_input in player_inputs:
-            connection.add_input(player_input)
+            connection.add_player_input(player_input)
 
-        self.state = connection.get_state()
+        self.state = connection.get_game_state()
 
         g.tile_size = g.window_height // self.state.board_height
-        if self.state.game_over:
-            self.state.game_over = False
+        if self.state.progress == self.state.Progress.OVER:
             self.switch('game over menu')
 
     def draw(self, screen):
