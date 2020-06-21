@@ -93,7 +93,7 @@ class Settings:
             fp = open('config.ini', 'w')
             self.settings.write(fp)
             fp.close()
-            print("config.ini modified (unless program just started)")
+            print("config.ini saved")
         except:
             print("Failed to save settings to config.ini")
             self.new_default_file()

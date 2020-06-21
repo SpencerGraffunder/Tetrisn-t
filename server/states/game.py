@@ -39,6 +39,7 @@ class Game(State):
         self.time_to_rotate = False
         self.clearing_lines = []
         self.clear_flag = False
+        self.has_leveled_up = False
 
     def reset(self, player_input):
         g.state = GameState()
@@ -48,14 +49,14 @@ class Game(State):
         g.state.board = [[Tile() for _ in range(g.state.board_width)] for _ in range(g.state.board_height+BOARD_HEIGHT_BUFFER)]
 
         # For testing multiplayer line clear
-        # for row in g.state.board[10:]:
-        #     for tile_index, tile in enumerate(row):
-        #         if tile_index < 12:
-        #             row[tile_index] = Tile(PieceType.I.value)
 
-        # find the greatest level less than CURRENT_LEVEL
-        # in FALL_DELAY_VALUES and set the speed to that level's speed
+        for row in self.state.board[10:]:
+            for tile_index, tile in enumerate(row):
+                if tile_index < 12:
+                    row[tile_index] = Tile(PieceType.I.value)
+
         g.state.current_level = player_input.starting_level
+        # find the greatest level less than CURRENT_LEVEL in FALL_DELAY_VALUES and set the speed to that level's speed
         x = g.state.current_level
         while x >= 0:
             if x in FALL_DELAY_VALUES.keys():
@@ -78,11 +79,12 @@ class Game(State):
         self.paused = False
         self.clearing_lines = []
         self.clear_flag = False
+        self.has_leveled_up = False
 
 
-        # split the board into PLAYER_COUNT equal sections (using floats), find the middle of the section we care about using the average, and favor right via the columns being index by 0
+        # split the board into PLAYER_COUNT equal sections (using floats), find the middle of the section we care about using the average, and round to nearest column
         for player in g.state.players:
-            player.spawn_column = int(((g.state.board_width / g.state.player_count) * player.player_number + (g.state.board_width / g.state.player_count) * (player.player_number + 1)) / 2)
+            player.spawn_column = int(((g.state.board_width / g.state.player_count) * player.player_number + (g.state.board_width / g.state.player_count) * (
 
     def do_event(self, event, player_number):
 
@@ -214,8 +216,35 @@ class Game(State):
         self.clearing_lines = future_clearing_lines
 
         # Update score
-        n_lines_cleared = len(present_clearing_lines)
-        g.state.score += SCORING_VALUES[n_lines_cleared]
+
+        present_lines_cleared = len(present_clearing_lines)
+        self.state.score += SCORING_VALUES[present_lines_cleared] * (self.state.current_level + 1)
+
+        # Update lines cleared and level
+        if not self.has_leveled_up:
+            if self.lines_cleared + present_lines_cleared >= 10 * (min(self.state.player_count, 3) + 2 * self.state.current_level):
+                self.state.current_level += 1
+                self.has_leveled_up = True
+                # Set speed
+                x = self.state.current_level
+                while x >= 0:
+                    if x in FALL_DELAY_VALUES.keys():
+                        self.fall_threshold = FALL_DELAY_VALUES[x]
+                        break
+                    x -= 1
+        else:
+            if self.lines_cleared % (10 * self.level_up_calculation_player_count) + present_lines_cleared >= 10 * self.level_up_calculation_player_count:
+                self.state.current_level += 1
+                # Set speed
+                x = self.state.current_level
+                while x >= 0:
+                    if x in FALL_DELAY_VALUES.keys():
+                        self.fall_threshold = FALL_DELAY_VALUES[x]
+                        break
+                    x -= 1
+
+        self.lines_cleared += present_lines_cleared
+        print(self.lines_cleared)
 
     def update(self):
 
