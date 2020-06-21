@@ -3,7 +3,7 @@ import pygame
 from common.components.text import *
 from common.connection import PlayerInput
 import pdb
-from client.globals import *
+import client.globals as g
 from common.connection import connection
 
 

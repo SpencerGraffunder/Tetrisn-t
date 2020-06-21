@@ -1,6 +1,7 @@
 import pygame
-from client.globals import *
+import client.globals as g
 from common.components.text import *
+from client.constants import *
 
 
 class Control:

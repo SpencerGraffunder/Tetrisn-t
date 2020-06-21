@@ -1,7 +1,7 @@
 import pygame
 import os
 import sys
-from client.globals import *
+import client.globals as g
 
 
 # Example
