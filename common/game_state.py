@@ -19,7 +19,6 @@ class GameState:
         self.players = []
         self.current_level = 0
         self.score = 0
-        self.player_count = 0
         self.progress = GameState.Progress.LOBBY
 
     @property

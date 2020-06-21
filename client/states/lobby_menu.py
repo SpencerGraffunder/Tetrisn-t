@@ -1,10 +1,10 @@
 from client.states.state import *
 import pygame
 from common.components.text import *
-from common.connection import PlayerInput
+from common.player_input import PlayerInput
 import pdb
 from client.globals import *
-from common.connection import connection
+from client.connection import connection
 
 
 class LobbyMenu(State):

@@ -6,7 +6,7 @@ from common.components.tile import *  # Import like this to avoid having to do T
 from common.components.piece import *
 from client.globals import *
 from common.components.text import *
-from common.connection import connection
+from client.connection import connection
 from common.player_input import *
 import resources.tile_maker
 from client.constants import *
