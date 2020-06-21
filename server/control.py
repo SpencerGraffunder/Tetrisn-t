@@ -1,10 +1,14 @@
 import server.globals as g
 import pygame
 
+
 class Control:
     def __init__(self):
         self.done = False
         self.clock = pygame.time.Clock()
+        self.state_dict = None
+        self.state_name = None
+        self.state = None
 
     def setup_states(self, state_dict, start_state):
         self.state_dict = state_dict

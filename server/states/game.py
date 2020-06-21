@@ -50,10 +50,10 @@ class Game(State):
 
         # For testing multiplayer line clear
 
-        for row in self.state.board[10:]:
-            for tile_index, tile in enumerate(row):
-                if tile_index < 12:
-                    row[tile_index] = Tile(PieceType.I.value)
+        # for row in self.state.board[10:]:
+        #     for tile_index, tile in enumerate(row):
+        #         if tile_index < 12:
+        #             row[tile_index] = Tile(PieceType.I.value)
 
         g.state.current_level = player_input.starting_level
         # find the greatest level less than CURRENT_LEVEL in FALL_DELAY_VALUES and set the speed to that level's speed
@@ -233,7 +233,7 @@ class Game(State):
                         break
                     x -= 1
         else:
-            if self.lines_cleared % (10 * self.level_up_calculation_player_count) + present_lines_cleared >= 10 * self.level_up_calculation_player_count:
+            if self.lines_cleared % (10 * min(3, self.state.player_count)) + present_lines_cleared >= 10 * min(3, self.state.player_count):
                 self.state.current_level += 1
                 # Set speed
                 x = self.state.current_level
@@ -244,7 +244,6 @@ class Game(State):
                     x -= 1
 
         self.lines_cleared += present_lines_cleared
-        print(self.lines_cleared)
 
     def update(self):
 
