@@ -3,8 +3,11 @@ import pygame
 from common.components.text import *
 from client.connection import PlayerInput
 import pdb
+
 from client.globals import *
 from client.connection import connection
+
+import client.globals as g
 
 
 class JoinMenu(State):

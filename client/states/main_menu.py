@@ -2,7 +2,7 @@ from client.states.state import *
 import pygame
 from common.components.text import *
 import pdb
-from client.globals import *
+import client.globals as g
 from client.constants import *
 
 
@@ -18,11 +18,13 @@ class MainMenu(State):
 
             if event.type == pygame.QUIT:
                 self.quit = True
+                g.config.save_settings()
+                return
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     # ESC pressed
                     self.quit = True
-                    g.save_settings()
+                    g.config.save_settings()
                     return
 
                 try:
