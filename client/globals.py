@@ -2,6 +2,7 @@ from common.player_input import ControlType
 import pygame
 from client.constants import *
 import configparser
+from server.server import Server
 
 
 class Settings:
@@ -69,6 +70,8 @@ class Settings:
 
 g = Settings()
 g.load_settings()
+
+server = Server()
 
 # # Number of players
 # local_player_count = 1

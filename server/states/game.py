@@ -6,9 +6,9 @@ import random
 from collections import deque
 import server.globals as g
 from common.components.text import *
-from common.connection import GameState
-from common.connection import connection
-from common.connection import PlayerInput
+from common.game_state import GameState
+from server.connection import Connection
+from common.player_input import PlayerInput
 from common.player_input import *
 from server.constants import *
 from server.clearing_line import *
@@ -18,7 +18,6 @@ class Game(State):
     def __init__(self):
         State.__init__(self)
 
-        self.state = GameState()
         self.input = PlayerInput(None)
         self.das_threshold = 0
         self.spawn_delay_threshold = 10
@@ -43,7 +42,6 @@ class Game(State):
 
     def reset(self, player_input):
         self.state = GameState()
-        self.state.player_count = player_input.player_count
 
         self.state.board_width = (4 * self.state.player_count) + 6
         # Fill board with empty tiles
@@ -81,7 +79,6 @@ class Game(State):
         self.clearing_lines = []
         self.clear_flag = False
 
-        self.state.players = [Player(x) for x in range(self.state.player_count)]
 
         # split the board into PLAYER_COUNT equal sections (using floats), find the middle of the section we care about using the average, and favor right via the columns being index by 0
         for player in self.state.players:
@@ -132,7 +129,6 @@ class Game(State):
                         self.state.players[player_number].is_move_down_pressed = False
 
     def lock_piece(self, player_number):
-
         piece_locked_into_another_piece = False
         max_row_index = 0
 
@@ -223,11 +219,8 @@ class Game(State):
 
     def update(self):
 
-        while connection.inputs:
-            self.input = connection.get_input()
-
-            if self.input.new_game:
-                self.reset(self.input)
+        while g.connection.inputs:
+            self.input = g.connection.get_input()
 
             if self.input.pause:
                 self.paused = True

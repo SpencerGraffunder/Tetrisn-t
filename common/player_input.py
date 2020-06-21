@@ -27,7 +27,7 @@ class Event:
 class PlayerInput:
     def __init__(self, player_number):
         self.events = []
-        self.new_game = False
+        self.is_ready = False
         self.starting_level = 0
         self.player_count = 1
         self.pause = False
@@ -38,7 +38,7 @@ class PlayerInput:
         return self.__bool__()
 
     def __bool__(self):
-        return bool(self.events) or self.new_game or self.pause or self.resume
+        return bool(self.events) or self.is_ready or self.pause or self.resume
 
     def add_event(self, event):
         self.events.append(event)

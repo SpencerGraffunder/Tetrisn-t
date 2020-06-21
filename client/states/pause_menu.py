@@ -1,8 +1,8 @@
 from client.states.state import *
 import pygame
 from common.components.text import *
-from common.connection import PlayerInput
-from common.connection import connection
+from common.player_input import PlayerInput
+from client.connection import connection
 import pdb
 from client.globals import *
 

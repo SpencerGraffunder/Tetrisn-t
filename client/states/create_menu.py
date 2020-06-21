@@ -5,6 +5,7 @@ from common.connection import PlayerInput
 import pdb
 from client.globals import *
 from common.connection import connection
+import client.globals as glb
 
 
 class CreateMenu(State):
@@ -49,7 +50,10 @@ class CreateMenu(State):
                     player_input.set_starting_level(starting_level)
                     player_input.set_player_count(g.local_player_count)
                     connection.add_input(player_input)
-                    self.switch('game')
+
+                    glb.server = Server()
+                    glb.server.start()
+                    self.switch('lobby menu')
 
     def draw(self, screen):
         screen.fill((150, 150, 150))

@@ -43,7 +43,7 @@ class JoinMenu(State):
                     player_input.set_starting_level(starting_level)
                     player_input.set_player_count(g.local_player_count)
                     connection.add_input(player_input)
-                    self.switch('game')
+                    self.switch('lobby menu')
 
     def draw(self, screen):
         screen.fill((150, 150, 150))
