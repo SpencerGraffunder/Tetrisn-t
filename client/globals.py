@@ -3,6 +3,7 @@ import pygame
 from client.constants import *
 import configparser
 import json
+import os
 
 default_keybindings = {0: {pygame.K_a: ControlType.LEFT,
                            pygame.K_d: ControlType.RIGHT,
@@ -47,41 +48,74 @@ class Settings:
 
         self.keybindings = None
 
+    # load_settings loads the settings from config.ini, and saves the current settings to it if the file's corrupt
     def load_settings(self):
-        self.settings.read('config.ini')
-        if not self.settings.has_section('main'):
-            self.settings.add_section('main')
+        try:
+            self.settings.read('config.ini')
+        except:
+            print("Error reading config.ini")
+            self.new_default_file()
+            return
 
-            ####################################################
-            # SET ALL DEFAULTS HERE
-            ####################################################
-            self.settings.set('main', 'window_height', str(700))
+        ####################################################
+        # LOAD ALL VARIABLES HERE
+        ####################################################
+        try:
+            self.window_height = int(self.settings.get('main', 'window_height'))
+        except:
+            self.new_default_file()
+            return
+        self.window_width = (((4 * MAX_PLAYER_COUNT) + 18) * self.window_height) // 20
+
+        try:
+            loading_dict = {}
+            for player_number, player_controls in json.loads(self.settings.get('main', 'keybindings')).items():
+                loading_dict[int(player_number)] = {}
+                for button, enum in player_controls.items():
+                    loading_dict[int(player_number)][int(button)] = ControlType(enum)
+            self.keybindings = loading_dict
+        except:
+            self.new_default_file()
+            return
+
+    def save_settings(self):
+        try:
+            self.settings.set('main', 'window_height', str(self.window_height))
 
             dumping_dict = {}
-            for player_number, player_controls in default_keybindings.items():
+            for player_number, player_controls in self.keybindings.items():
                 dumping_dict[player_number] = {}
                 for button, enum in player_controls.items():
                     dumping_dict[player_number][button] = enum.value
             self.settings.set('main', 'keybindings', json.dumps(dumping_dict))
 
-        ####################################################
-        # LOAD ALL VARIABLES HERE
-        ####################################################
-        self.window_height = int(self.settings.get('main', 'window_height'))
-        self.window_width = (((4 * MAX_PLAYER_COUNT) + 18) * self.window_height) // 20
+            fp = open('config.ini', 'w')
+            self.settings.write(fp)
+            fp.close()
+            print("config.ini modified (unless program just started)")
+        except:
+            print("Failed to save settings to config.ini")
+            self.new_default_file()
+            return
 
-        loading_dict = {}
-        for player_number, player_controls in json.loads(self.settings.get('main', 'keybindings')).items():
-            loading_dict[int(player_number)] = {}
-            for button, enum in player_controls.items():
-                loading_dict[int(player_number)][int(button)] = ControlType(enum)
-        self.keybindings = loading_dict
+    def new_default_file(self):
+        print("Making settings default and creating new config.ini file")
 
-    def save_settings(self):
-        self.settings.set('main', 'window_height', str(self.window_height))
+        try:
+            os.remove('config.ini')
+        except:
+            pass
+
+        if not self.settings.has_section('main'):
+            self.settings.add_section('main')
+
+        ####################################################
+        # SET ALL DEFAULTS HERE
+        ####################################################
+        self.settings.set('main', 'window_height', str(700))
 
         dumping_dict = {}
-        for player_number, player_controls in self.keybindings.items():
+        for player_number, player_controls in default_keybindings.items():
             dumping_dict[player_number] = {}
             for button, enum in player_controls.items():
                 dumping_dict[player_number][button] = enum.value
@@ -90,6 +124,8 @@ class Settings:
         fp = open('config.ini', 'w')
         self.settings.write(fp)
         fp.close()
+        print("config.ini created")
+        self.load_settings()
 
 
 g = Settings()
