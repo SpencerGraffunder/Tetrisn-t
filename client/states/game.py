@@ -4,7 +4,7 @@ import sys
 import os
 from common.components.tile import *  # Import like this to avoid having to do Tile. before everything
 from common.components.piece import *
-from client.globals import *
+import client.globals as g
 from common.components.text import *
 from common.connection import connection
 from common.player_input import *
@@ -35,9 +35,9 @@ class Game(State):
             joy.init()
 
         # Shift keyboard controls to assign controllers to players first
-        for i in range(n_joysticks):
-            g.keybindings[i+n_joysticks] = g.keybindings[i]
-            del g.keybindings[i]
+        # for i in range(n_joysticks):
+        #     g.keybindings[i+n_joysticks] = g.keybindings[i]
+        #     del g.keybindings[i]
 
     def do_event(self, event):
         if event.control == ControlType.PAUSE:

@@ -1,6 +1,6 @@
 from client.states.state import *
 import pygame
-from client.globals import *
+import client.globals as g
 from common.components.text import *
 
 

@@ -1,4 +1,4 @@
-from client.globals import *
+import client.globals as g
 import pygame
 
 tile_colors = {0: (0, 0, 255),

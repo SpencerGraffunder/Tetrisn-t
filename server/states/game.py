@@ -40,6 +40,7 @@ class Game(State):
         self.time_to_rotate = False
         self.clearing_lines = []
         self.clear_flag = False
+        self.has_leveled_up = False
 
     def reset(self, player_input):
         self.state = GameState()
@@ -55,9 +56,8 @@ class Game(State):
         #         if tile_index < 12:
         #             row[tile_index] = Tile(PieceType.I.value)
 
-        # find the greatest level less than CURRENT_LEVEL
-        # in FALL_DELAY_VALUES and set the speed to that level's speed
         self.state.current_level = player_input.starting_level
+        # find the greatest level less than CURRENT_LEVEL in FALL_DELAY_VALUES and set the speed to that level's speed
         x = self.state.current_level
         while x >= 0:
             if x in FALL_DELAY_VALUES.keys():
@@ -80,10 +80,11 @@ class Game(State):
         self.paused = False
         self.clearing_lines = []
         self.clear_flag = False
+        self.has_leveled_up = False
 
         self.state.players = [Player(x) for x in range(self.state.player_count)]
 
-        # split the board into PLAYER_COUNT equal sections (using floats), find the middle of the section we care about using the average, and favor right via the columns being index by 0
+        # split the board into PLAYER_COUNT equal sections (using floats), find the middle of the section we care about using the average, and round to nearest column
         for player in self.state.players:
             player.spawn_column = int(((self.state.board_width / self.state.player_count) * player.player_number + (self.state.board_width / self.state.player_count) * (player.player_number + 1)) / 2)
 
@@ -218,8 +219,33 @@ class Game(State):
         self.clearing_lines = future_clearing_lines
 
         # Update score
-        n_lines_cleared = len(present_clearing_lines)
-        self.state.score += SCORING_VALUES[n_lines_cleared]
+        present_lines_cleared = len(present_clearing_lines)
+        self.state.score += SCORING_VALUES[present_lines_cleared] * (self.state.current_level + 1)
+
+        # Update lines cleared and level
+        if not self.has_leveled_up:
+            if self.lines_cleared + present_lines_cleared >= 10 * (min(self.state.player_count, 3) + 2 * self.state.current_level):
+                self.state.current_level += 1
+                self.has_leveled_up = True
+                # Set speed
+                x = self.state.current_level
+                while x >= 0:
+                    if x in FALL_DELAY_VALUES.keys():
+                        self.fall_threshold = FALL_DELAY_VALUES[x]
+                        break
+                    x -= 1
+        else:
+            if self.lines_cleared % (10 * min(3, self.state.player_count)) + present_lines_cleared >= 10 * min(3, self.state.player_count):
+                self.state.current_level += 1
+                # Set speed
+                x = self.state.current_level
+                while x >= 0:
+                    if x in FALL_DELAY_VALUES.keys():
+                        self.fall_threshold = FALL_DELAY_VALUES[x]
+                        break
+                    x -= 1
+
+        self.lines_cleared += present_lines_cleared
 
     def update(self):
 
