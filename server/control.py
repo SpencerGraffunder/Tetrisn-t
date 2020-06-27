@@ -29,5 +29,6 @@ class Control:
 
     def main_game_loop(self):
         while not self.done:
+            # essentially sleeps when not doing game logic so that the tick rate is consistent
             self.clock.tick(g.tick_rate)/1000.0
             self.update()
