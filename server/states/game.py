@@ -82,9 +82,19 @@ class Game(State):
         self.has_leveled_up = False
 
 
-        # split the board into PLAYER_COUNT equal sections (using floats), find the middle of the section we care about using the average, and round to nearest column
-        for player in g.state.players:
-            player.spawn_column = int(((g.state.board_width / g.state.player_count) * player.player_number + (g.state.board_width / g.state.player_count) * (
+
+        # split the board into PLAYER_COUNT equal sections (using floats), find the middle of the section we care about
+        # using the average, and round down for the left half, and [round up for the right half for an even number of
+        # players, round down for the right half for an odd number of players]
+        # that way the pieces hopefully don't overlap spawn positions and things stay symmetrical
+        # somehow it seems to work this way between 1-6 players (except 5?), so hopefully that will port well into 7+
+        # this is all based on I piece spawn position, to help make all the 4 columns 'allocated' to each player be as
+        # evenly spread as possible
+        if self.state.player_count > 1:
+            for player in self.state.players:
+                player.spawn_column = int(((self.state.board_width / self.state.player_count) * player.player_number + (self.state.board_width / self.state.player_count) * (player.player_number + 1)) / 2) + ((self.state.player_count + 1) % 2) * player.player_number // ((self.state.player_count + 1) // 2)
+        elif self.state.player_count == 1:
+            self.state.players[0].spawn_column = self.state.board_width // 2
 
     def do_event(self, event, player_number):
 
