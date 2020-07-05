@@ -33,6 +33,9 @@ default_keybindings = {0: {pygame.K_a: ControlType.LEFT,
 local_player_count = 1
 player_count = 1
 
+# Score to be passed to game over state
+end_score = None
+
 # The graphics surfaces that will be drawn for each of the different tile types
 tile_surfaces = {}
 

@@ -96,11 +96,11 @@ class Game(State):
                                 control_type = ControlType.CCW
                             elif pygame_event.button == 1:
                                 control_type = ControlType.CW
-                            elif pygame_event.button == 11:
+                            elif pygame_event.button == 14:
                                 control_type = ControlType.RIGHT
-                            elif pygame_event.button == 10:
+                            elif pygame_event.button == 13:
                                 control_type = ControlType.LEFT
-                            elif pygame_event.button == 9:
+                            elif pygame_event.button == 12:
                                 control_type = ControlType.DOWN
                             if event_type is not None and control_type is not None:
                                 new_event = Event(event_type, control_type)
@@ -137,6 +137,7 @@ class Game(State):
 
         g.tile_size = g.window_height // self.state.board_height
         if self.state.progress == self.state.Progress.OVER:
+            g.end_score = self.state.score
             self.switch('game over menu')
 
     def draw(self, screen):
