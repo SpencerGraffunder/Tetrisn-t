@@ -37,4 +37,5 @@ DAS_VALUES = defaultdict(lambda: (3 - 1, 8 - 1))
 DAS_VALUES[1] = (6 - 1, 16 - 1)
 
 SERVER_ADDR = '192.168.1.8'
+SERVER_ADDR = '127.0.0.1'
 SERVER_PORT = '42069'

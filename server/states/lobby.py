@@ -20,7 +20,13 @@ class Lobby(State):
             if player_input.is_ready:
                 g.state.players[player_input.player_number].is_ready = True
 
+        g.connection.check_for_new_clients()
+
+
         if all([p.is_ready for p in g.state.players]):
             g.state.game_started = True
             g.connection.add_game_state(g.state)
             self.switch('game')
+
+        g.connection.check_for_new_clients()
+
